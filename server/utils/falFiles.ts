@@ -19,6 +19,9 @@ export async function falReadableUrl(url: string) {
   const local = await readStoredMedia(url, 200 * 1024 * 1024)
   if (!local)
     return url
+  // Without fal, inline local media so an OpenAI-compatible relay can still see it.
+  if (!readServiceSettings().falKey)
+    return local.bytes.byteLength <= 20 * 1024 * 1024 ? `data:${local.mime};base64,${Buffer.from(local.bytes).toString('base64')}` : url
   const hash = createHash('sha256').update(local.bytes).digest('hex')
   const cached = uploads.get(hash)
   if (cached && Date.now() - cached.time < 60 * 60 * 1000)

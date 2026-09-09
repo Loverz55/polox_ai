@@ -6,7 +6,7 @@ async function checkOpenRouter(settings: ServiceSettings) {
   if (!settings.openRouterKey)
     return { ok: false, message: 'OpenRouter API key is not configured.' }
   try {
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    const response = await fetch(`${settings.openRouterBaseUrl.replace(/\/+$/, '')}/chat/completions`, {
       method: 'POST',
       signal: AbortSignal.timeout(20000),
       headers: { 'Authorization': `Bearer ${settings.openRouterKey}`, 'Content-Type': 'application/json' },
@@ -19,9 +19,27 @@ async function checkOpenRouter(settings: ServiceSettings) {
   }
   catch { return { ok: false, message: 'OpenRouter could not be reached. Check your connection and try again.' } }
 }
+async function checkImage(settings: ServiceSettings) {
+  if (!settings.imageBaseUrl || !settings.imageKey)
+    return { ok: false, message: 'Image relay is not configured.' }
+  try {
+    const response = await fetch(`${settings.imageBaseUrl.replace(/\/+$/, '').replace(/\/v1$/, '')}/v1/models`, {
+      headers: { Authorization: `Bearer ${settings.imageKey}` },
+      signal: AbortSignal.timeout(15000),
+    })
+    if (!response.ok)
+      return { ok: false, message: `Image relay authentication failed (${response.status}). Check the base URL and key.` }
+    const payload = await response.json().catch(() => ({})) as { data?: Array<{ id?: string }> }
+    const ids = Array.isArray(payload.data) ? payload.data.map(model => String(model.id || '')) : []
+    if (ids.length && !ids.includes(settings.imageModel))
+      return { ok: true, message: `Image relay authenticated, but "${settings.imageModel}" is not in its model list.` }
+    return { ok: true, message: 'Image relay authenticated.' }
+  }
+  catch { return { ok: false, message: 'Image relay could not be reached. Check the base URL.' } }
+}
 async function checkFal(settings: ServiceSettings) {
   if (!settings.falKey)
-    return { ok: false, message: 'fal API key is not configured.' }
+    return { ok: false, message: 'fal API key is not configured (optional: needed for video, Seedream and layer tools).' }
   try {
     const client = createFalClient({ credentials: settings.falKey })
     // Authenticate against the model queue without creating a paid generation.
@@ -52,10 +70,10 @@ async function boundedFal(settings: ServiceSettings) {
   finally { clearTimeout(timer) }
 }
 export async function testServiceConnections(settings: ServiceSettings) {
-  const [openRouter, fal] = await Promise.all([checkOpenRouter(settings), boundedFal(settings)])
+  const [openRouter, image, fal] = await Promise.all([checkOpenRouter(settings), checkImage(settings), boundedFal(settings)])
   if (readServiceSettings().revision !== settings.revision)
-    return { ...publicServiceStatus(), openRouter, fal, superseded: true }
-  const checked = { ...settings, openRouterOk: openRouter.ok, falOk: fal.ok, checkedAt: new Date().toISOString() }
+    return { ...publicServiceStatus(), openRouter, image, fal, superseded: true }
+  const checked = { ...settings, openRouterOk: openRouter.ok, imageOk: image.ok, falOk: fal.ok, checkedAt: new Date().toISOString() }
   writeServiceSettings(checked)
-  return { ...publicServiceStatus(checked), openRouter, fal, superseded: false }
+  return { ...publicServiceStatus(checked), openRouter, image, fal, superseded: false }
 }

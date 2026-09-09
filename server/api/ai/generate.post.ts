@@ -5,6 +5,7 @@ import { falEndpoint } from '../../utils/falInput'
 import { sanitizeGenerateInput } from '../../utils/generateInput'
 import { dispatchQueuedJobs, newLocalTaskId } from '../../utils/generationQueue'
 import { toPublicJob } from '../../utils/generationResults'
+import { isRelayImageModel } from '../../utils/relayImage'
 import { toPublicApiError } from '../../utils/httpError'
 import { resolveProject } from '../../utils/projects'
 import { connectDatabase } from '../../utils/sqlite'
@@ -33,7 +34,7 @@ export default defineEventHandler(async (event) => {
   try {
     const job = await GenerationJob.create({
       projectId: String(project._id),
-      provider: 'fal',
+      provider: isRelayImageModel(model) ? 'relay' : 'fal',
       model,
       category: (isImageLayerSplitterModel(model) ? 'Tools' : String(body?.category || '')),
       task: (isImageLayerSplitterModel(model) ? 'Split Image Layers' : String(body?.task || '')),

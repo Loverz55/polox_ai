@@ -2,6 +2,7 @@ import { GenerationJob } from '../models/generationJob'
 import { createFalTask } from '../utils/falGenerate'
 import { falEndpoint } from '../utils/falInput'
 import { sanitizeGenerateInput } from '../utils/generateInput'
+import { generateRelayImage, isRelayImageModel } from '../utils/relayImage'
 import { agentEnv } from './env'
 
 export const IMAGE_TIMEOUT_MS = 8 * 60 * 1000
@@ -10,6 +11,8 @@ export const VIDEO_25_TIMEOUT_MS = 40 * 60 * 1000
 export type OnProviderCreated = (providerTaskId: string) => void | Promise<void>
 
 export async function pollFalTask(taskId: string, options: { timeoutMs: number, failLabel: string, endpoint?: string, statusUrl?: string, responseUrl?: string }) {
+  if (taskId.startsWith('relay_'))
+    throw new Error('Relay generations cannot be resumed after a restart. Please generate again.')
   const job = options.endpoint ? null : await GenerationJob.findOne({ providerTaskId: taskId })
   const endpoint = options.endpoint || falEndpoint(String(job?.requestBody?.model || job?.model || ''), job?.input || {})
   if (!endpoint)
@@ -50,6 +53,11 @@ export async function pollFalTask(taskId: string, options: { timeoutMs: number, 
 async function generate(model: string, input: Record<string, unknown>, timeoutMs: number, signal?: AbortSignal, onCreated?: OnProviderCreated) {
   signal?.throwIfAborted()
   const payload = sanitizeGenerateInput(model, input)
+  if (isRelayImageModel(model)) {
+    const taskId = `relay_${crypto.randomUUID()}`
+    await onCreated?.(taskId)
+    return { taskId, urls: await generateRelayImage(model, payload, taskId, signal) }
+  }
   const endpoint = falEndpoint(model, payload)
   const task = await createFalTask(endpoint, payload)
   await onCreated?.(task.requestId)

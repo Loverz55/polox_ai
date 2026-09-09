@@ -6,6 +6,8 @@ import { GenerationJob } from '../models/generationJob'
 import { createFalTask } from './falGenerate'
 import { generationConcurrency } from './generationConcurrency'
 import { isProviderStarted } from './generationJobs'
+import { generateRelayImage, isRelayImageModel } from './relayImage'
+import { syncAgentRuntimeFromJob } from './agentSessionRuntime'
 
 type GenerationJobDocument = StoredDocument<IGenerationJob>
 let dispatching: Promise<void> | undefined
@@ -31,8 +33,46 @@ async function failUnstartedJob(job: GenerationJobDocument, error: unknown) {
   await job.save()
   return job
 }
+const relayRunning = new Set<string>()
+async function runRelayJob(job: GenerationJobDocument) {
+  relayRunning.add(job.taskId)
+  try {
+    const { _textEdit, ...input } = job.input && typeof job.input === 'object' ? job.input : {}
+    const urls = await generateRelayImage(String(job.model), input, job.taskId)
+    job.resultAssets = urls.map(url => ({ sourceUrl: url, localUrl: url, localKey: '', contentType: '', status: 'uploaded' as const, error: '' }))
+    job.sourceUrls = urls
+    job.resultUrls = urls
+    job.resultJson = JSON.stringify({ resultUrls: urls })
+    job.state = 'success'
+    job.completeTime = Date.now()
+    job.failCode = ''
+    job.failMsg = ''
+  }
+  catch (error) {
+    console.error('[relay image]', job.taskId, error)
+    job.state = 'fail'
+    job.failMsg = readErrorMessage(error, 'Generation failed')
+  }
+  finally {
+    relayRunning.delete(job.taskId)
+    job.lastSyncAt = new Date()
+    await job.save()
+    void syncAgentRuntimeFromJob(job)
+    await dispatchQueuedJobs()
+  }
+}
+/** Relay jobs run in-process: nothing to poll. A job still "generating" after a restart is lost. */
+export async function syncRelayJob(job: GenerationJobDocument) {
+  if (relayRunning.has(job.taskId) || !['waiting', 'queuing', 'generating'].includes(job.state))
+    return job
+  job.state = 'fail'
+  job.failMsg = 'Generation was interrupted by a server restart. Please generate again.'
+  job.lastSyncAt = new Date()
+  await job.save()
+  return job
+}
 async function startProviderTask(job: GenerationJobDocument) {
-  if (job.provider && job.provider !== 'fal') return failUnstartedJob(job, new Error('This task belongs to a retired provider. Please generate again.'))
+  if (job.provider && job.provider !== 'fal' && job.provider !== 'relay') return failUnstartedJob(job, new Error('This task belongs to a retired provider. Please generate again.'))
   const original = asRecord(job.originalRequest)
   if (original?.source === 'agent' && original?.holdSlot === true) {
     if (job.state === 'queued' || job.state === 'waiting' || job.state === 'queuing') {
@@ -47,6 +87,15 @@ async function startProviderTask(job: GenerationJobDocument) {
   const requestBody = asRecord(job.requestBody) || {}
   // Ignore legacy text-compositing metadata on already persisted jobs.
   const { _textEdit, ...input } = job.input && typeof job.input === 'object' ? job.input : {}
+  if (job.provider === 'relay' || isRelayImageModel(String(job.model))) {
+    job.provider = 'relay'
+    job.providerTaskId = `relay_${crypto.randomUUID()}`
+    job.state = 'generating'
+    job.lastSyncAt = new Date()
+    await job.save()
+    void runRelayJob(job)
+    return job
+  }
   {
     const falModel = String(requestBody.model || job.model || '').trim()
     const falTask = await createFalTask(falModel, input)

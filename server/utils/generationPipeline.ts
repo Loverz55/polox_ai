@@ -4,7 +4,7 @@ import { GENERATION_ACTIVE_STATES } from '../../shared/types/generation'
 import { GenerationJob } from '../models/generationJob'
 import { syncAgentRuntimeFromJob } from './agentSessionRuntime'
 import { syncJobFromFal } from './falGenerate'
-import { dispatchQueuedJobs, startPendingProviderJob } from './generationQueue'
+import { dispatchQueuedJobs, startPendingProviderJob, syncRelayJob } from './generationQueue'
 import { mergeSourceUrls } from './generationResults'
 import { isStoredMediaUrl, saveMediaFile } from './localMedia'
 
@@ -68,6 +68,8 @@ function isVideoJob(job: IGenerationJob) {
     || model.startsWith('wan/')
 }
 async function syncProviderJob(job: GenerationJobDocument) {
+  if (job.provider === 'relay')
+    return syncRelayJob(job)
   return syncJobFromFal(job)
 }
 function pendingAssets(job: IGenerationJob) {

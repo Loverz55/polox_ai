@@ -6,7 +6,9 @@ const siteUrl = 'https://polox.ai'
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  devServer: { port: 3001 },
+  devServer: { port: 3070 },
+  // Sibling worktrees under .claude/ would otherwise be watched too (EMFILE).
+  ignore: ['.claude/**'],
 
   runtimeConfig: {
     public: {
@@ -30,6 +32,7 @@ export default defineNuxtConfig({
   vite: {
     plugins: [tailwindcss()],
     server: {
+      watch: { ignored: ['**/.claude/**'] },
       hmr: { port: 24679 },
       // Allow the cloudflared quick-tunnel host to reach the dev server
       // (e.g. https://xxx.trycloudflare.com). Wildcard keeps working when the

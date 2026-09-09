@@ -7,7 +7,7 @@ export function mediaRoot() {
   return resolve('.data/media')
 }
 
-let applicationUrl = 'http://localhost:3001'
+let applicationUrl = 'http://localhost:3070' // ponytail: must match nuxt.config devServer.port
 export function configureMediaBase(url: string) { applicationUrl = url }
 function mediaBase() {
   const base = new URL(applicationUrl)

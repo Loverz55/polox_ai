@@ -2,7 +2,9 @@ import type { ChatMessage, ToolCall } from './types'
 import { falReadableUrl } from '../utils/falFiles'
 import { agentEnv } from './env'
 
-const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions'
+function chatUrl() {
+  return `${agentEnv.openRouterBaseUrl}/chat/completions`
+}
 
 export interface StreamDelta {
   content?: string
@@ -53,7 +55,7 @@ export async function completeText(options: {
   temperature?: number
   maxTokens?: number
 }) {
-  const response = await fetch(OPENROUTER_URL, {
+  const response = await fetch(chatUrl(), {
     method: 'POST',
     signal: options.signal,
     headers: {
@@ -94,7 +96,7 @@ export async function streamChat(options: {
   signal?: AbortSignal
   onDelta: (delta: StreamDelta) => void
 }) {
-  const response = await fetch(OPENROUTER_URL, {
+  const response = await fetch(chatUrl(), {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${agentEnv.openRouterApiKey}`,
