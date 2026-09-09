@@ -10,6 +10,8 @@ const emit = defineEmits<{
   'confirm': []
 }>()
 
+const { t } = useI18n()
+
 function onOpenChange(open: boolean) {
   if (props.pending && !open)
     return
@@ -22,15 +24,15 @@ function onOpenChange(open: boolean) {
     <AlertDialogContent class="rounded-2xl border-border bg-card shadow-none sm:max-w-md">
       <AlertDialogHeader class="gap-2">
         <AlertDialogTitle>
-          {{ count && count > 1 ? `Delete ${count} results?` : 'Delete this result?' }}
+          {{ count && count > 1 ? t('Delete {count} results?', { count }) : t('Delete this result?') }}
         </AlertDialogTitle>
         <AlertDialogDescription>
-          This cannot be undone. The result will be removed from your library and cannot be recovered.
+          {{ t('This cannot be undone. The result will be removed from your library and cannot be recovered.') }}
         </AlertDialogDescription>
       </AlertDialogHeader>
       <AlertDialogFooter>
         <AlertDialogCancel class="rounded-lg shadow-none" :disabled="pending">
-          Cancel
+          {{ t('Cancel') }}
         </AlertDialogCancel>
         <Button
           class="rounded-lg bg-destructive text-white shadow-none hover:bg-destructive/90"
@@ -38,7 +40,7 @@ function onOpenChange(open: boolean) {
           @click="emit('confirm')"
         >
           <Spinner v-if="pending" class="size-4" />
-          Delete
+          {{ t('Delete') }}
         </Button>
       </AlertDialogFooter>
     </AlertDialogContent>

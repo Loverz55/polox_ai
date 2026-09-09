@@ -20,6 +20,7 @@ const emit = defineEmits<{
   ]
 }>()
 const route = useRoute()
+const { t } = useI18n()
 const { projects, selectedProjectId, createProject } = useProjects()
 const { availableModels, selectedModelId, selectedModel, formValues, uploadFields, itemsForField, primaryFields, toolbarFields, advancedFields, canGenerate, isUploading, isSubmitting, setFieldValue, addUploadedFiles, removeUploadedItem, handleGenerate } = useAiGeneratorForm()
 const fileInputRef = ref<HTMLInputElement | null>(null)
@@ -61,7 +62,7 @@ async function submitCreateProject() {
     await createProject()
   }
   catch (error) {
-    toast.error(readErrorMessage(error, 'Could not create the project'))
+    toast.error(readErrorMessage(error, t('Could not create the project')))
   }
   finally {
     creatingProject.value = false
@@ -158,14 +159,14 @@ watch(lockedProjectId, (id) => {
                     class="size-4 shrink-0 object-contain"
                     aria-hidden="true"
                   >
-                  {{ selectedModel?.name || 'Select model' }}
+                  {{ selectedModel?.name || t('Select model') }}
                   <ChevronDown class="size-3.5 opacity-50" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" class="min-w-48">
                 <DropdownMenuGroup>
                   <DropdownMenuLabel class="w-full text-center font-bold">
-                    Model
+                    {{ t('Model') }}
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuRadioGroup
@@ -204,14 +205,14 @@ watch(lockedProjectId, (id) => {
                   class="h-8 gap-1.5 border-border bg-muted/45 px-2.5 text-xs shadow-none hover:bg-accent"
                 >
                   <Folder class="size-3.5" />
-                  {{ projects.find(project => project.id === selectedProjectId)?.name || DEFAULT_PROJECT_NAME }}
+                  {{ t(projects.find(project => project.id === selectedProjectId)?.name || DEFAULT_PROJECT_NAME) }}
                   <ChevronDown class="size-3.5 opacity-50" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" class="min-w-48">
                 <DropdownMenuGroup>
                   <DropdownMenuLabel class="w-full text-center font-bold">
-                    Project
+                    {{ t('Project') }}
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuRadioGroup
@@ -223,14 +224,14 @@ watch(lockedProjectId, (id) => {
                       :key="project.id"
                       :value="project.id"
                     >
-                      {{ project.name }}
+                      {{ t(project.name) }}
                     </DropdownMenuRadioItem>
                   </DropdownMenuRadioGroup>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem class="gap-2" :disabled="creatingProject" @select="submitCreateProject">
                     <Spinner v-if="creatingProject" class="size-3.5" />
                     <Plus v-else class="size-3.5" />
-                    {{ creatingProject ? 'Creating…' : 'New project' }}
+                    {{ creatingProject ? t('Creating…') : t('New project') }}
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
               </DropdownMenuContent>
@@ -259,10 +260,10 @@ watch(lockedProjectId, (id) => {
               <PopoverContent align="start" class="w-80 space-y-4 p-4">
                 <div class="space-y-1">
                   <h4 class="text-sm font-medium">
-                    Advanced Settings
+                    {{ t('Advanced Settings') }}
                   </h4>
                   <p class="text-xs text-muted-foreground">
-                    Additional parameters for {{ selectedModel?.name }}.
+                    {{ t('Additional parameters for {model}.', { model: selectedModel?.name || '' }) }}
                   </p>
                 </div>
 
@@ -291,7 +292,7 @@ watch(lockedProjectId, (id) => {
               @click="onGenerate"
             >
               <Spinner v-if="isUploading || isSubmitting" />
-              Generate
+              {{ t('Generate') }}
             </Button>
           </div>
         </div>

@@ -40,6 +40,7 @@ interface Asset {
   error: string
   job?: GenerationJobPublic
 }
+const { t } = useI18n()
 const sourceAssets = computed(() => {
   const result: Asset[] = []
   const urls = new Set<string>()
@@ -88,7 +89,7 @@ async function exportAssets(items: Asset[], format: 'file' | 'zip') {
       responseType: 'blob',
     })
     if (!response._data)
-      throw new Error('Export returned no file')
+      throw new Error(t('Export returned no file'))
     const disposition = response.headers.get('content-disposition') || ''
     const filename = disposition.match(/filename\*=UTF-8''([^;]+)/i)?.[1]
     const url = URL.createObjectURL(response._data)
@@ -104,10 +105,10 @@ async function exportAssets(items: Asset[], format: 'file' | 'zip') {
     const data = (error as { data?: Blob | { statusMessage?: string } }).data
     if (data instanceof Blob) {
       const detail = await data.text().then(text => JSON.parse(text)).catch(() => null)
-      exportError.value = detail?.statusMessage || 'Export failed. Please try again.'
+      exportError.value = detail?.statusMessage || t('Export failed. Please try again.')
     }
     else {
-      exportError.value = data?.statusMessage || (error instanceof Error ? error.message : 'Export failed. Please try again.')
+      exportError.value = data?.statusMessage || (error instanceof Error ? error.message : t('Export failed. Please try again.'))
     }
   }
   finally {
@@ -142,7 +143,7 @@ let drag: { pointer: number, x: number, y: number, origin: CanvasPoint, id?: str
 let observerReady = false
 let resize: { id: string, pointer: number, corner: CanvasCorner, x: number, y: number, origin: CanvasRect } | undefined
 const corners: CanvasCorner[] = ['nw', 'ne', 'sw', 'se']
-const cornerLabels = { nw: 'top left', ne: 'top right', sw: 'bottom left', se: 'bottom right' }
+const cornerLabels = { nw: 'Resize top left', ne: 'Resize top right', sw: 'Resize bottom left', se: 'Resize bottom right' }
 let wheelTimer: ReturnType<typeof setTimeout> | undefined
 const pointers = new Map<number, CanvasPoint>()
 let pinch: { distance: number, center: CanvasPoint, camera: typeof camera } | undefined
@@ -602,7 +603,7 @@ onBeforeUnmount(() => {
 <template>
   <div class="canvas-shell relative isolate z-0 h-full min-h-0 flex-1 overflow-hidden bg-muted/25">
     <div
-      ref="surface" tabindex="0" role="region" aria-label="Infinite canvas. Drag empty space to select, Shift-click to add selections. Hold Space to pan, drag cards to move. Control or Command scroll to zoom. Press 0 to fit."
+      ref="surface" tabindex="0" role="region" :aria-label="t('Infinite canvas. Drag empty space to select, Shift-click to add selections. Hold Space to pan, drag cards to move. Control or Command scroll to zoom. Press 0 to fit.')"
       class="canvas-surface absolute inset-0 overflow-hidden outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
       :class="hand || space || interacting ? 'cursor-grabbing' : 'cursor-grab'"
       :style="{ backgroundSize: `${24 * camera.zoom}px ${24 * camera.zoom}px`, backgroundPosition: `${camera.x}px ${camera.y}px` }"
@@ -644,7 +645,7 @@ onBeforeUnmount(() => {
                 {{ asset.name }}
               </p>
               <p v-if="asset.state !== 'success'" class="line-clamp-3">
-                {{ asset.state === 'fail' ? asset.error || 'Generation failed' : 'Generating…' }}
+                {{ asset.state === 'fail' ? asset.error || t('Generation failed') : t('Generating…') }}
               </p>
             </div>
           </div>
@@ -653,7 +654,7 @@ onBeforeUnmount(() => {
             <button
               v-for="corner in corners" :key="corner"
               class="canvas-resize" :class="`canvas-resize-${corner}`"
-              :aria-label="`Resize ${cornerLabels[corner]}`" :title="`Resize ${cornerLabels[corner]}`"
+              :aria-label="t(cornerLabels[corner])" :title="t(cornerLabels[corner])"
               :style="{ width: `${14 / camera.zoom}px`, height: `${14 / camera.zoom}px`, borderWidth: `${1.5 / camera.zoom}px` }"
               @pointerdown.stop="startResize($event, asset.id, corner)" @dblclick.stop
               @keydown="resizeKey($event, asset.id, corner)"
@@ -674,7 +675,7 @@ onBeforeUnmount(() => {
     </div>
     <div
       v-for="asset in visible.filter(item => selection.size === 1 && selection.has(item.id))" :key="`toolbar-${asset.id}`"
-      role="toolbar" aria-label="Selected media actions"
+      role="toolbar" :aria-label="t('Selected media actions')"
       :style="toolbarPosition(asset.point)"
       class="absolute z-30 flex -translate-x-1/2 flex-col gap-2 rounded-xl border border-border bg-background/95 px-3 py-2 shadow-lg backdrop-blur"
       @pointerdown.stop @dblclick.stop
@@ -683,94 +684,94 @@ onBeforeUnmount(() => {
         {{ asset.name.replace(/^(Image|Video) · /, '') }}
       </p>
       <div class="flex items-center justify-between text-xs text-muted-foreground">
-        <span>{{ asset.video ? 'VIDEO' : 'IMAGE' }}</span>
+        <span>{{ asset.video ? t('VIDEO') : t('IMAGE') }}</span>
         <div class="flex gap-1">
-          <button class="canvas-action" aria-label="View details" title="View details" @click="detailAsset = asset">
+          <button class="canvas-action" :aria-label="t('View details')" :title="t('View details')" @click="detailAsset = asset">
             <Icon name="i-lucide-info" />
           </button>
-          <button v-if="asset.url && asset.state === 'success'" class="canvas-action" aria-label="Open result" @click="view(asset)">
+          <button v-if="asset.url && asset.state === 'success'" class="canvas-action" :aria-label="t('Open result')" @click="view(asset)">
             <Icon name="i-lucide-maximize-2" />
           </button>
-          <button v-if="asset.url && asset.state === 'success'" class="canvas-action" aria-label="Export original file" :title="exporting ? 'Exporting…' : 'Export original file'" :disabled="exporting" @click="exportAssets([asset], 'file')">
+          <button v-if="asset.url && asset.state === 'success'" class="canvas-action" :aria-label="t('Export original file')" :title="exporting ? t('Exporting…') : t('Export original file')" :disabled="exporting" @click="exportAssets([asset], 'file')">
             <Icon :name="exporting ? 'i-lucide-loader-circle' : 'i-lucide-download'" :class="{ 'animate-spin': exporting }" />
           </button>
-          <button v-if="showAttach && asset.url && !asset.video && asset.state === 'success'" class="canvas-action" aria-label="Use as reference" @click="emit('attach', { urls: [asset.url], prompt: asset.prompt })">
+          <button v-if="showAttach && asset.url && !asset.video && asset.state === 'success'" class="canvas-action" :aria-label="t('Use as reference')" @click="emit('attach', { urls: [asset.url], prompt: asset.prompt })">
             <Icon name="i-lucide-paperclip" />
           </button>
-          <button v-if="showMove && asset.taskId" class="canvas-action" aria-label="Move to project" @click="emit('move', asset.taskId)">
+          <button v-if="showMove && asset.taskId" class="canvas-action" :aria-label="t('Move to project')" @click="emit('move', asset.taskId)">
             <Icon name="i-lucide-folder" />
           </button>
-          <button v-if="asset.taskId && ['success', 'fail'].includes(asset.state)" class="canvas-action" aria-label="Delete result" :disabled="deletingTaskId === asset.taskId" @click="emit('delete', asset.taskId)">
+          <button v-if="asset.taskId && ['success', 'fail'].includes(asset.state)" class="canvas-action" :aria-label="t('Delete result')" :disabled="deletingTaskId === asset.taskId" @click="emit('delete', asset.taskId)">
             <Icon name="i-lucide-trash-2" />
           </button>
         </div>
       </div>
     </div>
     <div v-if="marquee" class="pointer-events-none absolute z-20 border border-blue-500 bg-blue-500/10" :style="marqueeStyle" />
-    <div v-if="selection.size > 1" role="toolbar" aria-label="Selected media bulk actions" class="absolute top-3 right-3 z-30 flex items-center gap-2 rounded-lg border border-border bg-background/95 p-2 shadow-lg" @pointerdown.stop>
-      <span class="text-xs text-muted-foreground">{{ selection.size }} selected</span>
-      <button class="canvas-action" aria-label="Export selected as ZIP" :title="exporting ? 'Exporting…' : 'Export selected as ZIP (up to 100 files)'" :disabled="exporting || !canExportSelection" @click="exportAssets(selectedAssets, 'zip')">
+    <div v-if="selection.size > 1" role="toolbar" :aria-label="t('Selected media bulk actions')" class="absolute top-3 right-3 z-30 flex items-center gap-2 rounded-lg border border-border bg-background/95 p-2 shadow-lg" @pointerdown.stop>
+      <span class="text-xs text-muted-foreground">{{ t('{count} selected', { count: selection.size }) }}</span>
+      <button class="canvas-action" :aria-label="t('Export selected as ZIP')" :title="exporting ? t('Exporting…') : t('Export selected as ZIP (up to 100 files)')" :disabled="exporting || !canExportSelection" @click="exportAssets(selectedAssets, 'zip')">
         <Icon :name="exporting ? 'i-lucide-loader-circle' : 'i-lucide-download'" :class="{ 'animate-spin': exporting }" />
       </button>
-      <button class="canvas-action" aria-label="Move selected to project" :disabled="!showMove || batchIds.length === 0 || selectedAssets.some(asset => !asset.taskId)" @click="emit('moveMany', batchIds)">
+      <button class="canvas-action" :aria-label="t('Move selected to project')" :disabled="!showMove || batchIds.length === 0 || selectedAssets.some(asset => !asset.taskId)" @click="emit('moveMany', batchIds)">
         <Icon name="i-lucide-folder" />
       </button>
-      <button class="canvas-action" aria-label="Delete selected results" :disabled="!canBatchDelete" @click="emit('deleteMany', batchIds)">
+      <button class="canvas-action" :aria-label="t('Delete selected results')" :disabled="!canBatchDelete" @click="emit('deleteMany', batchIds)">
         <Icon name="i-lucide-trash-2" />
       </button>
     </div>
     <div v-if="exporting || exportError" class="absolute top-16 right-3 z-30 flex max-w-sm items-center gap-2 rounded-lg border bg-background/95 px-3 py-2 text-xs shadow-lg" :role="exportError ? 'alert' : 'status'" @pointerdown.stop>
-      <span>{{ exportError || 'Preparing download…' }}</span>
-      <button v-if="exportError" class="canvas-action shrink-0" aria-label="Dismiss export error" @click="exportError = ''">
+      <span>{{ exportError || t('Preparing download…') }}</span>
+      <button v-if="exportError" class="canvas-action shrink-0" :aria-label="t('Dismiss export error')" @click="exportError = ''">
         <Icon name="i-lucide-x" />
       </button>
     </div>
     <div v-if="!ready || loadError" class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-background/80 text-sm" role="status">
-      <span>{{ loadError ? 'Could not load canvas layout.' : 'Loading canvas layout…' }}</span>
+      <span>{{ loadError ? t('Could not load canvas layout.') : t('Loading canvas layout…') }}</span>
       <button v-if="loadError" class="rounded border px-4 py-2" @click="loadLayout">
-        Retry
+        {{ t('Retry') }}
       </button>
     </div>
     <AiGeneratorJobDetailDialog v-if="detailAsset" :open="Boolean(detailAsset)" :job="detailJob" @update:open="!$event && (detailAsset = null)" />
     <div v-if="!assets.length" class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-3 text-muted-foreground">
       <Icon name="i-lucide-scan" class="size-10" />
       <p class="text-sm">
-        {{ loading ? 'Loading your canvas…' : emptyMessage || 'Your ideas start here' }}
+        {{ loading ? t('Loading your canvas…') : emptyMessage || t('Your ideas start here') }}
       </p>
       <p class="text-xs">
-        {{ loading || emptyMessage ? '' : 'Agent results appear on this canvas automatically.' }}
+        {{ loading || emptyMessage ? '' : t('Agent results appear on this canvas automatically.') }}
       </p>
     </div>
     <div class="pointer-events-none absolute inset-0 z-10">
       <div class="pointer-events-auto absolute top-3 left-3 flex items-center gap-2 rounded-lg border border-border bg-background/95 px-3 py-1.5 text-[11px] text-muted-foreground">
-        <span>{{ assets.length }} assets</span>
+        <span>{{ t('{count} assets', { count: assets.length }) }}</span>
         <button v-if="latestAsset" class="ml-2 text-foreground hover:underline" @click="focusAsset(latestAsset.id)">
-          Find latest
+          {{ t('Find latest') }}
         </button>
       </div>
       <div class="pointer-events-auto absolute right-3 bottom-3 left-3 flex flex-wrap items-center justify-between gap-2">
         <div class="flex items-center gap-1 rounded-xl border border-border bg-background/95 p-1">
-          <button class="canvas-tool" :class="!hand ? 'bg-accent' : ''" aria-label="Select and move objects" :aria-pressed="!hand" @click="hand = false">
+          <button class="canvas-tool" :class="!hand ? 'bg-accent' : ''" :aria-label="t('Select and move objects')" :aria-pressed="!hand" @click="hand = false">
             <Icon name="i-lucide-mouse-pointer-2" />
           </button>
-          <button class="canvas-tool" :class="hand ? 'bg-accent' : ''" aria-label="Pan canvas" :aria-pressed="hand" @click="hand = true">
+          <button class="canvas-tool" :class="hand ? 'bg-accent' : ''" :aria-label="t('Pan canvas')" :aria-pressed="hand" @click="hand = true">
             <Icon name="i-lucide-hand" />
           </button>
-          <button class="canvas-tool" aria-label="Arrange objects by creation order" title="Arrange: oldest first, newest last" @click="arrange">
+          <button class="canvas-tool" :aria-label="t('Arrange objects by creation order')" :title="t('Arrange: oldest first, newest last')" @click="arrange">
             <Icon name="i-lucide-layout-grid" />
           </button>
         </div>
         <div class="flex items-center gap-1 rounded-xl border border-border bg-background/95 p-1">
-          <button class="canvas-tool" aria-label="Zoom out" @click="zoom(camera.zoom / 1.2)">
+          <button class="canvas-tool" :aria-label="t('Zoom out')" @click="zoom(camera.zoom / 1.2)">
             <Icon name="i-lucide-minus" />
           </button>
-          <button class="min-w-12 text-xs tabular-nums" aria-label="Reset zoom to 100 percent" @click="zoom(1)">
+          <button class="min-w-12 text-xs tabular-nums" :aria-label="t('Reset zoom to 100 percent')" @click="zoom(1)">
             {{ Math.round(camera.zoom * 100) }}%
           </button>
-          <button class="canvas-tool" aria-label="Zoom in" @click="zoom(camera.zoom * 1.2)">
+          <button class="canvas-tool" :aria-label="t('Zoom in')" @click="zoom(camera.zoom * 1.2)">
             <Icon name="i-lucide-plus" />
           </button>
-          <button class="canvas-tool" aria-label="Fit all objects" title="Fit all · 0" @click="fit">
+          <button class="canvas-tool" :aria-label="t('Fit all objects')" :title="t('Fit all · 0')" @click="fit">
             <Icon name="i-lucide-scan" />
           </button>
         </div>

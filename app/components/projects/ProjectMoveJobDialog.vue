@@ -13,6 +13,7 @@ const emit = defineEmits<{
   'confirm': [projectId: string]
 }>()
 
+const { t } = useI18n()
 const targetProjectId = ref('')
 const canMove = computed(() => Boolean(targetProjectId.value))
 
@@ -39,10 +40,10 @@ function onConfirm() {
     <AlertDialogContent class="rounded-2xl border-border bg-card shadow-none sm:max-w-md">
       <AlertDialogHeader class="gap-2">
         <AlertDialogTitle>
-          Move to another project?
+          {{ t('Move to another project?') }}
         </AlertDialogTitle>
         <AlertDialogDescription>
-          {{ count && count > 1 ? `${count} generations will leave the current project and appear in the project you select.` : 'This generation will leave the current project and appear in the project you select.' }}
+          {{ count && count > 1 ? t('{count} generations will leave the current project and appear in the project you select.', { count }) : t('This generation will leave the current project and appear in the project you select.') }}
         </AlertDialogDescription>
       </AlertDialogHeader>
 
@@ -62,7 +63,7 @@ function onConfirm() {
             :for="`move-project-${project.id}`"
             class="min-w-0 flex-1 truncate font-normal"
           >
-            {{ project.name }}
+            {{ t(project.name) }}
           </Label>
         </div>
       </RadioGroup>
@@ -71,12 +72,12 @@ function onConfirm() {
         v-else
         class="text-sm text-muted-foreground"
       >
-        Create another project first.
+        {{ t('Create another project first.') }}
       </p>
 
       <AlertDialogFooter>
         <AlertDialogCancel class="rounded-lg shadow-none" :disabled="pending">
-          Cancel
+          {{ t('Cancel') }}
         </AlertDialogCancel>
         <Button
           class="rounded-lg shadow-none"
@@ -84,7 +85,7 @@ function onConfirm() {
           @click="onConfirm"
         >
           <Spinner v-if="pending" class="size-4" />
-          Move
+          {{ t('Move') }}
         </Button>
       </AlertDialogFooter>
     </AlertDialogContent>

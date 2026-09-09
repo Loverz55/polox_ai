@@ -13,6 +13,7 @@ const emit = defineEmits<{
         taskId: string,
   ]
 }>()
+const { t } = useI18n()
 const visibleJobs = computed(() => props.jobs.slice(0, 10))
 const layerResults = computed(() => visibleJobs.value.length > 0 && visibleJobs.value.every(job => isImageLayerSplitterModel(job.model)))
 const visible = computed(() => true)
@@ -24,7 +25,7 @@ const pendingTiles = computed(() => {
     return []
   return [{
     id: 'submitting',
-    label: 'Generating',
+    label: t('Generating'),
   }]
 })
 </script>
@@ -37,13 +38,13 @@ const pendingTiles = computed(() => {
   >
     <div class="flex items-center justify-between gap-3">
       <h3 class="text-sm font-medium text-foreground">
-        Generations
+        {{ t('Generations') }}
       </h3>
       <NuxtLink
         to="/projects"
         class="inline-flex shrink-0 items-center gap-1 rounded-md text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
-        View projects
+        {{ t('View projects') }}
         <Icon name="i-lucide-arrow-right" class="size-4" />
       </NuxtLink>
     </div>
@@ -52,7 +53,7 @@ const pendingTiles = computed(() => {
       v-if="empty"
       class="rounded-2xl border border-border bg-muted/35 px-4 py-8 text-center text-sm text-muted-foreground"
     >
-      You don't have any generations yet. Create your first one.
+      {{ t('You don\'t have any generations yet. Create your first one.') }}
     </p>
 
     <div

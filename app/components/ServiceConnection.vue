@@ -16,9 +16,10 @@ interface ConnectionStatus {
   falOk: boolean
   checkedAt: string
 }
-type CheckResult = { ok: boolean, message: string }
+interface CheckResult { ok: boolean, message: string }
 const status = ref<ConnectionStatus | null>(null)
 const { dialogOpen: open } = useServiceConnection()
+const { t } = useI18n()
 const testing = ref(false)
 const MASKED_KEY = '********'
 const openRouterBaseUrl = ref('')
@@ -83,10 +84,10 @@ async function testConnection() {
     status.value = result
     results.value = result
     if (result.superseded)
-      error.value = 'Settings changed in another window. Test the current settings again.'
+      error.value = t('Settings changed in another window. Test the current settings again.')
     showSavedKeys()
   }
-  catch { error.value = 'Connection test could not finish. Please try again.'; await refresh() }
+  catch { error.value = t('Connection test could not finish. Please try again.'); await refresh() }
   finally { testing.value = false }
 }
 </script>
@@ -94,54 +95,54 @@ async function testConnection() {
 <template>
   <Dialog v-model:open="open">
     <DialogTrigger as-child>
-      <button type="button" class="inline-flex items-center gap-2 rounded-md px-3 py-2 text-xs font-medium transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring" :class="connected ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'" aria-label="Service connection" :title="connected ? 'Text and image providers tested successfully' : 'Configure and test your text and image providers'">
+      <button type="button" class="inline-flex items-center gap-2 rounded-md px-3 py-2 text-xs font-medium transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring" :class="connected ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'" :aria-label="t('Service connection')" :title="connected ? t('Text and image providers tested successfully') : t('Configure and test your text and image providers')">
         <CheckCircle2 v-if="connected" class="size-4" />
         <AlertTriangle v-else class="size-4" />
-        <span>{{ connected ? 'Services connected' : 'API keys not configured' }}</span>
+        <span>{{ connected ? t('Services connected') : t('API keys not configured') }}</span>
       </button>
     </DialogTrigger>
     <DialogContent class="sm:max-w-md">
       <DialogHeader>
-        <DialogTitle>Service connection</DialogTitle>
-        <DialogDescription>Connect a text model (OpenRouter or any OpenAI-compatible relay) plus an image provider (OpenAI-compatible / Gemini relay, or fal). Keys are stored locally on this computer.</DialogDescription>
+        <DialogTitle>{{ t('Service connection') }}</DialogTitle>
+        <DialogDescription>{{ t('Connect a text model (OpenRouter or any OpenAI-compatible relay) plus an image provider (OpenAI-compatible / Gemini relay, or fal). Keys are stored locally on this computer.') }}</DialogDescription>
       </DialogHeader>
       <form class="space-y-4" @submit.prevent="testConnection">
         <div class="space-y-2">
-          <Label for="openrouter-base">Text API base URL</Label>
+          <Label for="openrouter-base">{{ t('Text API base URL') }}</Label>
           <Input id="openrouter-base" v-model="openRouterBaseUrl" required autocomplete="off" :disabled="testing" placeholder="https://openrouter.ai/api/v1" />
         </div>
         <div class="space-y-2">
           <div class="flex items-center gap-3">
-            <Label for="openrouter-key">Text API key</Label>
-            <a href="https://openrouter.ai/workspaces/default/keys" target="_blank" rel="noopener noreferrer" class="text-xs text-primary underline underline-offset-4 hover:opacity-80" aria-label="Get OpenRouter API key (opens in a new tab)">Get API key ↗</a>
+            <Label for="openrouter-key">{{ t('Text API key') }}</Label>
+            <a href="https://openrouter.ai/workspaces/default/keys" target="_blank" rel="noopener noreferrer" class="text-xs text-primary underline underline-offset-4 hover:opacity-80" :aria-label="t('Get OpenRouter API key (opens in a new tab)')">{{ t('Get API key ↗') }}</a>
           </div>
-          <Input id="openrouter-key" v-model="openRouterKey" type="password" autocomplete="off" :disabled="testing" placeholder="Enter your OpenRouter API key" @focus="selectKey" />
+          <Input id="openrouter-key" v-model="openRouterKey" type="password" autocomplete="off" :disabled="testing" :placeholder="t('Enter your text API key')" @focus="selectKey" />
         </div>
         <div class="space-y-2">
-          <Label for="openrouter-model">Text model</Label>
+          <Label for="openrouter-model">{{ t('Text model') }}</Label>
           <Input id="openrouter-model" v-model="openRouterModel" required autocomplete="off" :disabled="testing" placeholder="provider/model-name" />
         </div>
         <div class="space-y-2">
-          <Label for="image-base">Image API base URL (OpenAI-compatible / Gemini relay)</Label>
+          <Label for="image-base">{{ t('Image API base URL (OpenAI-compatible / Gemini relay)') }}</Label>
           <Input id="image-base" v-model="imageBaseUrl" autocomplete="off" :disabled="testing" placeholder="https://your-relay.example.com" />
         </div>
         <div class="space-y-2">
-          <Label for="image-key">Image API key</Label>
-          <Input id="image-key" v-model="imageKey" type="password" autocomplete="off" :disabled="testing" placeholder="Enter your image relay API key" @focus="selectKey" />
+          <Label for="image-key">{{ t('Image API key') }}</Label>
+          <Input id="image-key" v-model="imageKey" type="password" autocomplete="off" :disabled="testing" :placeholder="t('Enter your image relay API key')" @focus="selectKey" />
         </div>
         <div class="space-y-2">
-          <Label for="image-model">Default image model (gpt-image-2 or a gemini image model)</Label>
+          <Label for="image-model">{{ t('Default image model (gpt-image-2 or a gemini image model)') }}</Label>
           <Input id="image-model" v-model="imageModel" autocomplete="off" :disabled="testing" placeholder="gpt-image-2" />
         </div>
         <div class="space-y-2">
           <div class="flex items-center gap-3">
-            <Label for="fal-key">fal API key (optional)</Label>
-            <a href="https://fal.ai/login?returnTo=%2Fdashboard%2Fkeys" target="_blank" rel="noopener noreferrer" class="text-xs text-primary underline underline-offset-4 hover:opacity-80" aria-label="Get fal API key (opens in a new tab)">Get API key ↗</a>
+            <Label for="fal-key">{{ t('fal API key (optional)') }}</Label>
+            <a href="https://fal.ai/login?returnTo=%2Fdashboard%2Fkeys" target="_blank" rel="noopener noreferrer" class="text-xs text-primary underline underline-offset-4 hover:opacity-80" :aria-label="t('Get fal API key (opens in a new tab)')">{{ t('Get API key ↗') }}</a>
           </div>
-          <Input id="fal-key" v-model="falKey" type="password" autocomplete="off" :disabled="testing" placeholder="Enter your fal API key" @focus="selectKey" />
+          <Input id="fal-key" v-model="falKey" type="password" autocomplete="off" :disabled="testing" :placeholder="t('Enter your fal API key')" @focus="selectKey" />
         </div>
         <p class="text-xs text-muted-foreground">
-          Clear a key to remove it when you test and save. Testing saves your settings, sends a short request to your text model, lists the image relay's models, and checks fal if a key is set. The model request may incur a small charge.
+          {{ t('Clear a key to remove it when you test and save. Testing saves your settings, sends a short request to your text model, lists the image relay\'s models, and checks fal if a key is set. The model request may incur a small charge.') }}
         </p>
         <div v-if="results" class="space-y-2 rounded-md border p-3 text-sm" role="status" aria-live="polite">
           <p :class="results.openRouter.ok ? 'text-emerald-600' : 'text-red-600'">
@@ -160,7 +161,7 @@ async function testConnection() {
         <DialogFooter>
           <Button type="submit" :disabled="testing || !openRouterModel.trim() || !openRouterBaseUrl.trim()">
             <LoaderCircle v-if="testing" class="mr-2 size-4 animate-spin" />
-            {{ testing ? 'Testing connections…' : 'Test connection' }}
+            {{ testing ? t('Testing connections…') : t('Test connection') }}
           </Button>
         </DialogFooter>
       </form>

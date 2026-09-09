@@ -1,8 +1,8 @@
-import { useServiceConnection } from './useServiceConnection'
 import type { AgentConfirmPolicy, AgentQuality } from '~~/shared/types/agentPreferences'
 import type { GenerationJobPublic } from '~~/shared/types/generation'
 import type { GptImage2AspectRatio, GptImage2Resolution } from '~~/shared/utils/gptImage2'
 import type { ImageTextEdit, ImageTextLine } from '~~/shared/utils/imageTextEditor'
+import type { TranslateParams } from '~/i18n'
 import { publicGenerationFailMessage } from '~~/shared/types/generation'
 import { isInternalAgentChatText, publicAgentChatText } from '~~/shared/utils/agentChatVisibility'
 import { isAgentTransientMessage } from '~~/shared/utils/agentHistoryVisibility'
@@ -11,8 +11,10 @@ import { agentRecoveryNotice, isAgentDisconnectError as isDisconnectError, recov
 import { gptImage2ComboError } from '~~/shared/utils/gptImage2'
 import { isMediaVideoUrl } from '~~/shared/utils/seedance25'
 import { confirmationMedia, reconcileConfirmationStates } from '~/utils/agentConfirmationState'
+import { useServiceConnection } from './useServiceConnection'
 
 export type { AgentConfirmPolicy, AgentQuality }
+type Translate = (key: string, params?: TranslateParams) => string
 export type AgentStatus = 'idle' | 'thinking' | 'calling_tool' | 'generating' | 'queued'
 export type VideoFamily = 'seedance-2' | 'seedance-2-5' | 'wan-3'
 export type UncertainField = 'prompt' | 'aspect_ratio' | 'resolution' | 'duration'
@@ -183,6 +185,9 @@ const MAX_MESSAGE_CHARS = 8000
 const MAX_AGENTS = 20
 const MAX_AGENT_TITLE = 48
 const DEFAULT_AGENT_TITLE = 'New agent'
+// Stored titles stay English ("New agent 2" is matched by nextDefaultTitle); translate when listed.
+const DEFAULT_TITLE_RE = /^New agent(?: (\d+))?$/
+const STOP_NOTICE = 'Stopped. In-progress generations will keep running.'
 function clipMessageContent(value: string) {
   if (value.length <= MAX_MESSAGE_CHARS)
     return value
@@ -358,6 +363,8 @@ export function useAgentLab(options?: {
   onJobs?: (jobs: GenerationJobPublic[]) => void
 }) {
   const connection = useServiceConnection()
+  // Captured in setup context; the cached runtime and its async SSE handlers close over it.
+  const { t } = useI18n()
   function resolveLab() {
     const projectId = String(toValue(options?.projectId) || '').trim()
     const key = agentLabCacheKey(projectId)
@@ -370,6 +377,7 @@ export function useAgentLab(options?: {
     const lab = effectScope(true).run(() => createAgentLab({
       projectId,
       onJobs: options?.onJobs,
+      t,
     }))!
     if (key)
       agentLabs.set(key, lab)
@@ -393,16 +401,19 @@ export function useAgentLab(options?: {
         })
       : key === 'sendMessage'
         ? async (...args: unknown[]) => {
-            if (!await connection.ensureConnected()) return false
-            return Reflect.apply(read(), currentLab.value, args)
-          }
+          if (!await connection.ensureConnected())
+            return false
+          return Reflect.apply(read(), currentLab.value, args)
+        }
         : (...args: unknown[]) => Reflect.apply(read(), currentLab.value, args)]
   })) as ReturnType<typeof createAgentLab>
 }
 function createAgentLab(options?: {
   projectId?: MaybeRefOrGetter<string>
   onJobs?: (jobs: GenerationJobPublic[]) => void
+  t?: Translate
 }) {
+  const t: Translate = options?.t ?? (key => key)
   let bootstrapped = false
   const baseUrl = '/api/agent'
   const onJobs = ref(options?.onJobs)
@@ -417,7 +428,12 @@ function createAgentLab(options?: {
   const confirmation = ref<ConfirmationPayload | null>(null)
   const choice = ref<ChoicePayload | null>(null)
   const online = ref<boolean | null>(null)
-  const error = ref('')
+  // English source text; transient/disconnect checks match on it. Displayed translated.
+  const labError = ref('')
+  const error = computed({
+    get: () => labError.value ? t(labError.value) : '',
+    set: (next: string) => { labError.value = next },
+  })
   let agentWriteRetryAt = 0
   const pending = ref(false)
   const stopping = ref(false)
@@ -446,9 +462,18 @@ function createAgentLab(options?: {
     return true
   })
   const canCreateAgent = computed(() => canSwitchAgent.value && storedAgents.value.length < MAX_AGENTS)
+  function displayTitle(title: string) {
+    const match = DEFAULT_TITLE_RE.exec(title)
+    if (!match)
+      return title
+    return match[1] ? t('New agent {n}', { n: match[1] }) : t('New agent')
+  }
+  function isStopNotice(content: string) {
+    return content.includes('Stopped.') || content.includes(t(STOP_NOTICE))
+  }
   const agents = computed<AgentListItem[]>(() => storedAgents.value.map((agent) => {
     const active = agent.id === activeAgentId.value
-    const title = active ? agentTitle.value : (agent.title || DEFAULT_AGENT_TITLE)
+    const title = displayTitle(active ? agentTitle.value : (agent.title || DEFAULT_AGENT_TITLE))
     const busy = active
       ? pending.value || (status.value !== 'idle')
       : Boolean(agent.busy || agent.pending || (agent.status && agent.status !== 'idle'))
@@ -595,12 +620,14 @@ function createAgentLab(options?: {
     applyAgent(agent)
   }
   function clearLabError() {
-    error.value = ''
+    labError.value = ''
   }
   function appendErrorMessage(message: string) {
-    const content = message.trim()
-    if (!content || isAgentTransientMessage({ kind: 'error', content }))
+    const source = message.trim()
+    if (!source || isAgentTransientMessage({ kind: 'error', content: source }))
       return
+    // Error bubbles live in the transcript, so they are stored already translated.
+    const content = t(source)
     const last = messages.value[messages.value.length - 1]
     if (last?.kind === 'error' && last.content === content)
       return
@@ -614,11 +641,11 @@ function createAgentLab(options?: {
   function setLabError(message: string, persist = false) {
     message = agentRecoveryNotice(message)
     if (persist && !isAgentTransientMessage({ kind: 'error', content: message })) {
-      error.value = ''
+      labError.value = ''
       appendErrorMessage(message)
       return
     }
-    error.value = message
+    labError.value = message
   }
   function readErrorText(payload: Record<string, unknown>, fallback: string) {
     const nested = payload.data && typeof payload.data === 'object'
@@ -646,7 +673,7 @@ function createAgentLab(options?: {
     }
     if (response.status === 499)
       return 'The agent request was cancelled'
-    return readErrorText(payload, `Agent service error (${response.status})`)
+    return readErrorText(payload, t('Agent service error ({status})', { status: response.status }))
   }
   function labHeaders(json = false, idempotencyKey?: string) {
     const headers: Record<string, string> = {}
@@ -1130,7 +1157,8 @@ function createAgentLab(options?: {
         storedAgents.value = storedAgents.value.filter(agent => !excluded.has(agent.sessionId || ''))
         if (excluded.has(sessionId.value)) {
           const next = storedAgents.value[0] || emptyStoredAgent(DEFAULT_AGENT_TITLE)
-          if (!storedAgents.value.length) storedAgents.value = [next]
+          if (!storedAgents.value.length)
+            storedAgents.value = [next]
           applyAgent(next)
         }
         writeStore()
@@ -1207,8 +1235,8 @@ function createAgentLab(options?: {
       }
       if (requestedSessionId !== sessionId.value || requestedAgentId !== activeAgentId.value || requestedEpoch !== streamEpoch)
         return { busy: false, hasPendingConfirm: false }
-      if (Date.now() >= agentWriteRetryAt && isAgentTransientMessage({ kind: 'error', content: error.value }))
-        error.value = ''
+      if (Date.now() >= agentWriteRetryAt && isAgentTransientMessage({ kind: 'error', content: labError.value }))
+        labError.value = ''
       // SSE and polling must not both append the same assistant turn.
       if (activeTurns === 0 && Array.isArray(data.messages)) {
         messages.value = recoverAgentTranscript(messages.value, data.messages, row => ({
@@ -1317,8 +1345,8 @@ function createAgentLab(options?: {
         queueNotice.value = ''
         if (!pending.value)
           stopping.value = false
-        if (isDisconnectError(error.value))
-          error.value = ''
+        if (isDisconnectError(labError.value))
+          labError.value = ''
       }
       return { busy, hasPendingConfirm }
     }
@@ -1392,7 +1420,7 @@ function createAgentLab(options?: {
     }
     if (event.type === 'text' && event.delta) {
       const last = state.messages[state.messages.length - 1]
-      const duplicateStop = event.delta.includes('Stopped.') && last?.role === 'assistant' && last.content.includes('Stopped.')
+      const duplicateStop = event.delta.includes('Stopped.') && last?.role === 'assistant' && isStopNotice(last.content)
       if (!duplicateStop) {
         if (last?.role === 'assistant' && last.kind !== 'error' && last.streaming) {
           last.content += event.delta
@@ -1601,7 +1629,7 @@ function createAgentLab(options?: {
     queueNotice.value = next.queueNotice
     pending.value = next.pending
     if (event.type === 'error' && event.message)
-      error.value = ''
+      labError.value = ''
     if (event.type === 'done')
       trimLab()
   }
@@ -1658,7 +1686,7 @@ function createAgentLab(options?: {
       error?: string
     }
     if (!response.ok || !data.sessionId)
-      throw new Error(data.error || 'Could not start an agent session')
+      throw new Error(data.error || t('Could not start an agent session'))
     sessionId.value = data.sessionId
     return sessionId.value
   }
@@ -1706,7 +1734,7 @@ function createAgentLab(options?: {
       })
       attachments.value = [...attachments.value, {
         id: crypto.randomUUID(),
-        name: item.name || 'Canvas still',
+        name: item.name || t('Canvas still'),
         previewUrl: item.url,
         url: item.url,
         status: 'ready',
@@ -1775,12 +1803,13 @@ function createAgentLab(options?: {
           images.value.unshift(payload.image)
       }
       catch (err) {
+        const message = err instanceof Error ? err.message : 'Upload failed'
         const current = attachments.value.find(item => item.id === local.id)
         if (current) {
           current.status = 'fail'
-          current.error = err instanceof Error ? err.message : 'Upload failed'
+          current.error = t(message)
         }
-        setLabError(err instanceof Error ? err.message : 'Upload failed')
+        setLabError(message)
       }
     }
   }
@@ -1865,10 +1894,11 @@ function createAgentLab(options?: {
         body: '{}',
       })
       if (!response.ok) {
-        const text = await parseError(response).catch(() => `Stop failed (${response.status})`)
-        throw new Error(text || `Stop failed (${response.status})`)
+        const fallback = t('Stop failed ({status})', { status: response.status })
+        const text = await parseError(response).catch(() => fallback)
+        throw new Error(text || fallback)
       }
-      const alreadyNoted = messages.value.some(item => item.role === 'assistant' && item.content.includes('Stopped.'))
+      const alreadyNoted = messages.value.some(item => item.role === 'assistant' && isStopNotice(item.content))
       if (!alreadyNoted) {
         const last = messages.value[messages.value.length - 1]
         if (last?.role === 'assistant' && last.streaming)
@@ -1876,7 +1906,7 @@ function createAgentLab(options?: {
         messages.value.push({
           id: crypto.randomUUID(),
           role: 'assistant',
-          content: 'Stopped. In-progress generations will keep running.',
+          content: t(STOP_NOTICE),
         })
       }
       if (confirmation.value?.approvedBy !== 'agent') {
@@ -2060,8 +2090,8 @@ function createAgentLab(options?: {
     for (const item of retryable)
       autoRetries.set(item.id, (autoRetries.get(item.id) || 0) + 1)
     const note = retryable.length === 1
-      ? '有一条镜头生成失败，正在自动重试。'
-      : `有 ${retryable.length} 条镜头生成失败，正在自动重试。`
+      ? t('One shot failed to generate. Retrying it automatically.')
+      : t('{count} shots failed to generate. Retrying them automatically.', { count: retryable.length })
     messages.value.push({
       id: crypto.randomUUID(),
       role: 'assistant',
@@ -2083,8 +2113,8 @@ function createAgentLab(options?: {
     if (!items.length)
       return
     const content = items.length === 1
-      ? '有一条镜头生成失败。需要我再试这一镜吗？'
-      : `有 ${items.length} 条镜头生成失败。需要我再试吗？`
+      ? t('One shot failed to generate. Want me to retry it?')
+      : t('{count} shots failed to generate. Want me to retry them?', { count: items.length })
     const last = messages.value[messages.value.length - 1]
     if (last?.role === 'assistant' && last.content === content)
       return
@@ -2125,7 +2155,7 @@ function createAgentLab(options?: {
       }
       const completionId = `layers-complete:${taskId}`
       const imageIds = layers.map(layer => layer.id)
-      const content = `图层拆分已完成，共 ${layers.length} 个图层（含背景）。结果如下，也已添加到画布。`
+      const content = t('Layer split complete: {count} layers (including the background). Results are below and have been added to the canvas.', { count: layers.length })
       const isFallback = (message: AgentChatMessage) => message.id.replace(/^ui:/, '') === completionId
         || (message.content === content && message.imageIds?.some(id => imageIds.includes(id)))
       // Polling recovers missing layers; it must not announce the same output

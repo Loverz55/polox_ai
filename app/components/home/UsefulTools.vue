@@ -2,6 +2,7 @@
 import { ArrowRight } from 'lucide-vue-next'
 import { HOME_TOOL_COLLECTIONS } from '@/constants/usefulTools'
 
+const { t } = useI18n()
 const collections = HOME_TOOL_COLLECTIONS
 </script>
 
@@ -14,10 +15,10 @@ const collections = HOME_TOOL_COLLECTIONS
     >
       <div class="flex flex-col gap-1.5">
         <h2 class="text-2xl font-semibold tracking-tight md:text-3xl">
-          {{ collection.title }}
+          {{ t(collection.title) }}
         </h2>
         <p class="text-sm text-muted-foreground">
-          {{ collection.description }}
+          {{ t(collection.description) }}
         </p>
       </div>
 
@@ -37,10 +38,10 @@ const collections = HOME_TOOL_COLLECTIONS
               />
             </div>
             <h3 class="text-base font-medium text-foreground">
-              {{ tool.title }}
+              {{ t(tool.title) }}
             </h3>
             <p class="mt-1 text-sm text-muted-foreground">
-              {{ tool.description }}
+              {{ t(tool.description) }}
             </p>
           </div>
           <ArrowRight

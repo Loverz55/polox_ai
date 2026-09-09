@@ -3,6 +3,7 @@ import { ArrowRight } from 'lucide-vue-next'
 import { AGENT_MODELS } from '~~/shared/utils/agentModels'
 
 const props = defineProps<{ modelId: string }>()
+const { t } = useI18n()
 const tasks = computed(() => {
   const model = AGENT_MODELS.find(item => item.id === props.modelId)
   return model ? AGENT_MODELS.filter(item => item.name === model.name) : []
@@ -10,10 +11,10 @@ const tasks = computed(() => {
 </script>
 
 <template>
-  <nav aria-label="Model tasks" class="flex flex-wrap justify-center gap-2">
+  <nav :aria-label="t('Model tasks')" class="flex flex-wrap justify-center gap-2">
     <Button v-for="task in tasks" :key="task.id" as-child class="h-9">
-      <NuxtLink :to="{ path: '/', query: { agentModel: task.id }, hash: '#generator' }" :aria-label="`Use ${task.name} · ${task.task} in Agent`">
-        {{ task.task }}
+      <NuxtLink :to="{ path: '/', query: { agentModel: task.id }, hash: '#generator' }" :aria-label="t('Use {name} · {task} in Agent', { name: task.name, task: t(task.task) })">
+        {{ t(task.task) }}
         <ArrowRight class="size-4" aria-hidden="true" />
       </NuxtLink>
     </Button>

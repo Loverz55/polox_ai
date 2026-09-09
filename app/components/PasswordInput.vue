@@ -13,6 +13,7 @@ const props = defineProps<{
 }>()
 
 const showModal = useModel(props, 'modelValue')
+const { t } = useI18n()
 
 const showPassword = ref(false)
 </script>
@@ -23,7 +24,7 @@ const showPassword = ref(false)
       v-model="showModal"
       :type="showPassword ? 'text' : 'password'"
       :class="cn('pr-10', props?.class)"
-      :placeholder="props?.placeholder ? props.placeholder : 'Enter your password'"
+      :placeholder="props?.placeholder ? props.placeholder : t('Enter your password')"
       :disabled="props?.disabled"
       :autocomplete="props?.autocomplete"
       v-bind="props?.componentField"
@@ -44,7 +45,7 @@ const showPassword = ref(false)
       />
       <Icon v-else name="i-lucide-eye-off" class="size-4" aria-hidden="true" />
       <span class="sr-only">
-        {{ showPassword ? "Show password" : "Hide password" }}
+        {{ showPassword ? t('Show password') : t('Hide password') }}
       </span>
     </Button>
   </div>

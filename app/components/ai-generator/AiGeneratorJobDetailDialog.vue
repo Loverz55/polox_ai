@@ -17,6 +17,8 @@ const emit = defineEmits<{
   'update:open': [open: boolean]
 }>()
 
+const { t, locale } = useI18n()
+
 const model = computed(() =>
   AI_MODELS.find(entry => entry.id === props.job?.model),
 )
@@ -24,7 +26,7 @@ const model = computed(() =>
 const isConcat = computed(() => props.job ? isConcatenatedGeneration(props.job) : false)
 const modelName = computed(() => {
   if (isImageLayerSplitterModel(props.job?.model || ''))
-    return IMAGE_LAYER_SPLITTER_NAME
+    return t(IMAGE_LAYER_SPLITTER_NAME)
   if (isConcat.value)
     return ''
   return model.value?.name || props.job?.model || ''
@@ -58,7 +60,7 @@ const paramRows = computed(() => {
 
     return [{
       key,
-      label: labels.get(key) || key.split('_').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' '),
+      label: t(labels.get(key) || key.split('_').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ')),
       kind: urls.length ? mediaKind(urls) : 'text' as const,
       text: formatParamValue(value),
       urls,
@@ -86,17 +88,17 @@ function formatParamValue(value: unknown) {
   if (value == null || value === '')
     return '—'
   if (typeof value === 'boolean')
-    return value ? 'Yes' : 'No'
+    return value ? t('Yes') : t('No')
   if (Array.isArray(value))
-    return value.length ? value.map(item => String(item)).join(', ') : '—'
-  return String(value)
+    return value.length ? value.map(item => t(String(item))).join(', ') : '—'
+  return t(String(value))
 }
 
-const dateTime = new Intl.DateTimeFormat('en-US', {
+const dateTime = computed(() => new Intl.DateTimeFormat(locale.value === 'zh' ? 'zh-CN' : 'en-US', {
   dateStyle: 'medium',
   timeStyle: 'short',
   timeZone: 'Asia/Shanghai',
-})
+}))
 
 function formatDateTime(value?: string) {
   if (!value)
@@ -104,7 +106,7 @@ function formatDateTime(value?: string) {
   const date = new Date(value)
   if (Number.isNaN(date.getTime()))
     return '—'
-  return dateTime.format(date)
+  return dateTime.value.format(date)
 }
 
 const createdAtLabel = computed(() => formatDateTime(props.job?.createdAt))
@@ -126,7 +128,7 @@ const completedAtLabel = computed(() => {
     return formatDateTime(props.job.completedAt)
   if (props.job.state === 'success' || props.job.state === 'fail')
     return formatDateTime(props.job.updatedAt)
-  return 'In progress'
+  return t('In progress')
 })
 </script>
 
@@ -135,14 +137,14 @@ const completedAtLabel = computed(() => {
     <DialogContent class="max-h-[min(90vh,52rem)] overflow-y-auto rounded-2xl border-border bg-card shadow-none sm:max-w-2xl">
       <DialogHeader class="gap-1 pr-6">
         <DialogTitle>
-          Generation details
+          {{ t('Generation details') }}
         </DialogTitle>
         <DialogDescription>
           <template v-if="isConcat">
-            Concatenated video
+            {{ t('Concatenated video') }}
           </template>
           <template v-else>
-            {{ modelName }}{{ job?.task ? ` · ${job.task}` : '' }}
+            {{ modelName }}{{ job?.task ? ` · ${t(job.task)}` : '' }}
           </template>
         </DialogDescription>
       </DialogHeader>
@@ -153,13 +155,13 @@ const completedAtLabel = computed(() => {
       >
         <dl class="grid grid-cols-1 gap-3 sm:grid-cols-[8.5rem_1fr] sm:gap-x-4 sm:gap-y-3">
           <dt class="text-xs text-muted-foreground sm:pt-0.5">
-            Created
+            {{ t('Created') }}
           </dt>
           <dd class="min-w-0 text-sm tabular-nums text-foreground">
             {{ createdAtLabel }}
           </dd>
           <dt class="text-xs text-muted-foreground sm:pt-0.5">
-            Completed
+            {{ t('Completed') }}
           </dt>
           <dd class="min-w-0 text-sm tabular-nums text-foreground">
             {{ completedAtLabel }}
@@ -168,7 +170,7 @@ const completedAtLabel = computed(() => {
 
         <div class="flex flex-col gap-2">
           <h3 class="text-sm font-medium text-foreground">
-            Input
+            {{ t('Input') }}
           </h3>
           <dl class="grid grid-cols-1 gap-3 sm:grid-cols-[8.5rem_1fr] sm:gap-x-4 sm:gap-y-3">
             <template
@@ -188,7 +190,7 @@ const completedAtLabel = computed(() => {
                     :key="url"
                     type="button"
                     class="overflow-hidden rounded-xl border border-border bg-muted/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    :aria-label="row.kind === 'videos' ? 'View reference video' : row.kind === 'audio' ? 'Reference audio' : 'View reference image'"
+                    :aria-label="row.kind === 'videos' ? t('View reference video') : row.kind === 'audio' ? t('Reference audio') : t('View reference image')"
                     @click="openUrl(url, row.kind === 'videos' ? 'videos' : row.kind === 'audio' ? 'audio' : 'images', row.label)"
                   >
                     <video
@@ -208,7 +210,7 @@ const completedAtLabel = computed(() => {
                     <img
                       v-else
                       :src="url"
-                      alt="Reference image"
+                      :alt="t('Reference image')"
                       class="h-20 w-20 object-contain"
                     >
                   </button>
@@ -226,7 +228,7 @@ const completedAtLabel = computed(() => {
 
         <div class="flex flex-col gap-2">
           <h3 class="text-sm font-medium text-foreground">
-            Results
+            {{ t('Results') }}
           </h3>
           <p
             v-if="job.failMsg"
@@ -259,12 +261,12 @@ const completedAtLabel = computed(() => {
                 :key="url"
                 type="button"
                 class="overflow-hidden rounded-2xl border border-border bg-muted/35 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                :aria-label="job.layers?.[index]?.name || 'View generated image'"
-                @click="openUrl(url, 'images', job.prompt || 'Generated image')"
+                :aria-label="job.layers?.[index]?.name || t('View generated image')"
+                @click="openUrl(url, 'images', job.prompt || t('Generated image'))"
               >
                 <img
                   :src="url"
-                  :alt="job.layers?.[index]?.name || 'Generated image'"
+                  :alt="job.layers?.[index]?.name || t('Generated image')"
                   class="w-full object-contain"
                 >
                 <span v-if="job.layers?.[index]" class="block p-3 text-sm">{{ job.layers[index]?.name }}</span>
@@ -276,8 +278,8 @@ const completedAtLabel = computed(() => {
             class="text-sm text-muted-foreground"
           >
             {{ job.state === 'queued'
-              ? 'Waiting in queue until a slot is free.'
-              : resultsAreVideo ? 'No generated video yet.' : 'No generated images yet.' }}
+              ? t('Waiting in queue until a slot is free.')
+              : resultsAreVideo ? t('No generated video yet.') : t('No generated images yet.') }}
           </p>
         </div>
       </section>

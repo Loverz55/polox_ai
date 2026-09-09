@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Clapperboard, Wrench } from 'lucide-vue-next'
 
+const { t } = useI18n()
 const features = [
   {
     icon: Wrench,
@@ -22,10 +23,10 @@ const features = [
         id="upcoming-features-heading"
         class="text-2xl font-semibold tracking-tight md:text-3xl"
       >
-        Coming soon
+        {{ t('Coming soon') }}
       </h2>
       <p class="text-sm text-muted-foreground">
-        Stay tuned. Next we give the agent more tools, then longer video with an edit pass.
+        {{ t('Stay tuned. Next we give the agent more tools, then longer video with an edit pass.') }}
       </p>
     </div>
 
@@ -44,14 +45,14 @@ const features = [
             />
           </div>
           <span class="rounded-md border border-border bg-muted/45 px-1.5 py-0.5 text-[10px] font-medium leading-none text-muted-foreground">
-            Coming soon
+            {{ t('Coming soon') }}
           </span>
         </div>
         <h3 class="mt-4 text-base font-medium text-foreground">
-          {{ feature.title }}
+          {{ t(feature.title) }}
         </h3>
         <p class="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-          {{ feature.description }}
+          {{ t(feature.description) }}
         </p>
       </article>
     </div>

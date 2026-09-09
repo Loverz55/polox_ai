@@ -17,6 +17,7 @@ const emit = defineEmits<{
   submit: [answers: ChoiceAnswer[]]
   skip: []
 }>()
+const { t } = useI18n()
 
 const questions = computed(() => props.choice.questions.map(question => ({
   ...question,
@@ -168,19 +169,19 @@ const resolvedAnswers = computed(() => {
     <CardHeader class="gap-1.5 px-4">
       <div class="flex items-center justify-between gap-2">
         <CardTitle class="text-sm font-medium">
-          {{ choice.prompt || 'A few choices' }}
+          {{ choice.prompt || t('A few choices') }}
         </CardTitle>
         <Badge
           v-if="state === 'skipped'"
           variant="outline"
         >
-          Agent will decide
+          {{ t('Agent will decide') }}
         </Badge>
         <Badge
           v-else-if="state === 'answered'"
           variant="outline"
         >
-          Saved
+          {{ t('Saved') }}
         </Badge>
       </div>
       <CardDescription v-if="isPending && choice.recommendation">
@@ -190,7 +191,7 @@ const resolvedAnswers = computed(() => {
         v-else-if="isPending"
         class="text-xs text-muted-foreground"
       >
-        Skip any time to let the agent decide.
+        {{ t('Skip any time to let the agent decide.') }}
       </p>
     </CardHeader>
 
@@ -234,7 +235,7 @@ const resolvedAnswers = computed(() => {
                   variant="outline"
                   class="shrink-0 border-primary/40 text-[10px] text-primary"
                 >
-                  Suggested
+                  {{ t('Suggested') }}
                 </Badge>
               </span>
               <span
@@ -251,25 +252,25 @@ const resolvedAnswers = computed(() => {
             :model-value="selections[question.id]?.text || ''"
             :disabled="pending"
             class="mt-2 h-10 rounded-xl bg-input/30 shadow-none"
-            placeholder="Type your own"
-            :aria-label="`Custom answer: ${question.prompt}`"
+            :placeholder="t('Type your own')"
+            :aria-label="t('Custom answer: {prompt}', { prompt: question.prompt })"
             @update:model-value="setCustomText(question.id, String($event))"
             @keydown.enter.prevent="emitSubmit()"
           />
         </fieldset>
-        <section v-if="drawing" class="flex min-w-0 flex-col gap-3" aria-label="Select image layers">
+        <section v-if="drawing" class="flex min-w-0 flex-col gap-3" :aria-label="t('Select image layers')">
           <p class="text-sm text-muted-foreground">
-            Draw boxes on each image, then confirm all images together. Your boxes are saved when switching images.
+            {{ t('Draw boxes on each image, then confirm all images together. Your boxes are saved when switching images.') }}
           </p>
-          <div v-if="(sourceImages?.length || 0) > 1" class="flex flex-wrap gap-2" aria-label="Source image">
+          <div v-if="(sourceImages?.length || 0) > 1" class="flex flex-wrap gap-2" :aria-label="t('Source image')">
             <button v-for="image in sourceImages" :key="image.id" type="button" class="rounded-lg border p-1" :class="sourceUrl === image.url ? 'border-primary' : 'border-border'" :aria-pressed="sourceUrl === image.url" :disabled="pending || selecting" @click="sourceUrl = image.url">
-              <img :src="image.url" alt="Select source image" class="size-16 object-contain">
-              <span class="block text-xs">{{ regionsByImage[image.url]?.length || 0 }} regions</span>
+              <img :src="image.url" :alt="t('Select source image')" class="size-16 object-contain">
+              <span class="block text-xs">{{ t('{count} regions', { count: regionsByImage[image.url]?.length || 0 }) }}</span>
             </button>
           </div>
           <ToolsImageRegionSelector v-if="sourceUrl" :key="sourceUrl" v-model="regions" :src="sourceUrl" :disabled="pending" @selecting="selecting = $event" />
           <p v-else role="status" class="text-sm text-muted-foreground">
-            No source image is available. Upload an image in the chat first.
+            {{ t('No source image is available. Upload an image in the chat first.') }}
           </p>
         </section>
       </div>
@@ -286,13 +287,13 @@ const resolvedAnswers = computed(() => {
             {{ item.question.title || item.question.prompt }}
           </p>
           <p class="mt-0.5 text-sm text-foreground">
-            {{ item.skipped ? 'Agent will decide' : (item.summary || 'Saved') }}
+            {{ item.skipped ? t('Agent will decide') : (item.summary || t('Saved')) }}
           </p>
           <p v-if="item.answer?.imageSelections?.length" class="mt-1 text-xs text-muted-foreground">
-            {{ item.answer.imageSelections.length }} images · {{ item.answer.imageSelections.reduce((total, selection) => total + selection.regions.length, 0) }} regions confirmed
+            {{ t('{images} images · {regions} regions confirmed', { images: item.answer.imageSelections.length, regions: item.answer.imageSelections.reduce((total, selection) => total + selection.regions.length, 0) }) }}
           </p>
           <p v-else-if="item.answer?.regions?.length" class="mt-1 text-xs text-muted-foreground">
-            {{ item.answer.regions.length }} regions confirmed
+            {{ t('{count} regions confirmed', { count: item.answer.regions.length }) }}
           </p>
         </div>
       </div>
@@ -306,7 +307,7 @@ const resolvedAnswers = computed(() => {
         :disabled="pending"
         @click="emit('skip')"
       >
-        Skip
+        {{ t('Skip') }}
       </Button>
       <Button
         size="sm"
@@ -315,7 +316,7 @@ const resolvedAnswers = computed(() => {
         @click="emitSubmit"
       >
         <Spinner v-if="pending" />
-        {{ drawing ? `Confirm ${imageSelections.length} image${imageSelections.length === 1 ? '' : 's'}` : 'Continue' }}
+        {{ drawing ? (imageSelections.length === 1 ? t('Confirm {count} image', { count: imageSelections.length }) : t('Confirm {count} images', { count: imageSelections.length })) : t('Continue') }}
       </Button>
     </CardFooter>
   </Card>

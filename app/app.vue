@@ -4,6 +4,7 @@ import { Toaster } from '@/components/ui/sonner'
 import 'vue-sonner/style.css'
 
 const { theme } = useAppSettings()
+const { locale } = useI18n()
 useHead({
   meta: [
     { charset: 'utf-8' },
@@ -16,7 +17,7 @@ useHead({
     { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
   ],
   htmlAttrs: {
-    lang: 'en',
+    lang: computed(() => locale.value === 'zh' ? 'zh-CN' : 'en'),
   },
   bodyAttrs: {
     class: computed(() => `color-${theme.value?.color || 'green'} theme-${theme.value?.type || 'mono'} theme-rounded-none`),

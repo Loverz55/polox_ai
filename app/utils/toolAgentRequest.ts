@@ -1,9 +1,13 @@
 import { AGENT_MODELS, modelMention } from '~~/shared/utils/agentModels'
 
-export function toolAgentRequest(modelId: string, input: Record<string, unknown>) {
+// Pure util (no Nuxt context): callers pass `t` from useI18n() to localize the thrown error.
+type Translate = (key: string) => string
+const identity: Translate = key => key
+
+export function toolAgentRequest(modelId: string, input: Record<string, unknown>, t: Translate = identity) {
   const model = AGENT_MODELS.find(model => model.id === modelId)
   if (!model)
-    throw new Error('This model is not available in Agent.')
+    throw new Error(t('This model is not available in Agent.'))
 
   return `${modelMention(model)}\nRun ${model.task} using the exact parameters below. Keep the selected model, prompt, media URLs, and any region coordinates unchanged. These settings were filled in on the tool page.\n\n${JSON.stringify(input, null, 2)}`
 }

@@ -3,6 +3,7 @@ import { useSidebar } from '~/components/ui/sidebar'
 
 const { setOpenMobile } = useSidebar()
 const { groups, isCategoryActive, isTaskActive, selectTask, notifyComingSoon } = useAiGeneratorNav()
+const { t } = useI18n()
 
 const activeItemClass = [
   'data-[active=true]:bg-primary data-[active=true]:text-primary-foreground',
@@ -24,11 +25,11 @@ function onItemClick(group: typeof groups[number], item: typeof groups[number]['
 <template>
   <SidebarGroup>
     <SidebarGroupLabel>
-      Generator
+      {{ t('Generator') }}
     </SidebarGroupLabel>
     <nav
       class="border border-sidebar-border group-data-[collapsible=icon]:border-0"
-      aria-label="Generator"
+      :aria-label="t('Generator')"
     >
       <div
         v-for="group in groups"
@@ -38,25 +39,25 @@ function onItemClick(group: typeof groups[number], item: typeof groups[number]['
         <SidebarGroupLabel
           :class="isCategoryActive(group.heading) ? 'text-primary' : undefined"
         >
-          {{ group.label }}
+          {{ t(group.label) }}
         </SidebarGroupLabel>
         <SidebarMenu>
           <SidebarMenuItem v-for="item in group.items" :key="item.title">
             <SidebarMenuButton
-              :tooltip="item.title"
+              :tooltip="t(item.title)"
               :is-active="Boolean(item.category && item.task && isTaskActive(item.category, item.task))"
               :class="activeItemClass"
               @click="onItemClick(group, item)"
             >
               <Icon :name="item.icon" />
               <span :class="item.comingSoon ? 'text-muted-foreground' : undefined">
-                {{ item.title }}
+                {{ t(item.title) }}
               </span>
               <span
                 v-if="item.comingSoon"
                 class="ml-auto text-[10px] text-muted-foreground"
               >
-                Soon
+                {{ t('Soon') }}
               </span>
             </SidebarMenuButton>
           </SidebarMenuItem>

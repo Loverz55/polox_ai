@@ -4,6 +4,7 @@ definePageMeta({
 })
 
 const router = useRouter()
+const { t } = useI18n()
 </script>
 
 <template>
@@ -12,17 +13,17 @@ const router = useRouter()
       <h1 class="text-[7rem] font-bold leading-tight">
         503
       </h1>
-      <span class="font-medium">Website is under maintenance!</span>
+      <span class="font-medium">{{ t('Website is under maintenance!') }}</span>
       <p class="text-center text-muted-foreground">
-        The site is not available at the moment. <br>
-        We'll be back online shortly.
+        {{ t('The site is not available at the moment.') }} <br>
+        {{ t('We\'ll be back online shortly.') }}
       </p>
       <div class="mt-6 flex gap-4">
         <Button variant="outline" @click="router.back()">
-          Go Back
+          {{ t('Go Back') }}
         </Button>
         <Button @click="router.push('/')">
-          Back to Home
+          {{ t('Back to Home') }}
         </Button>
       </div>
     </div>

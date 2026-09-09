@@ -51,6 +51,7 @@
     "format": "eslint --fix .",
     "release": "release-it",
     "test:sqlite": "node --experimental-transform-types --test scripts/test-sqlite.mjs scripts/test-agent-history.mjs scripts/test-local-data-migration.mjs scripts/test-local-generation-queue.mjs",
+    "test:i18n": "node --experimental-transform-types --test scripts/test-i18n.mjs",
     "test:media": "node --experimental-transform-types --test scripts/test-local-media.mjs scripts/test-agent-upload.mjs scripts/test-image-text-editor.mjs scripts/test-media-export.mjs"
   },
   "dependencies": {

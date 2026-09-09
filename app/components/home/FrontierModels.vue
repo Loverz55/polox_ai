@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import { getFrontierModelCards } from '@/constants/aiModels'
 import type { FrontierModelCard } from '@/constants/aiModels'
-
-const cards = getFrontierModelCards()
+import { getFrontierModelCards } from '@/constants/aiModels'
 
 const emit = defineEmits<{
   select: [card: FrontierModelCard]
 }>()
+const { t } = useI18n()
+const cards = getFrontierModelCards()
 </script>
 
 <template>
   <section class="flex flex-col gap-4">
     <div class="flex flex-col gap-1.5">
       <h2 class="text-2xl font-semibold tracking-tight md:text-3xl">
-        Frontier AI models
+        {{ t('Frontier AI models') }}
       </h2>
       <p class="text-sm text-muted-foreground">
-        The latest AI image and video models in one workspace.
+        {{ t('The latest AI image and video models in one workspace.') }}
       </p>
     </div>
 
@@ -44,10 +44,10 @@ const emit = defineEmits<{
           v-if="card.company"
           class="mt-1 text-sm text-muted-foreground"
         >
-          By {{ card.company }}
+          {{ t('By {company}', { company: card.company }) }}
         </p>
         <p class="mt-2 text-sm text-muted-foreground">
-          {{ card.task }}
+          {{ t(card.task) }}
         </p>
       </button>
     </div>

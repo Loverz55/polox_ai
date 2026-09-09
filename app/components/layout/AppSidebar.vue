@@ -13,6 +13,7 @@ function resolveNavItemComponent(item: NavLink | NavGroup | NavSectionTitle): an
 const { sidebar } = useAppSettings()
 const { setOpenMobile } = useSidebar()
 const { public: publicConfig } = useRuntimeConfig()
+const { t } = useI18n()
 </script>
 
 <template>
@@ -24,7 +25,7 @@ const { public: publicConfig } = useRuntimeConfig()
       <template v-for="(nav, indexGroup) in navMenu" :key="indexGroup">
         <SidebarGroup>
           <SidebarGroupLabel v-if="nav.heading">
-            {{ nav.heading }}
+            {{ t(nav.heading) }}
           </SidebarGroupLabel>
           <component :is="resolveNavItemComponent(item)" v-for="(item, index) in nav.items" :key="index" :item="item" />
         </SidebarGroup>
@@ -34,7 +35,7 @@ const { public: publicConfig } = useRuntimeConfig()
     <SidebarFooter>
       <SidebarMenu>
         <SidebarMenuItem v-if="publicConfig.discordUrl">
-          <SidebarMenuButton as-child tooltip="Join Discord">
+          <SidebarMenuButton as-child :tooltip="t('Join Discord')">
             <a
               :href="publicConfig.discordUrl"
               target="_blank"
@@ -42,12 +43,12 @@ const { public: publicConfig } = useRuntimeConfig()
               @click="setOpenMobile(false)"
             >
               <Icon name="simple-icons:discord" />
-              <span>Join Discord</span>
+              <span>{{ t('Join Discord') }}</span>
             </a>
           </SidebarMenuButton>
         </SidebarMenuItem>
         <SidebarMenuItem>
-          <SidebarMenuButton as-child tooltip="Visit PoloX Official Website">
+          <SidebarMenuButton as-child :tooltip="t('Visit PoloX Official Website')">
             <a
               href="https://polox.ai"
               target="_blank"
@@ -55,7 +56,7 @@ const { public: publicConfig } = useRuntimeConfig()
               @click="setOpenMobile(false)"
             >
               <Icon name="lucide:external-link" />
-              <span>Visit PoloX Website</span>
+              <span>{{ t('Visit PoloX Website') }}</span>
             </a>
           </SidebarMenuButton>
         </SidebarMenuItem>

@@ -1,5 +1,6 @@
 import type { GenerationJobPublic, GenerationJobsList } from '~~/shared/types/generation'
 import type { AiCategory, AiFormValues, AiTask, FieldConfig } from '@/types/aiModel'
+import type { TranslateParams } from '~/i18n'
 import { FetchError } from 'ofetch'
 import { toast } from 'vue-sonner'
 import { isGenerationActive, isGenerationQueued, isGenerationTerminal } from '~~/shared/types/generation'
@@ -9,6 +10,11 @@ import { gptCompatibleAspect, gptCompatibleResolution } from '~~/shared/utils/gp
 import { useToolAgent } from '@/composables/useToolAgent'
 import { AI_CATEGORIES, AI_MODELS, AI_TASKS } from '@/constants/aiModels'
 import { createDefaultValues, getFieldsByPlacement, getInputSchema, isFormValid, mergePreservedValues, parseFieldConfigs } from '@/lib/aiModelSchema'
+import { tr } from '~/i18n'
+
+type Translate = (key: string, params?: TranslateParams) => string
+// Module-level helpers have no Nuxt context; callers in setup pass `t` from useI18n().
+const englishOnly: Translate = (key, params) => tr('en', key, params)
 
 const MAX_IMAGE_BYTES = 30 * 1024 * 1024
 const MAX_VIDEO_BYTES = 200 * 1024 * 1024
@@ -72,7 +78,7 @@ export function fileMatchesAccept(file: File, accept: string) {
     return false
   })
 }
-export function acceptHint(accept: string, maxBytes?: number) {
+export function acceptHint(accept: string, maxBytes?: number, t: Translate = englishOnly) {
   const fallback = accept.includes('video/')
     ? MAX_VIDEO_BYTES
     : accept.includes('audio/')
@@ -80,23 +86,23 @@ export function acceptHint(accept: string, maxBytes?: number) {
       : MAX_IMAGE_BYTES
   const mb = Math.round((maxBytes || fallback) / (1024 * 1024))
   if (accept.includes('video/'))
-    return `Use MP4 or MOV videos up to ${mb}MB`
+    return t('Use MP4 or MOV videos up to {mb}MB', { mb })
   if (accept.includes('audio/'))
-    return `Use MP3 or WAV files up to ${mb}MB`
+    return t('Use MP3 or WAV files up to {mb}MB', { mb })
   if (accept.includes('image/bmp'))
-    return `Use JPEG, PNG, WEBP, or BMP images up to ${mb}MB`
+    return t('Use JPEG, PNG, WEBP, or BMP images up to {mb}MB', { mb })
   if (accept.includes('image/gif') && accept.includes('image/avif'))
-    return `Use JPEG, PNG, WEBP, GIF, or AVIF images up to ${mb}MB`
+    return t('Use JPEG, PNG, WEBP, GIF, or AVIF images up to {mb}MB', { mb })
   if (accept.includes('image/gif'))
-    return `Use JPEG, PNG, WEBP, or GIF images up to ${mb}MB`
-  return `Use JPEG, PNG, or WEBP images up to ${mb}MB`
+    return t('Use JPEG, PNG, WEBP, or GIF images up to {mb}MB', { mb })
+  return t('Use JPEG, PNG, or WEBP images up to {mb}MB', { mb })
 }
 export function isAbortError(error: unknown) {
   return error instanceof DOMException && error.name === 'AbortError'
 }
 export function uploadFileWithProgress(file: File, onProgress: (percent: number) => void, xhrRef: {
   current: XMLHttpRequest | null
-}) {
+}, t: Translate = englishOnly) {
   return new Promise<{
     url: string
   }>((resolve, reject) => {
@@ -109,7 +115,7 @@ export function uploadFileWithProgress(file: File, onProgress: (percent: number)
     }
     xhr.onload = () => {
       if (xhr.status < 200 || xhr.status >= 300) {
-        reject(new Error(readUploadError(xhr)))
+        reject(new Error(readUploadError(xhr, t)))
         return
       }
       try {
@@ -117,7 +123,7 @@ export function uploadFileWithProgress(file: File, onProgress: (percent: number)
           url?: string
         }
         if (!data.url) {
-          reject(new Error('Upload did not return a URL'))
+          reject(new Error(t('Upload did not return a URL')))
           return
         }
         resolve({
@@ -125,26 +131,26 @@ export function uploadFileWithProgress(file: File, onProgress: (percent: number)
         })
       }
       catch {
-        reject(new Error('Upload did not return a URL'))
+        reject(new Error(t('Upload did not return a URL')))
       }
     }
-    xhr.onerror = () => reject(new Error('Upload failed'))
+    xhr.onerror = () => reject(new Error(t('Upload failed')))
     xhr.onabort = () => reject(new DOMException('Aborted', 'AbortError'))
     const body = new FormData()
     body.append('file', file)
     xhr.send(body)
   })
 }
-function readUploadError(xhr: XMLHttpRequest) {
+function readUploadError(xhr: XMLHttpRequest, t: Translate) {
   try {
     const data = JSON.parse(xhr.responseText) as {
       statusMessage?: string
       message?: string
     }
-    return data.statusMessage || data.message || `Upload failed (${xhr.status})`
+    return data.statusMessage || data.message || t('Upload failed ({status})', { status: xhr.status })
   }
   catch {
-    return `Upload failed (${xhr.status})`
+    return t('Upload failed ({status})', { status: xhr.status })
   }
 }
 export function useAiGeneratorCategory() {
@@ -185,6 +191,7 @@ export function applyGeneratorSelection(modelId: string) {
   return true
 }
 export function useAiGeneratorForm() {
+  const { t } = useI18n()
   const { selectedCategory } = useAiGeneratorCategory()
   const { selectedTask, availableTasks } = useAiGeneratorTask()
   const { selectedProjectId } = useProjects()
@@ -273,7 +280,7 @@ export function useAiGeneratorForm() {
       if (error instanceof FetchError && error.statusCode === 404)
         removeJob(taskId)
       else
-        toast.error(readApiError(error, 'Could not delete this result'))
+        toast.error(readApiError(error, t('Could not delete this result')))
       deleteConfirmOpen.value = false
     }
     finally {
@@ -373,11 +380,11 @@ export function useAiGeneratorForm() {
     for (const file of Array.from(files).slice(0, remaining)) {
       const maxBytes = uploadField.property['x-max-bytes'] || maxBytesForType(file.type)
       if (!fileMatchesAccept(file, accept)) {
-        toast.error(acceptHint(accept, maxBytes))
+        toast.error(acceptHint(accept, maxBytes, t))
         continue
       }
       if (file.size > maxBytes) {
-        toast.error(acceptHint(accept, maxBytes))
+        toast.error(acceptHint(accept, maxBytes, t))
         continue
       }
       accepted.push(file)
@@ -404,7 +411,7 @@ export function useAiGeneratorForm() {
     try {
       const uploadPromise = uploadFileWithProgress(file, (progress) => {
         patchUploadItem(fieldKey, id, { progress })
-      }, xhrRef)
+      }, xhrRef, t)
       if (xhrRef.current)
         uploadRequests.set(id, xhrRef.current)
       const uploaded = await uploadPromise
@@ -419,7 +426,7 @@ export function useAiGeneratorForm() {
       if (isAbortError(error)) {
         return
       }
-      toast.error(error instanceof Error ? error.message : 'Upload failed')
+      toast.error(error instanceof Error ? error.message : t('Upload failed'))
       removeUploadedItem(fieldKey, id)
     }
     finally {
@@ -444,7 +451,7 @@ export function useAiGeneratorForm() {
         if (epoch !== pollEpoch)
           return
         if (generatingSince && Date.now() - generatingSince > GENERATION_TIMEOUT_MS) {
-          toast.error('Generation is taking longer than expected. Results will appear when ready.')
+          toast.error(t('Generation is taking longer than expected. Results will appear when ready.'))
           return
         }
         const job = await $fetch<GenerationJobPublic>(`/api/ai/jobs/${taskId}`)
@@ -455,7 +462,7 @@ export function useAiGeneratorForm() {
           return
         }
         if (job.state === 'fail') {
-          toast.error(job.failMsg || 'Generation failed')
+          toast.error(job.failMsg || t('Generation failed'))
           return
         }
         if (isGenerationQueued(job.state))
@@ -472,7 +479,7 @@ export function useAiGeneratorForm() {
         removeJob(taskId)
         return
       }
-      toast.error(readApiError(error, 'Generation failed'))
+      toast.error(readApiError(error, t('Generation failed')))
     }
     finally {
       pollingTaskIds.delete(taskId)
@@ -540,7 +547,7 @@ export function useAiGeneratorForm() {
       return job
     }
     catch (error) {
-      toast.error(readApiError(error, 'Generation failed'))
+      toast.error(readApiError(error, t('Generation failed')))
     }
     finally {
       isSubmitting.value = false

@@ -11,12 +11,13 @@ import { readErrorMessage } from '~~/shared/utils/apiError'
 import ProjectMoveJobDialog from '@/components/projects/ProjectMoveJobDialog.vue'
 import { canvasMediaNavigationKey } from '~/composables/useCanvasMediaNavigation'
 
+const { t } = useI18n()
 const canvas = ref<{
   focusMedia: (url: string) => Promise<boolean>
 } | null>(null)
 provide(canvasMediaNavigationKey, async (url) => {
   if (!await canvas.value?.focusMedia(url))
-    toast.error('This file is no longer available on the canvas.')
+    toast.error(t('This file is no longer available on the canvas.'))
 })
 definePageMeta({
   layout: 'studio',
@@ -49,7 +50,7 @@ const otherProjects = computed(() => projects.value.filter(item => item.id && it
 let loadToken = 0
 let jobsController: AbortController | undefined
 let jobsInFlight = false
-const title = computed(() => project.value?.name || 'Project')
+const title = computed(() => project.value?.name || t('Project'))
 const description = computed(() => project.value?.description || '')
 const canRename = computed(() => Boolean(project.value && !project.value.isDefault))
 const renaming = ref(false)
@@ -60,7 +61,7 @@ const renameInputRef = ref<{
 } | null>(null)
 useSeoMeta({
   title: () => `${title.value} · ${publicConfig.brandName}`,
-  description: 'Project generations',
+  description: () => t('Project generations'),
 })
 async function loadProject() {
   if (!projectId.value)
@@ -70,7 +71,7 @@ async function loadProject() {
     selectedProjectId.value = project.value.id
   }
   catch (error) {
-    toast.error(error instanceof Error ? error.message : 'Could not load this project')
+    toast.error(error instanceof Error ? error.message : t('Could not load this project'))
     await nuxtApp.runWithContext(() => navigateTo('/projects'))
   }
 }
@@ -129,7 +130,7 @@ async function loadJobs(silent = false) {
   }
   catch (error) {
     if (!silent && !controller.signal.aborted)
-      toast.error(error instanceof Error ? error.message : 'Could not load generations')
+      toast.error(error instanceof Error ? error.message : t('Could not load generations'))
   }
   finally {
     if (token === loadToken) {
@@ -187,13 +188,17 @@ async function confirmBulk(targetProjectId?: string) {
   }
   bulkTaskIds.value = failed
   bulkPending.value = false
-  if (failed.length)
-    toast.error(`${failed.length} results could not be ${action === 'move' ? 'moved' : 'deleted'}. Retry to process only these results.`)
-  else
+  if (failed.length) {
+    toast.error(action === 'move'
+      ? t('{count} results could not be moved. Retry to process only these results.', { count: failed.length })
+      : t('{count} results could not be deleted. Retry to process only these results.', { count: failed.length }))
+  }
+  else {
     bulkAction.value = null
+  }
   const refreshed = await Promise.allSettled([loadJobs(true), loadProjects()])
   if (refreshed.some(result => result.status === 'rejected'))
-    toast.error('Could not refresh the project. Reload to see the latest results.')
+    toast.error(t('Could not refresh the project. Reload to see the latest results.'))
 }
 function requestDelete(taskId: string) {
   const job = items.value.find(item => item.taskId === taskId)
@@ -232,7 +237,7 @@ async function confirmMove(targetProjectId: string) {
     await Promise.all([loadJobs(true), loadProjects()])
   }
   catch (error) {
-    toast.error(error instanceof Error ? error.message : 'Could not move this result')
+    toast.error(error instanceof Error ? error.message : t('Could not move this result'))
   }
   finally {
     movingTaskId.value = null
@@ -260,7 +265,7 @@ async function confirmDelete() {
       deleteConfirmOpen.value = false
     }
     else {
-      toast.error(readErrorMessage(error, 'Could not delete this result'))
+      toast.error(readErrorMessage(error, t('Could not delete this result')))
     }
   }
   finally {
@@ -297,7 +302,7 @@ async function saveRename() {
     return
   const name = renameDraft.value.trim()
   if (!name) {
-    toast.error('Title is required')
+    toast.error(t('Title is required'))
     focusRenameInput()
     return
   }
@@ -319,7 +324,7 @@ async function saveRename() {
     renaming.value = false
   }
   catch (error) {
-    toast.error(readErrorMessage(error, 'Could not rename the project'))
+    toast.error(readErrorMessage(error, t('Could not rename the project')))
     focusRenameInput()
   }
   finally {
@@ -361,7 +366,7 @@ function onAttachCanvas(payload: {
 }) {
   attachUrls(payload.urls.map(url => ({
     url,
-    name: payload.prompt.trim() || 'Canvas still',
+    name: payload.prompt.trim() || t('Canvas still'),
   })))
 }
 </script>
@@ -373,7 +378,7 @@ function onAttachCanvas(payload: {
         <Button as-child variant="ghost" size="sm" class="rounded-lg">
           <NuxtLink to="/projects">
             <ArrowLeft data-icon="inline-start" />
-            Projects
+            {{ t('Projects') }}
           </NuxtLink>
         </Button>
         <Separator orientation="vertical" class="h-5" />
@@ -388,7 +393,7 @@ function onAttachCanvas(payload: {
             :maxlength="PROJECT_NAME_MAX"
             :disabled="renamingSaving"
             required
-            aria-label="Project name"
+            :aria-label="t('Project name')"
             class="h-8 min-w-0 max-w-64 flex-1 rounded-lg bg-input/30 shadow-none"
             @focus="onRenameInputFocus"
             @keydown.esc.prevent="cancelRename"
@@ -398,7 +403,7 @@ function onAttachCanvas(payload: {
             size="icon-sm"
             class="size-7 shrink-0 rounded-lg shadow-none"
             :disabled="renamingSaving || !renameDraft.trim()"
-            aria-label="Save name"
+            :aria-label="t('Save name')"
           >
             <Check class="size-3.5" />
           </Button>
@@ -408,7 +413,7 @@ function onAttachCanvas(payload: {
             size="icon-sm"
             class="size-7 shrink-0 rounded-lg"
             :disabled="renamingSaving"
-            aria-label="Cancel rename"
+            :aria-label="t('Cancel rename')"
             @click="cancelRename"
           >
             <X class="size-3.5" />
@@ -435,8 +440,8 @@ function onAttachCanvas(payload: {
             variant="ghost"
             size="icon-sm"
             class="size-7 shrink-0 rounded-lg text-muted-foreground"
-            title="Rename"
-            aria-label="Rename project"
+            :title="t('Rename')"
+            :aria-label="t('Rename project')"
             @click="startRename"
           >
             <Pencil class="size-3.5" />
@@ -492,7 +497,7 @@ function onAttachCanvas(payload: {
       <template #right>
         <section
           class="relative isolate flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-background"
-          aria-label="Canvas"
+          :aria-label="t('Canvas')"
         >
           <AgentLabInfiniteCanvas
             ref="canvas"

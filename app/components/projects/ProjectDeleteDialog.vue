@@ -12,6 +12,7 @@ const emit = defineEmits<{
   'confirm': []
 }>()
 
+const { t } = useI18n()
 const confirmation = ref('')
 const canDelete = computed(() => confirmation.value.trim() === PROJECT_DELETE_CONFIRMATION)
 
@@ -32,16 +33,16 @@ function onOpenChange(open: boolean) {
     <AlertDialogContent class="rounded-2xl border-border bg-card shadow-none sm:max-w-md">
       <AlertDialogHeader class="gap-2">
         <AlertDialogTitle>
-          Delete this project?
+          {{ t('Delete this project?') }}
         </AlertDialogTitle>
         <AlertDialogDescription>
-          This cannot be undone. All generations in {{ projectName || 'this project' }} will be moved to Default.
+          {{ t('This cannot be undone. All generations in {name} will be moved to Default.', { name: projectName || t('this project') }) }}
         </AlertDialogDescription>
       </AlertDialogHeader>
 
       <div class="grid gap-2">
         <Label for="delete-project-confirmation">
-          Type {{ PROJECT_DELETE_CONFIRMATION }} to confirm
+          {{ t('Type {word} to confirm', { word: PROJECT_DELETE_CONFIRMATION }) }}
         </Label>
         <Input
           id="delete-project-confirmation"
@@ -56,7 +57,7 @@ function onOpenChange(open: boolean) {
 
       <AlertDialogFooter>
         <AlertDialogCancel class="rounded-lg shadow-none" :disabled="pending">
-          Cancel
+          {{ t('Cancel') }}
         </AlertDialogCancel>
         <Button
           class="rounded-lg bg-destructive text-white shadow-none hover:bg-destructive/90 disabled:opacity-40"
@@ -64,7 +65,7 @@ function onOpenChange(open: boolean) {
           @click="emit('confirm')"
         >
           <Spinner v-if="pending" class="size-4" />
-          Delete project
+          {{ t('Delete project') }}
         </Button>
       </AlertDialogFooter>
     </AlertDialogContent>

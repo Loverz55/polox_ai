@@ -5,10 +5,11 @@ definePageMeta({
 
 const { selectHomeAgent } = useAgentWorkspaceNav()
 const { public: publicConfig } = useRuntimeConfig()
+const { t } = useI18n()
 
 useSeoMeta({
-  title: `Agent Lab | ${publicConfig.brandName}`,
-  description: 'Chat-driven stills and short videos in your local workspace.',
+  title: t('Agent Lab | {brand}', { brand: publicConfig.brandName }),
+  description: t('Chat-driven stills and short videos in your local workspace.'),
 })
 
 selectHomeAgent()

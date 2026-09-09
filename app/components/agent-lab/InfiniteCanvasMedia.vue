@@ -84,9 +84,9 @@ function retry() {
       @error="failed = true"
     >
     <div v-else class="flex size-full flex-col items-center justify-center gap-3 px-2 text-center text-muted-foreground" style="font-size: var(--canvas-label-size, 14px)">
-      <span>Preview unavailable</span>
+      <span>{{ $t('Preview unavailable') }}</span>
       <button class="rounded border px-3 py-1" @click.stop="retry">
-        Retry preview
+        {{ $t('Retry preview') }}
       </button>
     </div>
   </div>
