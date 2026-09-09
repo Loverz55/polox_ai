@@ -7,6 +7,7 @@ import { imageLayerRegionFromPoints, transformImageLayerRegion } from '~~/shared
 const props = defineProps<{ src: string, disabled?: boolean, fixedRegions?: boolean, hideLabels?: boolean, sidebarTitle?: string }>()
 const emit = defineEmits<{ selecting: [value: boolean], pick: [], load: [], error: [] }>()
 const regions = defineModel<ImageLayerRegion[]>({ default: () => [] })
+const { t } = useI18n()
 const imageRef = ref<HTMLImageElement>()
 const loaded = ref(false)
 const viewportRef = ref<HTMLDivElement>()
@@ -225,20 +226,20 @@ onBeforeUnmount(cancel)
   <div class="grid min-w-0 overflow-hidden rounded-xl border border-border lg:grid-cols-[minmax(0,1fr)_240px]">
     <div class="min-w-0 bg-muted/20">
       <div class="flex h-11 items-center justify-between gap-2 border-b border-border px-3">
-        <div class="flex shrink-0 items-center gap-1" role="group" aria-label="Canvas tools">
-          <button v-for="tool in ([{ id: 'draw', label: 'Draw box', icon: SquareDashed }, { id: 'select', label: 'Select object', icon: MousePointer2 }, { id: 'pan', label: 'Pan canvas', icon: Hand }] as const).filter(tool => !fixedRegions || tool.id !== 'draw')" :key="tool.id" type="button" class="inline-flex size-7 items-center justify-center rounded-md border transition-colors disabled:opacity-30" :class="activeTool === tool.id ? 'border-primary/30 bg-primary/10 text-primary' : 'border-transparent text-muted-foreground hover:bg-accent hover:text-foreground'" :aria-label="tool.label" :aria-pressed="activeTool === tool.id" :title="tool.label" :disabled="!loaded || disabled" @click="setTool(tool.id)">
+        <div class="flex shrink-0 items-center gap-1" role="group" :aria-label="t('Canvas tools')">
+          <button v-for="tool in ([{ id: 'draw', label: t('Draw box'), icon: SquareDashed }, { id: 'select', label: t('Select object'), icon: MousePointer2 }, { id: 'pan', label: t('Pan canvas'), icon: Hand }] as const).filter(tool => !fixedRegions || tool.id !== 'draw')" :key="tool.id" type="button" class="inline-flex size-7 items-center justify-center rounded-md border transition-colors disabled:opacity-30" :class="activeTool === tool.id ? 'border-primary/30 bg-primary/10 text-primary' : 'border-transparent text-muted-foreground hover:bg-accent hover:text-foreground'" :aria-label="tool.label" :aria-pressed="activeTool === tool.id" :title="tool.label" :disabled="!loaded || disabled" @click="setTool(tool.id)">
             <component :is="tool.icon" class="size-4" />
           </button>
         </div>
         <div class="flex items-center gap-1">
-          <button type="button" class="inline-flex size-7 items-center justify-center rounded-md hover:bg-accent disabled:opacity-30" aria-label="Zoom out" title="Zoom out" :disabled="!loaded || disabled || zoom <= 0.5" @click="setZoom(zoom - 0.25)">
+          <button type="button" class="inline-flex size-7 items-center justify-center rounded-md hover:bg-accent disabled:opacity-30" :aria-label="t('Zoom out')" :title="t('Zoom out')" :disabled="!loaded || disabled || zoom <= 0.5" @click="setZoom(zoom - 0.25)">
             <ZoomOut class="size-4" />
           </button>
           <span class="w-10 text-center text-xs tabular-nums" aria-live="polite">{{ Math.round(zoom * 100) }}%</span>
-          <button type="button" class="inline-flex size-7 items-center justify-center rounded-md hover:bg-accent disabled:opacity-30" aria-label="Zoom in" title="Zoom in" :disabled="!loaded || disabled || zoom >= 4" @click="setZoom(zoom + 0.25)">
+          <button type="button" class="inline-flex size-7 items-center justify-center rounded-md hover:bg-accent disabled:opacity-30" :aria-label="t('Zoom in')" :title="t('Zoom in')" :disabled="!loaded || disabled || zoom >= 4" @click="setZoom(zoom + 0.25)">
             <ZoomIn class="size-4" />
           </button>
-          <button type="button" class="ml-1 inline-flex size-7 items-center justify-center rounded-md hover:bg-accent disabled:opacity-30" aria-label="Fit image" title="Fit image" :disabled="!loaded || disabled" @click="setZoom(1)">
+          <button type="button" class="ml-1 inline-flex size-7 items-center justify-center rounded-md hover:bg-accent disabled:opacity-30" :aria-label="t('Fit image')" :title="t('Fit image')" :disabled="!loaded || disabled" @click="setZoom(1)">
             <Maximize class="size-4" />
           </button>
         </div>
@@ -248,7 +249,7 @@ onBeforeUnmount(cancel)
         class="h-[340px] overflow-auto overscroll-contain outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring md:h-[480px]"
         :class="src ? [canvasCursor, 'touch-none select-none'] : ''"
         :tabindex="src ? 0 : -1"
-        aria-label="Scrollable image canvas"
+        :aria-label="t('Scrollable image canvas')"
         @pointerdown="begin"
         @pointermove="move"
         @pointerup="finish"
@@ -257,8 +258,8 @@ onBeforeUnmount(cancel)
       >
         <button v-if="!src" type="button" class="flex size-full flex-col items-center justify-center gap-3 p-6 text-center hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring" @click="emit('pick')">
           <span class="flex size-16 items-center justify-center rounded-xl border-2 border-dashed border-muted-foreground/40"><Upload class="size-6 text-muted-foreground" /></span>
-          <span class="text-sm font-medium">Upload an image</span>
-          <span class="text-xs text-muted-foreground">JPG, PNG, WEBP, GIF or AVIF · Up to 30 MB</span>
+          <span class="text-sm font-medium">{{ t('Upload an image') }}</span>
+          <span class="text-xs text-muted-foreground">{{ t('JPG, PNG, WEBP, GIF or AVIF · Up to 30 MB') }}</span>
         </button>
         <div v-else class="grid place-items-center" :style="{ width: `${Math.max(viewportWidth, imageWidth + 32)}px`, height: `${Math.max(viewportHeight, imageHeight + 32)}px` }">
           <div
@@ -266,9 +267,9 @@ onBeforeUnmount(cancel)
             :class="canvasCursor"
             :style="{ width: `${imageWidth}px`, height: `${imageHeight}px` }"
             role="group"
-            aria-label="Image selection canvas"
+            :aria-label="t('Image selection canvas')"
           >
-            <img ref="imageRef" :src="src" :alt="fixedRegions ? 'Image with editable text regions' : 'Image to separate into layers'" draggable="false" class="block size-full max-w-none" @load="onImageLoad" @error="loaded = false; emit('error')">
+            <img ref="imageRef" :src="src" :alt="t(fixedRegions ? 'Image with editable text regions' : 'Image to separate into layers')" draggable="false" class="block size-full max-w-none" @load="onImageLoad" @error="loaded = false; emit('error')">
             <svg v-if="loaded" class="pointer-events-none absolute inset-0 size-full overflow-visible" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true">
               <g v-for="(box, index) in [...regions, ...(draft ? [draft] : [])]" :key="index">
                 <rect :x="box[0]" :y="box[1]" :width="box[2] - box[0]" :height="box[3] - box[1]" :fill="`${objectColor(index)}${index === activeIndex ? '26' : '0a'}`" stroke="#111827" stroke-width="1" vector-effect="non-scaling-stroke" />
@@ -283,7 +284,7 @@ onBeforeUnmount(cancel)
                 type="button"
                 class="absolute z-20 flex size-6 -translate-x-1/2 -translate-y-1/2 touch-none items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 :style="{ left: `${(regions[activeIndex]![0] + (regions[activeIndex]![2] - regions[activeIndex]![0]) * handle.x) / 10}%`, top: `${(regions[activeIndex]![1] + (regions[activeIndex]![3] - regions[activeIndex]![1]) * handle.y) / 10}%`, cursor: handle.cursor }"
-                :aria-label="`Resize object ${activeIndex + 1} ${handle.label}`"
+                :aria-label="t('Resize object {index} {handle}', { index: activeIndex + 1, handle: t(handle.label) })"
                 :disabled="disabled"
                 @pointerdown.stop="beginResize($event, handle.id)"
                 @pointermove.stop="move"
@@ -299,8 +300,8 @@ onBeforeUnmount(cancel)
               type="button"
               class="absolute z-10 inline-flex size-6 -translate-x-full cursor-pointer items-center justify-center rounded-bl-md bg-zinc-950 text-white shadow-sm hover:bg-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-40"
               :style="{ left: `${regions[activeIndex]![2] / 10}%`, top: `${regions[activeIndex]![1] / 10}%` }"
-              :aria-label="`Delete selected object ${activeIndex + 1}`"
-              title="Delete object"
+              :aria-label="t('Delete selected object {index}', { index: activeIndex + 1 })"
+              :title="t('Delete object')"
               :disabled="disabled"
               @pointerdown.stop
               @pointerup.stop
@@ -313,16 +314,16 @@ onBeforeUnmount(cancel)
       </div>
     </div>
     <slot name="sidebar" :active-index="activeIndex" :select-object="selectObject" :object-color="objectColor">
-      <aside class="flex min-w-0 flex-col border-t border-border bg-card lg:border-t-0 lg:border-l" aria-label="Selected objects">
+      <aside class="flex min-w-0 flex-col border-t border-border bg-card lg:border-t-0 lg:border-l" :aria-label="t('Selected objects')">
         <div class="flex h-11 items-center justify-between border-b border-border px-3">
           <h3 class="text-sm font-medium">
-            {{ sidebarTitle || 'Objects' }} <span class="ml-1 text-xs text-muted-foreground" role="status">{{ regions.length }}{{ fixedRegions ? '' : '/16' }}</span>
+            {{ t(sidebarTitle || 'Objects') }} <span class="ml-1 text-xs text-muted-foreground" role="status">{{ regions.length }}{{ fixedRegions ? '' : '/16' }}</span>
           </h3>
         </div>
         <div v-if="!regions.length" class="flex flex-1 flex-col items-center justify-center gap-3 px-5 py-10 text-center text-muted-foreground">
           <Scan class="size-6" />
           <p class="text-xs leading-relaxed">
-            Choose Draw box, then drag around an object.<br>Each selection appears here.
+            {{ t('Choose Draw box, then drag around an object.') }}<br>{{ t('Each selection appears here.') }}
           </p>
         </div>
         <ol v-else class="max-h-[300px] flex-1 space-y-1 overflow-y-auto p-2 lg:max-h-[480px]">
@@ -330,10 +331,10 @@ onBeforeUnmount(cancel)
             <slot name="object" :index="index" :color="objectColor(index)" :select-object="selectObject">
               <button type="button" class="flex min-w-0 flex-1 items-center gap-3 p-2 text-left" :aria-pressed="index === activeIndex" :disabled="disabled" @click="selectObject(index)">
                 <span class="flex size-7 shrink-0 items-center justify-center rounded-md text-xs font-semibold tabular-nums text-zinc-950" :style="{ backgroundColor: objectColor(index) }" aria-hidden="true">{{ index + 1 }}</span>
-                <span class="truncate text-sm">Object {{ index + 1 }}</span>
+                <span class="truncate text-sm">{{ t('Object {index}', { index: index + 1 }) }}</span>
               </button>
             </slot>
-            <button v-if="!fixedRegions" type="button" class="mr-1 inline-flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-background hover:text-foreground" :aria-label="`Remove object ${index + 1}`" :disabled="disabled" @click="removeObject(index)">
+            <button v-if="!fixedRegions" type="button" class="mr-1 inline-flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-background hover:text-foreground" :aria-label="t('Remove object {index}', { index: index + 1 })" :disabled="disabled" @click="removeObject(index)">
               <Trash2 class="size-3.5" />
             </button>
           </li>

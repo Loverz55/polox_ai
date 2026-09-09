@@ -79,6 +79,7 @@ const emit = defineEmits<{
         id: string,
   ]
 }>()
+const { t } = useI18n()
 const draft = defineModel<string>('draft', { default: '' })
 const qualityPreference = defineModel<AgentQuality>('qualityPreference', { default: 'hobby' })
 const confirmPolicy = defineModel<AgentConfirmPolicy>('confirmPolicy', { default: 'always' })
@@ -167,7 +168,7 @@ const historyPanel = ref<{
   load: () => Promise<void>
 } | null>(null)
 const visibleMessageCount = ref(40)
-const presentedMessages = computed(() => presentAgentResults(props.messages, message => messageMedia(message, props.images)))
+const presentedMessages = computed(() => presentAgentResults(props.messages, message => messageMedia(message, props.images), t('Here are the results.')))
 const visibleMessages = computed(() => presentedMessages.value.slice(-visibleMessageCount.value))
 let loadingCachedHistory = false
 watch(() => props.sessionId, () => { visibleMessageCount.value = 40 })
@@ -372,7 +373,7 @@ function openAttachment(item: PendingAttachment) {
   openMedia({
     url: item.previewUrl || item.url,
     kind: 'image',
-    alt: item.name || 'Attached still',
+    alt: item.name || t('Attached still'),
   })
 }
 const GENERATING_COPY = [
@@ -404,13 +405,13 @@ const statusLabel = computed(() => {
   if ((props.confirmationOpen || props.choiceOpen) && props.status !== 'queued' && !generating)
     return ''
   if (props.status === 'queued')
-    return props.queueNotice || 'Waiting for a free generation slot. This will start automatically.'
+    return props.queueNotice || t('Waiting for a free generation slot. This will start automatically.')
   if (generating)
-    return GENERATING_COPY[generatingCopyIndex.value] || GENERATING_COPY[0]
+    return t(GENERATING_COPY[generatingCopyIndex.value] || GENERATING_COPY[0])
   if (props.status === 'calling_tool')
-    return 'Calling tools'
+    return t('Calling tools')
   if (props.status === 'thinking' || props.pending)
-    return 'Thinking'
+    return t('Thinking')
   return ''
 })
 const mediaWorking = computed(() => props.status === 'generating' || props.status === 'queued' || hasGeneratingMedia.value)
@@ -543,12 +544,12 @@ function setConfirmPolicy(value: unknown) {
 }
 const confirmPolicyLabel = computed(() => {
   if (confirmPolicy.value === 'auto')
-    return 'Automatic'
+    return t('Automatic')
   if (confirmPolicy.value === 'when_needed')
-    return 'Review when needed'
-  return 'Always review'
+    return t('Review when needed')
+  return t('Always review')
 })
-const activeTitle = computed(() => props.agents.find(agent => agent.id === props.activeAgentId)?.title || 'New agent')
+const activeTitle = computed(() => props.agents.find(agent => agent.id === props.activeAgentId)?.title || t('New agent'))
 function setActiveAgent(value: unknown) {
   const next = Array.isArray(value) ? value[0] : value
   if (typeof next === 'string' && next)
@@ -577,7 +578,7 @@ function setActiveAgent(value: unknown) {
               variant="ghost"
               size="icon-sm"
               class="size-7 shrink-0 rounded-lg"
-              aria-label="Switch agent"
+              :aria-label="t('Switch agent')"
             >
               <ChevronDown class="size-3.5 opacity-50" />
             </Button>
@@ -612,11 +613,11 @@ function setActiveAgent(value: unknown) {
         size="sm"
         class="h-8 shrink-0 gap-1 rounded-lg px-2 text-xs font-medium shadow-none"
         :disabled="!canCreateAgent"
-        aria-label="New agent"
+        :aria-label="t('New agent')"
         @click="emit('createAgent')"
       >
         <Plus class="size-3.5" />
-        New
+        {{ t('New') }}
       </Button>
     </div>
 
@@ -724,7 +725,7 @@ function setActiveAgent(value: unknown) {
           <button
             type="button"
             class="block size-14 overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            :aria-label="`View ${item.name}`"
+            :aria-label="t('View {name}', { name: item.name })"
             @click="openAttachment(item)"
           >
             <img
@@ -739,13 +740,13 @@ function setActiveAgent(value: unknown) {
           >
             <Spinner v-if="item.status === 'uploading'" class="size-4" />
             <span v-else class="px-1 text-center text-[10px] text-destructive">
-              Failed
+              {{ t('Failed') }}
             </span>
           </div>
           <button
             type="button"
             class="absolute top-1 right-1 flex size-5 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            :aria-label="`Remove ${item.name}`"
+            :aria-label="t('Remove {name}', { name: item.name })"
             @click="emit('removeAttachment', item.id)"
           >
             <X class="size-3" />
@@ -758,18 +759,18 @@ function setActiveAgent(value: unknown) {
             v-if="mention && !composerLocked"
             :id="modelListId"
             role="listbox"
-            aria-label="Choose a model or project asset"
+            :aria-label="t('Choose a model or project asset')"
             class="fixed z-[100] flex flex-col overflow-hidden rounded-xl border border-border bg-popover p-1 text-popover-foreground shadow-lg"
             :style="mentionStyle"
             @mousedown.prevent
           >
             <p class="hidden px-3 py-2 text-xs text-muted-foreground md:block">
-              ← → Switch columns · ↑ ↓ Navigate · Enter Select
+              {{ t('← → Switch columns · ↑ ↓ Navigate · Enter Select') }}
             </p>
             <div class="grid min-h-0 flex-1 grid-cols-2 divide-x divide-border">
-              <div role="group" aria-label="Models" class="min-w-0 overflow-y-auto overscroll-contain">
+              <div role="group" :aria-label="t('Models')" class="min-w-0 overflow-y-auto overscroll-contain">
                 <p class="sticky top-0 z-10 bg-popover px-3 py-2 text-xs font-semibold">
-                  Models
+                  {{ t('Models') }}
                 </p>
                 <button
                   v-for="(model, index) in modelMatches"
@@ -784,15 +785,15 @@ function setActiveAgent(value: unknown) {
                 >
                   <img v-if="agentModelLogo(model)" :src="agentModelLogo(model)" alt="" class="size-6 shrink-0 object-contain">
                   <Icon v-else :name="model.icon || 'lucide:box'" class="size-6 shrink-0" />
-                  <span class="min-w-0 flex-1"><span class="block truncate text-sm font-medium">{{ model.name }}</span><span class="block text-xs text-muted-foreground">{{ model.task }}</span></span>
+                  <span class="min-w-0 flex-1"><span class="block truncate text-sm font-medium">{{ model.name }}</span><span class="block text-xs text-muted-foreground">{{ t(model.task) }}</span></span>
                 </button>
                 <p v-if="!modelMatches.length" class="px-3 py-4 text-sm text-muted-foreground" role="status">
-                  No matching models
+                  {{ t('No matching models') }}
                 </p>
               </div>
-              <div role="group" aria-label="Project assets" class="min-w-0 overflow-y-auto overscroll-contain">
+              <div role="group" :aria-label="t('Project assets')" class="min-w-0 overflow-y-auto overscroll-contain">
                 <p class="sticky top-0 z-10 bg-popover px-3 py-2 text-xs font-semibold">
-                  Project assets · {{ projectAssets.length }}
+                  {{ t('Project assets') }} · {{ projectAssets.length }}
                 </p>
                 <button
                   v-for="(asset, index) in assetMatches" :id="`${modelListId}-assets-${index}`" :key="asset.id"
@@ -803,16 +804,16 @@ function setActiveAgent(value: unknown) {
                 >
                   <Icon v-if="asset.video" name="lucide:clapperboard" class="size-9 shrink-0" />
                   <img v-else :src="asset.url" alt="" loading="lazy" class="size-9 shrink-0 rounded object-contain">
-                  <span class="min-w-0"><span class="block truncate text-sm font-medium" :title="asset.name">{{ asset.name }}</span><span class="block text-xs text-muted-foreground">{{ asset.video ? 'Video' : 'Image' }}</span></span>
+                  <span class="min-w-0"><span class="block truncate text-sm font-medium" :title="t(asset.name)">{{ t(asset.name) }}</span><span class="block text-xs text-muted-foreground">{{ asset.video ? t('Video') : t('Image') }}</span></span>
                 </button>
                 <p v-if="projectAssetsLoading" class="px-3 py-2 text-xs text-muted-foreground" role="status">
-                  Loading project assets…
+                  {{ t('Loading project assets…') }}
                 </p>
                 <p v-else-if="projectAssetsError" class="px-3 py-2 text-xs text-destructive" role="status">
                   {{ projectAssetsError }}
                 </p>
                 <p v-else-if="!assetMatches.length" class="px-3 py-4 text-sm text-muted-foreground" role="status">
-                  {{ projectAssets.length ? 'No matching assets' : 'No assets in this project yet' }}
+                  {{ projectAssets.length ? t('No matching assets') : t('No assets in this project yet') }}
                 </p>
               </div>
             </div>
@@ -829,8 +830,8 @@ function setActiveAgent(value: unknown) {
           :class="compactComposer
             ? 'max-md:max-h-10 max-md:min-h-10 max-md:py-2 md:max-h-[min(40vh,20rem)] md:min-h-[88px]'
             : 'max-h-[min(40vh,20rem)] min-h-[88px]'"
-          :placeholder="agentComposerPlaceholder(selectedModels)"
-          aria-label="Message to agent"
+          :placeholder="t(agentComposerPlaceholder(selectedModels))"
+          :aria-label="t('Message to agent')"
           :aria-expanded="Boolean(mention)"
           :aria-controls="mention ? modelListId : undefined"
           :aria-activedescendant="activeMentionId"
@@ -860,7 +861,7 @@ function setActiveAgent(value: unknown) {
             size="icon-sm"
             class="rounded-lg"
             :disabled="composerLocked"
-            aria-label="Attach image"
+            :aria-label="t('Attach image')"
             @click="fileInput?.click()"
           >
             <Paperclip />
@@ -874,7 +875,7 @@ function setActiveAgent(value: unknown) {
                   size="sm"
                   class="h-8 max-w-full gap-1 rounded-lg px-2 text-xs font-medium shadow-none"
                   :disabled="prefsLocked"
-                  aria-label="Generation approval"
+                  :aria-label="t('Generation approval')"
                 >
                   <span class="truncate">{{ confirmPolicyLabel }}</span>
                   <ChevronDown class="size-3.5 shrink-0 opacity-50" />
@@ -883,7 +884,7 @@ function setActiveAgent(value: unknown) {
               <DropdownMenuContent align="end" class="min-w-72">
                 <DropdownMenuGroup>
                   <DropdownMenuLabel>
-                    Generation approval
+                    {{ t('Generation approval') }}
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuRadioGroup
@@ -892,25 +893,25 @@ function setActiveAgent(value: unknown) {
                   >
                     <DropdownMenuRadioItem value="auto" class="items-start">
                       <span class="flex flex-col gap-0.5">
-                        <span>Automatic</span>
+                        <span>{{ t('Automatic') }}</span>
                         <span class="text-xs font-normal text-muted-foreground">
-                          Spend without clicking Confirm. The agent decides.
+                          {{ t('Spend without clicking Confirm. The agent decides.') }}
                         </span>
                       </span>
                     </DropdownMenuRadioItem>
                     <DropdownMenuRadioItem value="when_needed" class="items-start">
                       <span class="flex flex-col gap-0.5">
-                        <span>Review when needed</span>
+                        <span>{{ t('Review when needed') }}</span>
                         <span class="text-xs font-normal text-muted-foreground">
-                          Confirm only when the agent thinks a review is needed.
+                          {{ t('Confirm only when the agent thinks a review is needed.') }}
                         </span>
                       </span>
                     </DropdownMenuRadioItem>
                     <DropdownMenuRadioItem value="always" class="items-start">
                       <span class="flex flex-col gap-0.5">
-                        <span>Always review</span>
+                        <span>{{ t('Always review') }}</span>
                         <span class="text-xs font-normal text-muted-foreground">
-                          Confirm every generation.
+                          {{ t('Confirm every generation.') }}
                         </span>
                       </span>
                     </DropdownMenuRadioItem>
@@ -921,7 +922,7 @@ function setActiveAgent(value: unknown) {
             <KbdGroup
               v-if="!canStop"
               class="hidden md:inline-flex"
-              aria-label="Shift Enter to send"
+              :aria-label="t('Shift Enter to send')"
             >
               <Kbd>Shift</Kbd>
               <Kbd>Enter</Kbd>
@@ -933,10 +934,10 @@ function setActiveAgent(value: unknown) {
               size="sm"
               class="rounded-lg"
               :disabled="stopping"
-              aria-label="Stop agent"
+              :aria-label="t('Stop agent')"
             >
               <Square class="size-3.5 fill-current" data-icon="inline-start" />
-              Stop
+              {{ t('Stop') }}
             </InputGroupButton>
             <InputGroupButton
               v-else
@@ -948,7 +949,7 @@ function setActiveAgent(value: unknown) {
               aria-keyshortcuts="Shift+Enter"
             >
               <ArrowUp data-icon="inline-start" />
-              Send
+              {{ t('Send') }}
             </InputGroupButton>
           </div>
         </InputGroupAddon>

@@ -7,6 +7,7 @@ import HomeUsefulTools from '@/components/home/UsefulTools.vue'
 
 const { public: publicConfig } = useRuntimeConfig()
 const route = useRoute()
+const { t } = useI18n()
 const { selectHomeAgent } = useAgentWorkspaceNav()
 
 const agentComposer = useTemplateRef('agentComposer')
@@ -44,10 +45,10 @@ function selectFrontierModel(card: FrontierModelCard) {
 }
 
 useSeoMeta({
-  title: `${publicConfig.brandName} | ${publicConfig.heroDescription}`,
-  description: publicConfig.heroDescription,
-  ogTitle: `${publicConfig.brandName} | ${publicConfig.heroDescription}`,
-  ogDescription: publicConfig.heroDescription,
+  title: () => `${publicConfig.brandName} | ${t(publicConfig.heroDescription)}`,
+  description: () => t(publicConfig.heroDescription),
+  ogTitle: () => `${publicConfig.brandName} | ${t(publicConfig.heroDescription)}`,
+  ogDescription: () => t(publicConfig.heroDescription),
 })
 </script>
 
@@ -58,11 +59,11 @@ useSeoMeta({
 
       <div class="mx-auto flex max-w-3xl flex-col items-center gap-3 text-center">
         <h1 class="text-[2.55rem] font-semibold leading-[1.03] tracking-[-0.045em] text-balance text-white drop-shadow-[0_2px_18px_rgba(0,0,0,0.8)] md:text-[3.25rem]">
-          <span class="block">{{ publicConfig.heroTitle }}</span>
-          <span class="block">{{ publicConfig.heroTagline }}</span>
+          <span class="block">{{ t(publicConfig.heroTitle) }}</span>
+          <span class="block">{{ t(publicConfig.heroTagline) }}</span>
         </h1>
         <h2 class="max-w-[44rem] text-[0.95rem] font-normal leading-relaxed text-zinc-300 drop-shadow-[0_1px_12px_rgba(0,0,0,0.9)] md:text-lg">
-          {{ publicConfig.heroDescription }}
+          {{ t(publicConfig.heroDescription) }}
         </h2>
       </div>
     </div>
@@ -88,7 +89,7 @@ useSeoMeta({
     >
       <img
         src="https://media.theresanaiforthat.com/featured-on-taaft.png?width=600"
-        alt="Featured on There's An AI For That"
+        :alt="t('Featured on There\'s An AI For That')"
         width="180"
         height="54"
         class="h-auto w-[180px]"

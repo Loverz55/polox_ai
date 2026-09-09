@@ -5,6 +5,7 @@ import { useSidebar } from '~/components/ui/sidebar'
 
 const { projects, loaded, loading, createProject } = useProjects()
 const { setOpenMobile } = useSidebar()
+const { t } = useI18n()
 const creating = ref(false)
 const route = useRoute()
 const MAX_RECENT_PROJECTS = 10
@@ -19,7 +20,7 @@ async function onCreateProject() {
     await navigateTo(`/projects/${project.id}`)
   }
   catch (error) {
-    toast.error(readErrorMessage(error, 'Could not create the project'))
+    toast.error(readErrorMessage(error, t('Could not create the project')))
   }
   finally {
     creating.value = false
@@ -36,20 +37,20 @@ const recentProjects = computed(() => {
 <template>
   <SidebarGroup>
     <SidebarGroupLabel>
-      Recent projects
+      {{ t('Recent projects') }}
     </SidebarGroupLabel>
-    <nav aria-label="Recent projects">
+    <nav :aria-label="t('Recent projects')">
       <SidebarMenu class="mb-1">
         <SidebarMenuItem>
           <SidebarMenuButton
             type="button"
-            tooltip="New project"
+            :tooltip="t('New project')"
             :disabled="creating"
             :aria-busy="creating"
             @click="onCreateProject"
           >
             <Icon :name="creating ? 'i-lucide-loader-circle' : 'i-lucide-plus'" :class="{ 'animate-spin': creating }" />
-            <span>{{ creating ? 'Creating…' : 'New project' }}</span>
+            <span>{{ creating ? t('Creating…') : t('New project') }}</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
@@ -57,12 +58,12 @@ const recentProjects = computed(() => {
         <SidebarMenuItem v-for="project in recentProjects" :key="project.id">
           <SidebarMenuButton
             as-child
-            :tooltip="project.name"
+            :tooltip="t(project.name)"
             :is-active="route.path === `/projects/${project.id}`"
           >
             <NuxtLink :to="`/projects/${project.id}`" @click="setOpenMobile(false)">
               <Icon name="i-lucide-folder" />
-              <span class="truncate">{{ project.name }}</span>
+              <span class="truncate">{{ t(project.name) }}</span>
             </NuxtLink>
           </SidebarMenuButton>
         </SidebarMenuItem>
@@ -72,7 +73,7 @@ const recentProjects = computed(() => {
         class="px-2 py-2 text-sm text-muted-foreground group-data-[collapsible=icon]:hidden"
         role="status"
       >
-        {{ !loaded || loading ? 'Loading projects…' : 'No recent projects yet' }}
+        {{ !loaded || loading ? t('Loading projects…') : t('No recent projects yet') }}
       </p>
       <NuxtLink
         v-if="hasMoreProjects"
@@ -80,7 +81,7 @@ const recentProjects = computed(() => {
         class="mt-1 flex items-center justify-between rounded-md px-2 py-2 text-xs text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring group-data-[collapsible=icon]:hidden"
         @click="setOpenMobile(false)"
       >
-        View all
+        {{ t('View all') }}
         <Icon name="i-lucide-arrow-right" class="size-3.5" />
       </NuxtLink>
     </nav>

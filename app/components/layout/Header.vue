@@ -2,16 +2,17 @@
 import { studioToolBySlug } from '@/constants/usefulTools'
 
 const route = useRoute()
+const { t } = useI18n()
 
 function titleForSegment(item: string, href: string) {
   if (item === 'tools')
-    return 'Useful tools'
+    return t('Useful tools')
 
   if (item === 'projects')
-    return 'Projects'
+    return t('Projects')
 
   if (item === 'agent')
-    return 'Studio Agent'
+    return t('Studio Agent')
 
   if (item === 'seedream')
     return 'Seedream 5.0 Pro'
@@ -29,12 +30,14 @@ function titleForSegment(item: string, href: string) {
     return 'GPT Image 2'
 
   if (href.startsWith('/projects/') && item !== 'projects')
-    return 'Project'
+    return t('Project')
 
   if (href.startsWith('/tools/')) {
     const slug = href.slice('/tools/'.length).split('/')[0] || ''
-    return studioToolBySlug(slug)?.title
-      || item.replace(/-/g, ' ').replace(/\b\w/g, char => char.toUpperCase())
+    const toolTitle = studioToolBySlug(slug)?.title
+    return toolTitle
+      ? t(toolTitle)
+      : item.replace(/-/g, ' ').replace(/\b\w/g, char => char.toUpperCase())
   }
 
   return item
@@ -46,7 +49,7 @@ function titleForSegment(item: string, href: string) {
 
 function setLinks() {
   if (route.path === '/') {
-    return [{ title: 'Home', href: '/' }]
+    return [{ title: t('Home'), href: '/' }]
   }
 
   const segments = route.path.split('/').filter(item => item !== '')
@@ -61,19 +64,11 @@ function setLinks() {
     }
   })
 
-  return [{ title: 'Home', href: '/' }, ...breadcrumbs]
+  return [{ title: t('Home'), href: '/' }, ...breadcrumbs]
 }
 
-const links = ref<{
-  title: string
-  href: string
-}[]>(setLinks())
-
-watch(() => route.path, (val) => {
-  if (val) {
-    links.value = setLinks()
-  }
-})
+// Computed so breadcrumbs follow both route changes and locale switches (t() reads the locale).
+const links = computed(() => setLinks())
 </script>
 
 <template>
@@ -87,6 +82,7 @@ watch(() => route.path, (val) => {
     </div>
     <div class="ml-auto flex items-center">
       <ServiceConnection />
+      <LangToggle />
       <slot />
     </div>
   </header>

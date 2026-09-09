@@ -3,6 +3,7 @@ import { IMAGE_EDITOR_PATH, studioToolBySlug, VIDEO_EDITOR_PATH } from '@/consta
 
 const route = useRoute()
 const { public: publicConfig } = useRuntimeConfig()
+const { t, locale } = useI18n()
 const { selectedCategory } = useAiGeneratorCategory()
 const { selectedTask } = useAiGeneratorTask()
 
@@ -35,14 +36,15 @@ const pageUrl = computed(() => {
 })
 
 const seoTitle = computed(() => {
+  const brand = publicConfig.brandName
   if (isImageEditor.value)
-    return `AI Image Editor | Image to Image · ${publicConfig.brandName}`
+    return t('AI Image Editor | Image to Image · {brand}', { brand })
   if (isVideoEditor.value)
-    return `AI Video Editor | Reference to Video · ${publicConfig.brandName}`
-  return `${tool.value?.title || 'Tool'} · ${publicConfig.brandName}`
+    return t('AI Video Editor | Reference to Video · {brand}', { brand })
+  return t('{title} · {brand}', { title: t(tool.value?.title || 'Tool'), brand })
 })
 
-const seoDescription = computed(() => tool.value?.description || '')
+const seoDescription = computed(() => tool.value?.description ? t(tool.value.description) : '')
 
 useSeoMeta({
   title: seoTitle,
@@ -60,7 +62,7 @@ const jsonLd = computed(() => {
   if (!isGeneratorEditor.value || !tool.value)
     return null
 
-  const appName = isVideoEditor.value ? 'AI Video Editor' : 'AI Image Editor'
+  const appName = t(isVideoEditor.value ? 'AI Video Editor' : 'AI Image Editor')
   const offerPath = isVideoEditor.value ? VIDEO_EDITOR_PATH : IMAGE_EDITOR_PATH
 
   return {
@@ -72,7 +74,7 @@ const jsonLd = computed(() => {
         'url': pageUrl.value,
         'name': seoTitle.value,
         'description': seoDescription.value,
-        'inLanguage': 'en',
+        'inLanguage': locale.value === 'zh' ? 'zh-CN' : 'en',
         'isPartOf': {
           '@type': 'WebSite',
           'name': publicConfig.brandName,
@@ -98,13 +100,13 @@ const jsonLd = computed(() => {
           {
             '@type': 'ListItem',
             'position': 1,
-            'name': 'Home',
+            'name': t('Home'),
             'item': 'https://polox.ai/',
           },
           {
             '@type': 'ListItem',
             'position': 2,
-            'name': 'Useful tools',
+            'name': t('Useful tools'),
             'item': 'https://polox.ai/',
           },
           {
@@ -143,13 +145,13 @@ useHead({
   >
     <div class="flex flex-col gap-2">
       <p class="text-sm text-muted-foreground">
-        {{ tool.group || 'Useful tools' }}
+        {{ t(tool.group || 'Useful tools') }}
       </p>
       <h1 class="text-2xl font-semibold tracking-tight md:text-3xl">
-        {{ tool.title }}
+        {{ t(tool.title) }}
       </h1>
       <p class="max-w-xl text-sm text-muted-foreground">
-        {{ tool.description }}
+        {{ t(tool.description) }}
       </p>
     </div>
 
@@ -161,9 +163,7 @@ useHead({
       v-if="isVideoEditor"
       class="max-w-2xl text-sm leading-relaxed text-muted-foreground"
     >
-      The models above are reference-to-video AI models. Upload the video you want to edit as a
-      reference video, then enter a prompt describing how you want to change it. You can also
-      upload reference images and reference audio to replace objects, people, and sound in the video.
+      {{ t('The models above are reference-to-video AI models. Upload the video you want to edit as a reference video, then enter a prompt describing how you want to change it. You can also upload reference images and reference audio to replace objects, people, and sound in the video.') }}
     </p>
   </div>
 </template>

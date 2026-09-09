@@ -13,6 +13,8 @@ const emit = defineEmits<{
   (event: 'update:modelValue', value: unknown): void
 }>()
 
+const { t } = useI18n()
+
 const variant = computed(() => props.variant ?? 'advanced')
 
 const stringValue = computed({
@@ -30,12 +32,26 @@ const booleanValue = computed({
   set: value => emit('update:modelValue', value),
 })
 
+function optionLabel(option: string | number) {
+  const value = String(option)
+  if (props.field.key === 'duration' && /^\d+(?:\.\d+)?$/.test(value))
+    return t('{seconds}s', { seconds: value })
+  return t(value)
+}
+
 const enumOptions = computed(() =>
   (props.field.property.enum ?? []).map(option => ({
-    label: props.field.key === 'duration' ? `${option}s` : String(option),
+    label: optionLabel(option),
     value: String(option),
   })),
 )
+
+const fieldLabel = computed(() => t(props.field.label))
+const fieldDescription = computed(() => props.field.description ? t(props.field.description) : '')
+const inputPlaceholder = computed(() => props.field.property['x-placeholder'] ? t(props.field.property['x-placeholder']) : fieldLabel.value)
+const selectPlaceholder = computed(() => props.field.property['x-placeholder']
+  ? t(props.field.property['x-placeholder'])
+  : t('Select {label}', { label: fieldLabel.value.toLowerCase() }))
 
 const isAspectRatioField = computed(() => props.field.key === 'aspect_ratio')
 
@@ -57,7 +73,7 @@ const toolbarIcon = computed(() => {
   >
     <Textarea
       v-model="stringValue"
-      :placeholder="field.property['x-placeholder'] || 'Describe your idea and watch it happen'"
+      :placeholder="field.property['x-placeholder'] ? t(field.property['x-placeholder']) : t('Describe your idea and watch it happen')"
       class="min-h-24 resize-none rounded-xl border-0 bg-muted/55 px-3 py-2.5 text-[0.925rem] shadow-none focus-visible:bg-muted/70 focus-visible:ring-1 focus-visible:ring-primary/45 md:min-h-24"
     />
   </div>
@@ -73,12 +89,12 @@ const toolbarIcon = computed(() => {
       >
         <AspectRatioIcon v-if="isAspectRatioField && stringValue" :ratio="stringValue" />
         <component :is="toolbarIcon" v-else-if="toolbarIcon" class="size-3.5 text-muted-foreground" />
-        <SelectValue :placeholder="field.property['x-placeholder'] || field.label" />
+        <SelectValue :placeholder="inputPlaceholder" />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
           <SelectLabel class="w-full text-center font-bold text-foreground">
-            {{ field.label }}
+            {{ fieldLabel }}
           </SelectLabel>
           <SelectSeparator />
           <SelectItem
@@ -98,7 +114,7 @@ const toolbarIcon = computed(() => {
 
   <template v-else-if="field.widget === 'select'">
     <div class="space-y-2">
-      <Label class="text-sm">{{ field.label }}</Label>
+      <Label class="text-sm">{{ fieldLabel }}</Label>
       <Select
         :model-value="stringValue"
         @update:model-value="(value) => stringValue = value != null ? String(value) : ''"
@@ -106,14 +122,14 @@ const toolbarIcon = computed(() => {
         <SelectTrigger>
           <span v-if="isAspectRatioField && stringValue" class="flex items-center gap-2">
             <AspectRatioIcon :ratio="stringValue" />
-            <SelectValue :placeholder="field.property['x-placeholder'] || `Select ${field.label.toLowerCase()}`" />
+            <SelectValue :placeholder="selectPlaceholder" />
           </span>
-          <SelectValue v-else :placeholder="field.property['x-placeholder'] || `Select ${field.label.toLowerCase()}`" />
+          <SelectValue v-else :placeholder="selectPlaceholder" />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
             <SelectLabel class="w-full text-center font-bold text-foreground">
-              {{ field.label }}
+              {{ fieldLabel }}
             </SelectLabel>
             <SelectSeparator />
             <SelectItem
@@ -129,15 +145,15 @@ const toolbarIcon = computed(() => {
           </SelectGroup>
         </SelectContent>
       </Select>
-      <p v-if="field.description" class="text-xs text-muted-foreground">
-        {{ field.description }}
+      <p v-if="fieldDescription" class="text-xs text-muted-foreground">
+        {{ fieldDescription }}
       </p>
     </div>
   </template>
 
   <template v-else-if="field.widget === 'radio'">
     <div class="space-y-2">
-      <Label class="text-sm">{{ field.label }}</Label>
+      <Label class="text-sm">{{ fieldLabel }}</Label>
       <RadioGroup
         :model-value="stringValue"
         class="grid gap-2"
@@ -154,15 +170,15 @@ const toolbarIcon = computed(() => {
           </Label>
         </div>
       </RadioGroup>
-      <p v-if="field.description" class="text-xs text-muted-foreground">
-        {{ field.description }}
+      <p v-if="fieldDescription" class="text-xs text-muted-foreground">
+        {{ fieldDescription }}
       </p>
     </div>
   </template>
 
   <template v-else-if="field.widget === 'number'">
     <div class="space-y-2">
-      <Label class="text-sm">{{ field.label }}</Label>
+      <Label class="text-sm">{{ fieldLabel }}</Label>
       <NumberField
         :model-value="numberValue"
         :min="field.property.minimum"
@@ -175,8 +191,8 @@ const toolbarIcon = computed(() => {
           <NumberFieldIncrement />
         </NumberFieldContent>
       </NumberField>
-      <p v-if="field.description" class="text-xs text-muted-foreground">
-        {{ field.description }}
+      <p v-if="fieldDescription" class="text-xs text-muted-foreground">
+        {{ fieldDescription }}
       </p>
     </div>
   </template>
@@ -184,9 +200,9 @@ const toolbarIcon = computed(() => {
   <template v-else-if="field.widget === 'switch'">
     <div class="flex items-center justify-between gap-3 rounded-lg border border-border/60 px-3 py-2">
       <div class="space-y-0.5">
-        <Label class="text-sm">{{ field.label }}</Label>
-        <p v-if="field.description" class="text-xs text-muted-foreground">
-          {{ field.description }}
+        <Label class="text-sm">{{ fieldLabel }}</Label>
+        <p v-if="fieldDescription" class="text-xs text-muted-foreground">
+          {{ fieldDescription }}
         </p>
       </div>
       <Switch
@@ -198,13 +214,13 @@ const toolbarIcon = computed(() => {
 
   <template v-else>
     <div class="space-y-2">
-      <Label class="text-sm">{{ field.label }}</Label>
+      <Label class="text-sm">{{ fieldLabel }}</Label>
       <Input
         v-model="stringValue"
-        :placeholder="field.property['x-placeholder'] || field.label"
+        :placeholder="inputPlaceholder"
       />
-      <p v-if="field.description" class="text-xs text-muted-foreground">
-        {{ field.description }}
+      <p v-if="fieldDescription" class="text-xs text-muted-foreground">
+        {{ fieldDescription }}
       </p>
     </div>
   </template>

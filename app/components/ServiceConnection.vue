@@ -13,6 +13,7 @@ interface ConnectionStatus {
 }
 const status = ref<ConnectionStatus | null>(null)
 const { dialogOpen: open } = useServiceConnection()
+const { t } = useI18n()
 const testing = ref(false)
 const MASKED_KEY = '********'
 const openRouterKey = ref('')
@@ -65,10 +66,10 @@ async function testConnection() {
     status.value = result
     results.value = result
     if (result.superseded)
-      error.value = 'Settings changed in another window. Test the current settings again.'
+      error.value = t('Settings changed in another window. Test the current settings again.')
     showSavedKeys()
   }
-  catch { error.value = 'Connection test could not finish. Please try again.'; await refresh() }
+  catch { error.value = t('Connection test could not finish. Please try again.'); await refresh() }
   finally { testing.value = false }
 }
 </script>
@@ -76,38 +77,38 @@ async function testConnection() {
 <template>
   <Dialog v-model:open="open">
     <DialogTrigger as-child>
-      <button type="button" class="inline-flex items-center gap-2 rounded-md px-3 py-2 text-xs font-medium transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring" :class="connected ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'" aria-label="Service connection" :title="connected ? 'OpenRouter and fal tested successfully' : 'Configure and test OpenRouter and fal'">
+      <button type="button" class="inline-flex items-center gap-2 rounded-md px-3 py-2 text-xs font-medium transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring" :class="connected ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'" :aria-label="t('Service connection')" :title="connected ? t('OpenRouter and fal tested successfully') : t('Configure and test OpenRouter and fal')">
         <CheckCircle2 v-if="connected" class="size-4" />
         <AlertTriangle v-else class="size-4" />
-        <span>{{ connected ? 'Services connected' : 'API keys not configured' }}</span>
+        <span>{{ connected ? t('Services connected') : t('API keys not configured') }}</span>
       </button>
     </DialogTrigger>
     <DialogContent class="sm:max-w-md">
       <DialogHeader>
-        <DialogTitle>Service connection</DialogTitle>
-        <DialogDescription>Connect OpenRouter and fal to start creating. Your keys are stored locally on this computer. Keep your API keys private. Never share them with anyone.</DialogDescription>
+        <DialogTitle>{{ t('Service connection') }}</DialogTitle>
+        <DialogDescription>{{ t('Connect OpenRouter and fal to start creating. Your keys are stored locally on this computer. Keep your API keys private. Never share them with anyone.') }}</DialogDescription>
       </DialogHeader>
       <form class="space-y-4" @submit.prevent="testConnection">
         <div class="space-y-2">
           <div class="flex items-center gap-3">
-            <Label for="openrouter-key">OpenRouter API key</Label>
-            <a href="https://openrouter.ai/workspaces/default/keys" target="_blank" rel="noopener noreferrer" class="text-xs text-primary underline underline-offset-4 hover:opacity-80" aria-label="Get OpenRouter API key (opens in a new tab)">Get API key ↗</a>
+            <Label for="openrouter-key">{{ t('OpenRouter API key') }}</Label>
+            <a href="https://openrouter.ai/workspaces/default/keys" target="_blank" rel="noopener noreferrer" class="text-xs text-primary underline underline-offset-4 hover:opacity-80" :aria-label="t('Get OpenRouter API key (opens in a new tab)')">{{ t('Get API key ↗') }}</a>
           </div>
-          <Input id="openrouter-key" v-model="openRouterKey" type="password" autocomplete="off" :disabled="testing" placeholder="Enter your OpenRouter API key" @focus="selectKey" />
+          <Input id="openrouter-key" v-model="openRouterKey" type="password" autocomplete="off" :disabled="testing" :placeholder="t('Enter your OpenRouter API key')" @focus="selectKey" />
         </div>
         <div class="space-y-2">
-          <Label for="openrouter-model">OpenRouter model</Label>
+          <Label for="openrouter-model">{{ t('OpenRouter model') }}</Label>
           <Input id="openrouter-model" v-model="openRouterModel" required autocomplete="off" :disabled="testing" placeholder="provider/model-name" />
         </div>
         <div class="space-y-2">
           <div class="flex items-center gap-3">
-            <Label for="fal-key">fal API key</Label>
-            <a href="https://fal.ai/login?returnTo=%2Fdashboard%2Fkeys" target="_blank" rel="noopener noreferrer" class="text-xs text-primary underline underline-offset-4 hover:opacity-80" aria-label="Get fal API key (opens in a new tab)">Get API key ↗</a>
+            <Label for="fal-key">{{ t('fal API key') }}</Label>
+            <a href="https://fal.ai/login?returnTo=%2Fdashboard%2Fkeys" target="_blank" rel="noopener noreferrer" class="text-xs text-primary underline underline-offset-4 hover:opacity-80" :aria-label="t('Get fal API key (opens in a new tab)')">{{ t('Get API key ↗') }}</a>
           </div>
-          <Input id="fal-key" v-model="falKey" type="password" autocomplete="off" :disabled="testing" placeholder="Enter your fal API key" @focus="selectKey" />
+          <Input id="fal-key" v-model="falKey" type="password" autocomplete="off" :disabled="testing" :placeholder="t('Enter your fal API key')" @focus="selectKey" />
         </div>
         <p class="text-xs text-muted-foreground">
-          Clear a key to remove it when you test and save. Testing saves your settings, sends a short request to your OpenRouter model, and checks fal authentication and file upload. The model request may incur a small charge.
+          {{ t('Clear a key to remove it when you test and save. Testing saves your settings, sends a short request to your OpenRouter model, and checks fal authentication and file upload. The model request may incur a small charge.') }}
         </p>
         <div v-if="results" class="space-y-2 rounded-md border p-3 text-sm" role="status" aria-live="polite">
           <p :class="results.openRouter.ok ? 'text-emerald-600' : 'text-red-600'">
@@ -123,7 +124,7 @@ async function testConnection() {
         <DialogFooter>
           <Button type="submit" :disabled="testing || !openRouterModel.trim()">
             <LoaderCircle v-if="testing" class="mr-2 size-4 animate-spin" />
-            {{ testing ? 'Testing connections…' : 'Test connection' }}
+            {{ testing ? t('Testing connections…') : t('Test connection') }}
           </Button>
         </DialogFooter>
       </form>

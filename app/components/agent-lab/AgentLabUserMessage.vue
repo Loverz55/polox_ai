@@ -37,11 +37,11 @@ const parts = computed(() => {
         v-else
         type="button"
         class="overflow-hidden rounded-xl border border-border bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        :aria-label="attachment.kind === 'video' ? 'View reference video' : 'View reference image'"
-        @click="open({ url: attachment.url, kind: attachment.kind, alt: 'Reference attachment' })"
+        :aria-label="attachment.kind === 'video' ? $t('View reference video') : $t('View reference image')"
+        @click="open({ url: attachment.url, kind: attachment.kind, alt: $t('Reference attachment') })"
       >
         <video v-if="attachment.kind === 'video'" :src="attachment.url" muted playsinline preload="metadata" class="size-20 object-cover" />
-        <img v-else :src="attachment.url" alt="Reference image" loading="lazy" class="size-20 object-cover">
+        <img v-else :src="attachment.url" :alt="$t('Reference image')" loading="lazy" class="size-20 object-cover">
       </button>
     </template>
   </div>

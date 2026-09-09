@@ -36,7 +36,7 @@ const html = computed(() => {
   <div class="agent-lab-md text-sm leading-6" @click="onLinkClick" @auxclick="onLinkClick">
     <details v-if="thinking" class="mb-1 text-muted-foreground">
       <summary class="cursor-pointer text-xs font-medium">
-        Thinking
+        {{ $t('Thinking') }}
       </summary>
       <div class="mt-2 whitespace-pre-wrap text-xs leading-5">
         {{ thinking }}

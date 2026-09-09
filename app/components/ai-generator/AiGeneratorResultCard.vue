@@ -29,6 +29,7 @@ const emit = defineEmits<{
   attach: [payload: { urls: string[], prompt: string }]
 }>()
 
+const { t } = useI18n()
 const detailOpen = ref(false)
 const inflight = computed(() => !isGenerationTerminal(props.job.state))
 const canDelete = computed(() =>
@@ -43,7 +44,7 @@ const failed = computed(() => props.job.state === 'fail')
 const isConcat = computed(() => isConcatenatedGeneration(props.job))
 const modelName = computed(() => {
   if (isImageLayerSplitterModel(props.job?.model || ''))
-    return IMAGE_LAYER_SPLITTER_NAME
+    return t(IMAGE_LAYER_SPLITTER_NAME)
   if (isConcat.value)
     return ''
   return AI_MODELS.find(model => model.id === props.job.model)?.name || props.job.model
@@ -56,14 +57,14 @@ const taskType = computed(() => {
 
 function statusLabel() {
   if (props.job.state === 'queued')
-    return 'Waiting in queue'
+    return t('Waiting in queue')
   if (props.job.state === 'moderating')
-    return isVideo.value ? 'Checking video' : 'Checking images'
+    return isVideo.value ? t('Checking video') : t('Checking images')
   if (props.job.state === 'archiving')
-    return isVideo.value ? 'Saving video' : 'Saving images'
+    return isVideo.value ? t('Saving video') : t('Saving images')
   if (failed.value)
-    return props.job.failMsg || 'Generation failed'
-  return 'Generating'
+    return props.job.failMsg || t('Generation failed')
+  return t('Generating')
 }
 
 const canAttach = computed(() =>
@@ -95,7 +96,7 @@ function openResult() {
   openMedia({
     url,
     kind: isVideo.value ? 'video' : 'image',
-    alt: props.job.prompt || (isVideo.value ? 'Generated video' : 'Generated image'),
+    alt: props.job.prompt || (isVideo.value ? t('Generated video') : t('Generated image')),
   })
 }
 </script>
@@ -110,7 +111,7 @@ function openResult() {
         v-if="showMove"
         type="button"
         :class="actionButtonClass"
-        aria-label="Move to another project"
+        :aria-label="t('Move to another project')"
         @click.stop="emit('move', job.taskId)"
       >
         <Folder class="size-3.5" />
@@ -119,7 +120,7 @@ function openResult() {
         v-if="canAttach"
         type="button"
         :class="actionButtonClass"
-        aria-label="Attach to Agent"
+        :aria-label="t('Attach to Agent')"
         @click.stop="onAttach"
       >
         <Paperclip class="size-3.5" />
@@ -127,7 +128,7 @@ function openResult() {
       <button
         type="button"
         :class="actionButtonClass"
-        aria-label="View generation details"
+        :aria-label="t('View generation details')"
         @click.stop="detailOpen = true"
       >
         <Eye class="size-3.5" />
@@ -137,7 +138,7 @@ function openResult() {
         type="button"
         :class="actionButtonClass"
         :disabled="deleting"
-        aria-label="Delete generation"
+        :aria-label="t('Delete generation')"
         @click.stop="onDelete"
       >
         <Spinner v-if="deleting" class="size-3.5" />
@@ -165,12 +166,12 @@ function openResult() {
         v-else
         type="button"
         class="block w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        aria-label="View generated image"
+        :aria-label="t('View generated image')"
         @click="openResult"
       >
         <img
           :src="media[0]"
-          alt="Generated image"
+          :alt="t('Generated image')"
           class="h-auto w-full object-contain"
         >
       </button>
@@ -206,7 +207,7 @@ function openResult() {
       class="flex min-h-28 items-center justify-center bg-muted px-4 py-6"
     >
       <p class="text-center text-sm text-muted-foreground">
-        {{ failed ? (job.failMsg || 'Generation failed') : (isVideo ? 'No video' : 'No image') }}
+        {{ failed ? (job.failMsg || t('Generation failed')) : (isVideo ? t('No video') : t('No image')) }}
       </p>
     </div>
 
@@ -216,7 +217,7 @@ function openResult() {
         class="line-clamp-3 break-words text-xs text-foreground md:text-sm"
         :title="job.prompt || undefined"
       >
-        {{ job.prompt || 'Untitled generation' }}
+        {{ job.prompt || t('Untitled generation') }}
       </p>
       <p
         v-if="modelName"
@@ -228,7 +229,7 @@ function openResult() {
         v-if="taskType"
         class="text-[11px] text-muted-foreground"
       >
-        {{ taskType }}
+        {{ t(taskType) }}
       </p>
       <p
         v-if="caption"

@@ -9,10 +9,11 @@ import ProjectDeleteDialog from '@/components/projects/ProjectDeleteDialog.vue'
 const POLL_MS = 3000
 const { public: publicConfig } = useRuntimeConfig()
 
+const { t } = useI18n()
 const { projects, selectedProjectId, loaded, loadProjects } = useProjects()
 useSeoMeta({
-  title: `Projects · ${publicConfig.brandName}`,
-  description: 'Your generation projects',
+  title: () => `${t('Projects')} · ${publicConfig.brandName}`,
+  description: () => t('Your generation projects'),
 })
 const hasActiveJobs = computed(() => projects.value.some(project => project.activeJobCount > 0))
 const createOpen = ref(false)
@@ -77,7 +78,7 @@ async function submitCreate() {
     await navigateTo(`/projects/${project.id}`)
   }
   catch (error) {
-    toast.error(readErrorMessage(error, 'Could not create the project'))
+    toast.error(readErrorMessage(error, t('Could not create the project')))
   }
   finally {
     creating.value = false
@@ -99,7 +100,7 @@ async function submitEdit() {
     editOpen.value = false
   }
   catch (error) {
-    toast.error(readErrorMessage(error, 'Could not update the project'))
+    toast.error(readErrorMessage(error, t('Could not update the project')))
   }
   finally {
     editing.value = false
@@ -127,7 +128,7 @@ async function confirmDelete() {
     await loadProjects()
   }
   catch (error) {
-    toast.error(readErrorMessage(error, 'Could not delete the project'))
+    toast.error(readErrorMessage(error, t('Could not delete the project')))
   }
   finally {
     deleting.value = false
@@ -140,10 +141,10 @@ async function confirmDelete() {
     <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
       <div class="flex flex-col gap-1">
         <p class="text-sm text-muted-foreground">
-          Projects
+          {{ t('Projects') }}
         </p>
         <h1 class="text-2xl font-semibold tracking-tight">
-          Projects
+          {{ t('Projects') }}
         </h1>
       </div>
       <Button
@@ -151,7 +152,7 @@ async function confirmDelete() {
         class="h-9 shrink-0 rounded-lg px-3 shadow-none"
         @click="openCreate"
       >
-        New project
+        {{ t('New project') }}
       </Button>
     </div>
 
@@ -166,7 +167,7 @@ async function confirmDelete() {
       v-else-if="projects.length === 0"
       class="rounded-2xl border border-border bg-muted/35 px-4 py-8 text-center text-sm text-muted-foreground"
     >
-      No projects yet.
+      {{ t('No projects yet.') }}
     </p>
 
     <div
@@ -187,10 +188,10 @@ async function confirmDelete() {
       <DialogContent class="rounded-2xl border-border bg-card shadow-none sm:max-w-md">
         <DialogHeader class="gap-1">
           <DialogTitle>
-            New project
+            {{ t('New project') }}
           </DialogTitle>
           <DialogDescription>
-            Give this project a title. A description is optional.
+            {{ t('Give this project a title. A description is optional.') }}
           </DialogDescription>
         </DialogHeader>
 
@@ -201,7 +202,7 @@ async function confirmDelete() {
           <FieldGroup>
             <Field>
               <FieldLabel html-for="project-name">
-                Title
+                {{ t('Title') }}
               </FieldLabel>
               <Input
                 id="project-name"
@@ -213,9 +214,9 @@ async function confirmDelete() {
             </Field>
             <Field>
               <FieldLabel html-for="project-description">
-                Description
+                {{ t('Description') }}
                 <span class="font-normal text-muted-foreground">
-                  (optional)
+                  {{ t('(optional)') }}
                 </span>
               </FieldLabel>
               <Textarea
@@ -223,7 +224,7 @@ async function confirmDelete() {
                 v-model="createDescription"
                 rows="3"
                 :maxlength="PROJECT_DESCRIPTION_MAX"
-                placeholder="What this project is for"
+                :placeholder="t('What this project is for')"
                 class="min-h-20 rounded-xl bg-input/30 shadow-none"
               />
             </Field>
@@ -237,14 +238,14 @@ async function confirmDelete() {
               :disabled="creating"
               @click="createOpen = false"
             >
-              Cancel
+              {{ t('Cancel') }}
             </Button>
             <Button
               type="submit"
               class="h-8 rounded-lg px-3 text-xs shadow-none"
               :disabled="creating"
             >
-              {{ creating ? 'Creating…' : 'Create' }}
+              {{ creating ? t('Creating…') : t('Create') }}
             </Button>
           </DialogFooter>
         </form>
@@ -255,10 +256,10 @@ async function confirmDelete() {
       <DialogContent class="rounded-2xl border-border bg-card shadow-none sm:max-w-md">
         <DialogHeader class="gap-1">
           <DialogTitle>
-            Edit project
+            {{ t('Edit project') }}
           </DialogTitle>
           <DialogDescription>
-            Update the title and description.
+            {{ t('Update the title and description.') }}
           </DialogDescription>
         </DialogHeader>
 
@@ -269,7 +270,7 @@ async function confirmDelete() {
           <FieldGroup>
             <Field>
               <FieldLabel html-for="edit-project-name">
-                Title
+                {{ t('Title') }}
               </FieldLabel>
               <Input
                 id="edit-project-name"
@@ -281,9 +282,9 @@ async function confirmDelete() {
             </Field>
             <Field>
               <FieldLabel html-for="edit-project-description">
-                Description
+                {{ t('Description') }}
                 <span class="font-normal text-muted-foreground">
-                  (optional)
+                  {{ t('(optional)') }}
                 </span>
               </FieldLabel>
               <Textarea
@@ -291,7 +292,7 @@ async function confirmDelete() {
                 v-model="editDescription"
                 rows="3"
                 :maxlength="PROJECT_DESCRIPTION_MAX"
-                placeholder="What this project is for"
+                :placeholder="t('What this project is for')"
                 class="min-h-20 rounded-xl bg-input/30 shadow-none"
               />
             </Field>
@@ -305,14 +306,14 @@ async function confirmDelete() {
               :disabled="editing"
               @click="editOpen = false"
             >
-              Cancel
+              {{ t('Cancel') }}
             </Button>
             <Button
               type="submit"
               class="h-8 rounded-lg px-3 text-xs shadow-none"
               :disabled="editing"
             >
-              {{ editing ? 'Saving…' : 'Save' }}
+              {{ editing ? t('Saving…') : t('Save') }}
             </Button>
           </DialogFooter>
         </form>

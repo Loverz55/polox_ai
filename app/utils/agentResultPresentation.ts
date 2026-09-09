@@ -4,8 +4,11 @@ interface ResultMessage extends AgentChatMessage {
   media: AgentImage[]
 }
 
-/** Keep job ownership for recovery, but present finished outputs below the reply. */
-export function presentAgentResults(messages: AgentChatMessage[], mediaFor: (message: AgentChatMessage) => AgentImage[]): ResultMessage[] {
+/**
+ * Keep job ownership for recovery, but present finished outputs below the reply.
+ * `resultsText` is the already-translated copy for the display-only results row.
+ */
+export function presentAgentResults(messages: AgentChatMessage[], mediaFor: (message: AgentChatMessage) => AgentImage[], resultsText = 'Here are the results.'): ResultMessage[] {
   const rows = messages.map(message => ({ ...message, media: mediaFor(message) }))
   const removed = new Set<ResultMessage>()
   for (let index = 0; index < rows.length; index++) {
@@ -42,7 +45,7 @@ export function presentAgentResults(messages: AgentChatMessage[], mediaFor: (mes
     // Detached jobs can finish before the assistant's final reply is recovered.
     // This display-only row disappears once that reply arrives.
     if (!target) {
-      target = { id: `results:${card.id}`, role: 'assistant', content: '生成结果如下。', media: [] }
+      target = { id: `results:${card.id}`, role: 'assistant', content: resultsText, media: [] }
       rows.splice(end, 0, target)
       end++
     }

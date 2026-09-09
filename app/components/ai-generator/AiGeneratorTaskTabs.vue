@@ -8,6 +8,7 @@ withDefaults(defineProps<{
   align: 'center',
 })
 
+const { t } = useI18n()
 const { selectedCategory, selectedTask, selectTask, notifyComingSoon } = useAiGeneratorNav()
 const { availableTasks, categoryTasks } = useAiGeneratorTask()
 
@@ -47,20 +48,19 @@ function onTaskChange(value: string | number) {
             v-for="task in categoryTasks"
             :key="task.value"
             :value="task.value"
-            :class="[
-              'flex-none shrink-0',
+            class="flex-none shrink-0" :class="[
               task.comingSoon
                 ? 'text-muted-foreground data-[state=active]:bg-transparent data-[state=active]:text-muted-foreground dark:data-[state=active]:bg-transparent'
                 : 'text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground dark:data-[state=active]:border-transparent dark:data-[state=active]:bg-primary dark:data-[state=active]:text-primary-foreground',
             ]"
           >
             <Icon :name="AI_GENERATOR_TASK_ICONS[task.value]" />
-            {{ task.value }}
+            {{ t(task.value) }}
             <span
               v-if="task.comingSoon"
               class="text-[10px] font-medium text-muted-foreground"
             >
-              Soon
+              {{ t('Soon') }}
             </span>
           </TabsTrigger>
         </TabsList>

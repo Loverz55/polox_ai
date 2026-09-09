@@ -7,6 +7,7 @@ const props = defineProps<{
 }>()
 
 const { open } = useMediaLightbox()
+const { t } = useI18n()
 const navigateToMedia = useCanvasMediaNavigation()
 const isCutout = computed(() => props.image.kind === 'cutout')
 const isVideo = computed(() => props.image.kind === 'video')
@@ -14,19 +15,19 @@ const ready = computed(() => props.image.status === 'success' && Boolean(props.i
 const label = computed(() => {
   if (props.image.status === 'fail') {
     if (isCutout.value)
-      return props.image.error || 'Background removal failed'
+      return props.image.error ? t(props.image.error) : t('Background removal failed')
     if (isVideo.value)
-      return props.image.error || 'Video generation failed'
-    return props.image.error || 'Generation failed'
+      return props.image.error ? t(props.image.error) : t('Video generation failed')
+    return props.image.error ? t(props.image.error) : t('Generation failed')
   }
   if (props.image.status === 'generating') {
     if (isCutout.value)
-      return 'Removing background'
+      return t('Removing background')
     if (isVideo.value)
-      return 'Generating video'
-    return 'Generating still'
+      return t('Generating video')
+    return t('Generating still')
   }
-  return props.image.prompt || (isVideo.value ? 'Generated video' : 'Generated still')
+  return props.image.prompt || (isVideo.value ? t('Generated video') : t('Generated still'))
 })
 
 function openPreview() {
@@ -81,7 +82,7 @@ function openPreview() {
   >
     <Spinner v-if="image.status === 'generating'" class="size-4" />
     <span v-else class="px-1.5 text-center text-[10px] leading-3 text-muted-foreground">
-      {{ image.error || 'Failed' }}
+      {{ image.error || t('Failed') }}
     </span>
   </div>
 </template>

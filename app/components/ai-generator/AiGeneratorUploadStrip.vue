@@ -14,8 +14,11 @@ const emit = defineEmits<{
   remove: [id: string]
 }>()
 
+const { t } = useI18n()
 const uploadRing = 2 * Math.PI * 12
 const canAdd = computed(() => props.items.length < props.maxItems)
+const displayLabel = computed(() => t(props.label))
+const addLabel = computed(() => t('Add {label}', { label: displayLabel.value.toLowerCase() }))
 const mediaKind = computed(() => {
   if (props.accept.includes('video/'))
     return 'video'
@@ -25,12 +28,12 @@ const mediaKind = computed(() => {
 })
 function removeLabel(item: GeneratorUploadItem) {
   if (item.status === 'uploading')
-    return 'Cancel upload'
+    return t('Cancel upload')
   if (mediaKind.value === 'video')
-    return 'Remove video'
+    return t('Remove video')
   if (mediaKind.value === 'audio')
-    return 'Remove audio'
-  return 'Remove image'
+    return t('Remove audio')
+  return t('Remove image')
 }
 </script>
 
@@ -40,7 +43,7 @@ function removeLabel(item: GeneratorUploadItem) {
       v-if="label"
       class="flex items-baseline gap-1.5 text-xs text-muted-foreground"
     >
-      <span>{{ label }}</span>
+      <span>{{ displayLabel }}</span>
       <span class="tabular-nums">{{ items.length }}/{{ maxItems }}</span>
     </p>
     <div class="flex max-w-full flex-wrap items-start gap-2">
@@ -48,7 +51,7 @@ function removeLabel(item: GeneratorUploadItem) {
         v-if="items.length === 0"
         type="button"
         class="flex size-16 items-center justify-center rounded-xl border border-dashed border-border bg-muted/35 text-muted-foreground transition-colors duration-150 hover:bg-muted/60 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        :aria-label="`Add ${label.toLowerCase()}`"
+        :aria-label="addLabel"
         @click="emit('pick')"
       >
         <Plus class="size-5" />
@@ -92,7 +95,7 @@ function removeLabel(item: GeneratorUploadItem) {
               :aria-valuenow="item.progress"
               aria-valuemin="0"
               aria-valuemax="100"
-              aria-label="Upload progress"
+              :aria-label="t('Upload progress')"
             >
               <circle
                 cx="16"
@@ -139,7 +142,7 @@ function removeLabel(item: GeneratorUploadItem) {
           v-if="canAdd"
           type="button"
           class="flex size-16 items-center justify-center rounded-xl border border-dashed border-border bg-muted/35 text-muted-foreground transition-colors duration-150 hover:bg-muted/60 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          :aria-label="`Add ${label.toLowerCase()}`"
+          :aria-label="addLabel"
           @click="emit('pick')"
         >
           <Plus class="size-5" />

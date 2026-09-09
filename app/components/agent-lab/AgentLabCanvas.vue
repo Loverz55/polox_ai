@@ -10,16 +10,17 @@ withDefaults(defineProps<{
   showHeader: true,
   projectId: 'agent-workspace',
 })
+const { t } = useI18n()
 </script>
 
 <template>
   <section class="relative isolate flex h-full min-h-0 flex-col overflow-hidden bg-background">
     <div v-if="showHeader" class="flex items-center justify-between border-b border-border px-4 py-3">
       <h2 class="text-sm font-medium tracking-tight">
-        Canvas
+        {{ t('Canvas') }}
       </h2>
       <Badge v-if="status === 'generating'" variant="outline">
-        Working
+        {{ t('Working') }}
       </Badge>
     </div>
     <AgentLabInfiniteCanvas :key="projectId" :project-id="projectId" :jobs="[]" :images="images" />

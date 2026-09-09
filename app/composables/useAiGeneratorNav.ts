@@ -16,6 +16,7 @@ export function useAiGeneratorNav() {
   const { selectedCategory } = useAiGeneratorCategory()
   const { selectedTask } = useAiGeneratorTask()
   const { isAgentMode, exitAgentMode } = useAgentWorkspaceNav()
+  const { t } = useI18n()
 
   function currentLock() {
     return lockedGeneratorSelection(route.path)
@@ -36,8 +37,8 @@ export function useAiGeneratorNav() {
   }
 
   function notifyComingSoon(name: string) {
-    toast.info('Coming soon', {
-      description: `${name} generation is not available yet.`,
+    toast.info(t('Coming soon'), {
+      description: t('{name} generation is not available yet.', { name: t(name) }),
       closeButton: true,
       duration: 5000,
     })

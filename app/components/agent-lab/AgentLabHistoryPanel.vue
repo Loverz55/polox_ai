@@ -11,6 +11,7 @@ const props = defineProps<{
   embedded?: boolean
   excludeIds?: string[]
 }>()
+const { t } = useI18n()
 const page = shallowRef<AgentHistoryPage | null>(null)
 const loading = ref(false)
 const error = ref('')
@@ -48,7 +49,7 @@ const historyMessages = computed(() => {
     confirmation: message.confirmation || undefined,
     confirmationState: message.confirmation || message.confirmationState ? message.cardState : undefined,
     resolvedParams: message.resolvedParams,
-  })), thumbsFor).map(message => ({ ...saved.get(message.id), ...message, cardState: message.confirmationState }))
+  })), thumbsFor, t('Here are the results.')).map(message => ({ ...saved.get(message.id), ...message, cardState: message.confirmationState }))
 })
 
 function thumbsFor(message: { content: string, imageIds?: string[], media?: AgentImage[] }) {
@@ -109,7 +110,7 @@ async function load(direction: 'initial' | 'older' = 'older') {
   }
   catch (cause) {
     if (token === epoch && !controller.signal.aborted)
-      error.value = cause instanceof Error ? cause.message : 'Could not load history'
+      error.value = cause instanceof Error ? cause.message : t('Could not load history')
   }
   finally {
     if (token === epoch)
@@ -160,11 +161,11 @@ defineExpose({ load })
 </script>
 
 <template>
-  <section :class="embedded ? 'shrink-0' : 'flex min-h-0 flex-1 flex-col'" aria-label="Saved chat history" :aria-busy="loading">
+  <section :class="embedded ? 'shrink-0' : 'flex min-h-0 flex-1 flex-col'" :aria-label="t('Saved chat history')" :aria-busy="loading">
     <div v-if="error" class="px-4 py-2 text-sm text-destructive" role="alert">
       {{ error }}
       <button type="button" class="ml-2 underline" :disabled="loading" @click="load(retryDirection)">
-        Retry
+        {{ t('Retry') }}
       </button>
     </div>
     <div ref="scroller" :class="embedded ? '' : 'min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 [overflow-anchor:none]'" @scroll="onScroll" @wheel="onWheel" @touchstart.passive="onTouchStart" @touchmove.passive="onTouchMove">
@@ -185,13 +186,13 @@ defineExpose({ load })
               read-only
             />
             <p v-else-if="message.confirmationState || message.confirmationReason" class="mt-2 text-xs text-muted-foreground">
-              {{ message.confirmationState }} {{ message.confirmationReason }}
+              {{ message.confirmationState ? t(message.confirmationState) : '' }} {{ message.confirmationReason }}
             </p>
             <p v-if="message.choiceState" class="mt-2 text-xs text-muted-foreground">
-              {{ message.choiceState }}
+              {{ t(message.choiceState) }}
             </p>
             <p v-for="(answer, index) in message.choiceAnswers || []" :key="index" class="mt-1 text-sm">
-              {{ answer.label || answer.text || answer.optionId || (answer.skipped ? 'Skipped' : '') }}
+              {{ answer.label || answer.text || answer.optionId || (answer.skipped ? t('Skipped') : '') }}
             </p>
           </template>
         </AgentLabMessage>

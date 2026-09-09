@@ -7,6 +7,7 @@ import { readErrorMessage } from '~~/shared/utils/apiError'
 defineProps<{
   disabled?: boolean
 }>()
+const { t } = useI18n()
 const { projects, selectedProjectId, createProject, loading } = useProjects()
 const creating = ref(false)
 const mounted = ref(false)
@@ -17,7 +18,7 @@ async function onCreate() {
     await createProject()
   }
   catch (error) {
-    toast.error(readErrorMessage(error, 'Could not create the project'))
+    toast.error(readErrorMessage(error, t('Could not create the project')))
   }
   finally {
     creating.value = false
@@ -27,26 +28,26 @@ async function onCreate() {
 
 <template>
   <div class="flex items-center gap-2">
-    <span class="text-xs text-muted-foreground">Project</span>
+    <span class="text-xs text-muted-foreground">{{ t('Project') }}</span>
     <DropdownMenu :modal="false">
       <DropdownMenuTrigger as-child>
-        <Button type="button" variant="outline" size="sm" class="gap-1.5" :disabled="!mounted || disabled || loading || creating" aria-label="Select project">
+        <Button type="button" variant="outline" size="sm" class="gap-1.5" :disabled="!mounted || disabled || loading || creating" :aria-label="t('Select project')">
           <Folder class="size-3.5" />
-          {{ projects.find(project => project.id === selectedProjectId)?.name || DEFAULT_PROJECT_NAME }}
+          {{ t(projects.find(project => project.id === selectedProjectId)?.name || DEFAULT_PROJECT_NAME) }}
           <ChevronDown class="size-3.5 opacity-50" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" class="min-w-48">
-        <DropdownMenuLabel>Project</DropdownMenuLabel>
+        <DropdownMenuLabel>{{ t('Project') }}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuRadioGroup v-model="selectedProjectId">
           <DropdownMenuRadioItem v-for="project in projects" :key="project.id" :value="project.id">
-            {{ project.name }}
+            {{ t(project.name) }}
           </DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem :disabled="creating" @select="onCreate">
-          <Plus class="mr-2 size-3.5" /> New project
+          <Plus class="mr-2 size-3.5" /> {{ t('New project') }}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

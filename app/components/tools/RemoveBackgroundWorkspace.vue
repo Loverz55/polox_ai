@@ -11,10 +11,11 @@ import { useToolAgent } from '@/composables/useToolAgent'
 const props = defineProps<{
   layerSplitter?: boolean
 }>()
+const { t } = useI18n()
 const toolModel = computed(() => props.layerSplitter ? IMAGE_LAYER_SPLITTER_MODEL : IDEOGRAM_REMOVE_BACKGROUND_MODEL)
 const regions = ref<ImageLayerRegion[]>([])
 const isSelecting = ref(false)
-const failureMessage = computed(() => props.layerSplitter ? 'Image layer splitting failed' : 'Background removal failed')
+const failureMessage = computed(() => t(props.layerSplitter ? 'Image layer splitting failed' : 'Background removal failed'))
 const ACCEPT = 'image/jpeg,image/png,image/webp,image/gif,image/avif'
 const { startToolAgent } = useToolAgent()
 const fileInputRef = ref<HTMLInputElement | null>(null)
@@ -44,7 +45,7 @@ function uploadFile(file: File, onProgress: (percent: number) => void) {
     }
     xhr.onload = () => {
       if (xhr.status < 200 || xhr.status >= 300) {
-        reject(new Error('Upload failed'))
+        reject(new Error(t('Upload failed')))
         return
       }
       try {
@@ -52,16 +53,16 @@ function uploadFile(file: File, onProgress: (percent: number) => void) {
           url?: string
         }
         if (!data.url) {
-          reject(new Error('Upload did not return a URL'))
+          reject(new Error(t('Upload did not return a URL')))
           return
         }
         resolve({ url: data.url })
       }
       catch {
-        reject(new Error('Upload did not return a URL'))
+        reject(new Error(t('Upload did not return a URL')))
       }
     }
-    xhr.onerror = () => reject(new Error('Upload failed'))
+    xhr.onerror = () => reject(new Error(t('Upload failed')))
     xhr.onabort = () => reject(new DOMException('Aborted', 'AbortError'))
     const body = new FormData()
     body.append('file', file)
@@ -80,7 +81,7 @@ async function onFilesSelected(event: Event) {
     || (type === 'image/gif' && name.endsWith('.gif'))
     || (type === 'image/avif' && name.endsWith('.avif')))
   if (!allowed || file.size > (props.layerSplitter ? IMAGE_LAYER_SPLITTER_MAX_BYTES : IDEOGRAM_REMOVE_BACKGROUND_MAX_BYTES)) {
-    toast.error(`Use JPEG, PNG, WEBP, GIF, or AVIF images up to ${props.layerSplitter ? 30 : 10}MB`)
+    toast.error(t('Use JPEG, PNG, WEBP, GIF, or AVIF images up to {size}MB', { size: props.layerSplitter ? 30 : 10 }))
     return
   }
   if (props.layerSplitter) {
@@ -92,12 +93,12 @@ async function onFilesSelected(event: Event) {
       const area = image.naturalWidth * image.naturalHeight
       const ratio = image.naturalWidth / image.naturalHeight
       if (area < 512 * 512 || area > 6000 * 6000 || ratio < 1 / 16 || ratio > 16) {
-        toast.error('Use an image with 262,144–36,000,000 pixels and an aspect ratio between 1:16 and 16:1')
+        toast.error(t('Use an image with 262,144–36,000,000 pixels and an aspect ratio between 1:16 and 16:1'))
         return
       }
     }
     catch {
-      toast.error('Could not read this image')
+      toast.error(t('Could not read this image'))
       return
     }
     finally {
@@ -133,7 +134,7 @@ async function onFilesSelected(event: Event) {
       items.value = items.value.filter(item => item.id !== id)
       return
     }
-    toast.error(readApiError(error, 'Upload failed'))
+    toast.error(readApiError(error, t('Upload failed')))
     const current = items.value.find(item => item.id === id)
     if (current)
       current.status = 'error'
@@ -185,23 +186,23 @@ onBeforeUnmount(() => {
         >
           <Spinner v-if="isUploading" class="size-6" />
           <Upload v-else class="size-7 text-muted-foreground" />
-          <span class="text-sm font-medium" role="status">{{ isUploading ? `Uploading… ${items[0]?.progress || 0}%` : items[0]?.status === 'error' ? 'Upload failed — choose an image to try again' : 'Upload an image' }}</span>
-          <span class="text-xs text-muted-foreground">JPG, PNG, WEBP, GIF or AVIF · Up to 30 MB</span>
+          <span class="text-sm font-medium" role="status">{{ isUploading ? t('Uploading… {progress}%', { progress: items[0]?.progress || 0 }) : items[0]?.status === 'error' ? t('Upload failed — choose an image to try again') : t('Upload an image') }}</span>
+          <span class="text-xs text-muted-foreground">{{ t('JPG, PNG, WEBP, GIF or AVIF · Up to 30 MB') }}</span>
         </button>
         <div v-if="readyUrl" class="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h2 class="flex items-center gap-2 text-sm font-medium">
-              <Scan class="size-4" /> Select what to separate
+              <Scan class="size-4" /> {{ t('Select what to separate') }}
             </h2>
             <p class="mt-1 text-sm text-muted-foreground">
-              Draw a box around each object you want to separate.
+              {{ t('Draw a box around each object you want to separate.') }}
             </p>
           </div>
           <div v-if="items.length" class="flex items-center gap-2">
             <Button variant="outline" size="sm" :disabled="isUploading || isSubmitting" @click="openFilePicker">
-              Replace image
+              {{ t('Replace image') }}
             </Button>
-            <Button variant="ghost" size="icon" aria-label="Remove image" :disabled="isSubmitting" @click="removeItem(items[0]!.id)">
+            <Button variant="ghost" size="icon" :aria-label="t('Remove image')" :disabled="isSubmitting" @click="removeItem(items[0]!.id)">
               <X class="size-4" />
             </Button>
           </div>
@@ -220,7 +221,7 @@ onBeforeUnmount(() => {
       <div v-if="!layerSplitter || readyUrl" class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between" :class="layerSplitter ? 'mt-4 border-t border-border pt-4 lg:justify-end' : ''">
         <AiGeneratorUploadStrip
           v-if="!layerSplitter"
-          label="Image"
+          :label="t('Image')"
           :items="items"
           :accept="ACCEPT"
           :max-items="1"
@@ -235,7 +236,7 @@ onBeforeUnmount(() => {
           @click="handleRun"
         >
           <Spinner v-if="isUploading || isSubmitting" />
-          {{ layerSplitter ? 'Separate selected layers' : 'Remove background' }}
+          {{ t(layerSplitter ? 'Separate selected layers' : 'Remove background') }}
         </Button>
       </div>
     </section>

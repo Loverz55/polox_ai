@@ -11,6 +11,7 @@ const props = withDefaults(defineProps<{
 })
 
 const { setOpenMobile } = useSidebar()
+const { t } = useI18n()
 const route = useRoute()
 
 const isActive = computed(() => {
@@ -23,12 +24,12 @@ const isActive = computed(() => {
 <template>
   <SidebarMenu>
     <SidebarMenuItem>
-      <SidebarMenuButton as-child :tooltip="item.title" :size="size" :data-active="isActive">
+      <SidebarMenuButton as-child :tooltip="t(item.title)" :size="size" :data-active="isActive">
         <NuxtLink :to="item.link" @click="setOpenMobile(false)">
           <Icon :name="item.icon || ''" />
-          <span>{{ item.title }}</span>
+          <span>{{ t(item.title) }}</span>
           <span v-if="item.new" class="rounded-md bg-[#adfa1d] px-1.5 py-0.5 text-xs text-black leading-none no-underline group-hover:no-underline">
-            New
+            {{ t('New') }}
           </span>
         </NuxtLink>
       </SidebarMenuButton>

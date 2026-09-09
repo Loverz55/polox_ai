@@ -3,6 +3,7 @@ import { ArrowRight } from 'lucide-vue-next'
 import ProjectCard from '@/components/projects/ProjectCard.vue'
 
 const MAX_RECENT_PROJECTS = 10
+const { t } = useI18n()
 const { projects, loaded, loadProjects } = useProjects()
 const recentProjects = computed(() => {
   return [...projects.value]
@@ -32,7 +33,7 @@ onMounted(() => {
           id="recent-projects-heading"
           class="text-2xl font-semibold tracking-tight md:text-3xl"
         >
-          Recent projects
+          {{ t('Recent projects') }}
         </h2>
       </div>
       <Button
@@ -41,7 +42,7 @@ onMounted(() => {
         class="h-8 shrink-0 rounded-lg px-3 text-xs shadow-none"
       >
         <NuxtLink to="/projects">
-          View all projects
+          {{ t('View all projects') }}
           <ArrowRight class="size-3.5" aria-hidden="true" />
         </NuxtLink>
       </Button>

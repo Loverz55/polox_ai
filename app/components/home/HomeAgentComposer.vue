@@ -15,6 +15,7 @@ const props = withDefaults(defineProps<{
   embedded: false,
   newAgentOnSend: false,
 })
+const { t } = useI18n()
 const { projects, selectedProjectId, createProject } = useProjects()
 const { enterSelectedProject, resolveTargetProjectId } = useAgentWorkspaceNav()
 const { sessionId: agentSessionId, messages, images, status, waitingForUserConfirm, waitingForUserChoice, pending, draft, attachments, attaching, error, sendMessage, stopAgent, stopping, attachFiles, attachUrls, removeAttachment, resolveConfirmation, resolveChoice, qualityPreference, confirmPolicy, agents, activeAgentId, canCreateAgent, canSwitchAgent, createAgent, selectAgent, queueNotice } = useAgentLab({ projectId: selectedProjectId })
@@ -52,7 +53,7 @@ async function loadProjectAssets() {
   }
   catch {
     if (!controller.signal.aborted)
-      projectAssetsError.value = 'Could not load project assets. Close and reopen @ to retry.'
+      projectAssetsError.value = t('Could not load project assets. Close and reopen @ to retry.')
   }
   finally {
     if (projectJobsController === controller)
@@ -83,7 +84,7 @@ async function submitCreateProject() {
     await createProject()
   }
   catch (error) {
-    toast.error(readErrorMessage(error, 'Could not create the project'))
+    toast.error(readErrorMessage(error, t('Could not create the project')))
   }
   finally {
     creatingProject.value = false
@@ -129,14 +130,14 @@ function onProjectChange(value: string | number) {
                 class="h-8 gap-1.5 border-border bg-muted/45 px-2.5 text-xs shadow-none hover:bg-accent"
               >
                 <Folder class="size-3.5" />
-                {{ projects.find(project => project.id === selectedProjectId)?.name || DEFAULT_PROJECT_NAME }}
+                {{ t(projects.find(project => project.id === selectedProjectId)?.name || DEFAULT_PROJECT_NAME) }}
                 <ChevronDown class="size-3.5 opacity-50" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" class="min-w-48">
               <DropdownMenuGroup>
                 <DropdownMenuLabel class="w-full text-center font-bold">
-                  Project
+                  {{ t('Project') }}
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuRadioGroup
@@ -148,14 +149,14 @@ function onProjectChange(value: string | number) {
                     :key="project.id"
                     :value="project.id"
                   >
-                    {{ project.name }}
+                    {{ t(project.name) }}
                   </DropdownMenuRadioItem>
                 </DropdownMenuRadioGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem class="gap-2" :disabled="creatingProject" @select="submitCreateProject">
                   <Spinner v-if="creatingProject" class="size-3.5" />
                   <Plus v-else class="size-3.5" />
-                  {{ creatingProject ? 'Creating…' : 'New project' }}
+                  {{ creatingProject ? t('Creating…') : t('New project') }}
                 </DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>
@@ -168,7 +169,7 @@ function onProjectChange(value: string | number) {
             @click="enterSelectedProject()"
           >
             <FolderOpen class="size-3.5" aria-hidden="true" />
-            Open in project
+            {{ t('Open in project') }}
           </Button>
         </div>
 

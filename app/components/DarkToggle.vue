@@ -1,11 +1,12 @@
 <script setup lang="ts">
 const color = useColorMode()
+const { t } = useI18n()
 </script>
 
 <template>
   <DropdownMenu>
     <DropdownMenuTrigger as-child>
-      <Button variant="ghost" size="icon" title="Toggle Color Scheme" aria-label="button dark toggle">
+      <Button variant="ghost" size="icon" :title="t('Toggle Color Scheme')" :aria-label="t('Toggle Color Scheme')">
         <div class="i-ph-sun-dim-duotone dark:i-ph-moon-stars-duotone" />
       </Button>
     </DropdownMenuTrigger>
@@ -17,7 +18,7 @@ const color = useColorMode()
           @click="color.preference = 'light'"
         >
           <Icon name="i-ph-sun-dim-duotone" size="16" />
-          <span>Light</span>
+          <span>{{ t('Light') }}</span>
         </DropdownMenuItem>
         <DropdownMenuItem
           flex="~ gap-2"
@@ -25,7 +26,7 @@ const color = useColorMode()
           @click="color.preference = 'dark'"
         >
           <Icon name="i-ph-moon-stars-duotone" size="16" />
-          <span>Dark</span>
+          <span>{{ t('Dark') }}</span>
         </DropdownMenuItem>
         <DropdownMenuItem
           flex="~ gap-2"
@@ -33,7 +34,7 @@ const color = useColorMode()
           @click="color.preference = 'system'"
         >
           <Icon name="i-lucide-monitor" size="16" />
-          <span>System</span>
+          <span>{{ t('System') }}</span>
         </DropdownMenuItem>
       </DropdownMenuGroup>
     </DropdownMenuContent>

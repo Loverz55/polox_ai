@@ -3,6 +3,7 @@ import { readErrorMessage } from '~~/shared/utils/apiError'
 
 export function useAgentWorkspaceNav() {
   const route = useRoute()
+  const { t } = useI18n()
 
   const { projects, selectedProjectId, loadProjects, createProject } = useProjects()
   const homeGeneratorOpen = useState('home-generator-open', () => false)
@@ -49,7 +50,7 @@ export function useAgentWorkspaceNav() {
       await navigateTo(`/projects/${id}?mode=agent`)
     }
     catch (error) {
-      toast.error(readErrorMessage(error, 'Could not open this project'))
+      toast.error(readErrorMessage(error, t('Could not open this project')))
     }
   }
   function openAgentWorkspace() {

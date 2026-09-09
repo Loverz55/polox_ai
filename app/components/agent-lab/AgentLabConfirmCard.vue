@@ -26,6 +26,7 @@ const emit = defineEmits<{
 }>()
 
 const { open: openMedia } = useMediaLightbox()
+const { t } = useI18n()
 function showPrompt(params: ConfirmationPayload['params']) {
   return params.modelId !== 'image-layer-splitter'
 }
@@ -114,7 +115,7 @@ const comboError = computed(() => {
 const promptError = computed(() => {
   if (!isImage.value && !isVideo.value)
     return ''
-  return prompt.value.trim() ? '' : 'Prompt is required'
+  return prompt.value.trim() ? '' : t('Prompt is required')
 })
 const isBatch = computed(() => Boolean(props.confirmation.params.modelId) || (props.confirmation.count || 1) > 1)
 const canConfirm = computed(() => !props.readOnly && (isBatch.value || (!promptError.value && !comboError.value)) && !props.pending)
@@ -130,7 +131,7 @@ const paramSummary = computed(() => {
   if (params.resolution)
     parts.push(params.resolution)
   if (params.videoMode === 'reference')
-    parts.push('Reference')
+    parts.push(t('Reference'))
   if (params.videoFamily === 'seedance-2-5') {
     parts.push('Seedance 2.5')
   }
@@ -141,18 +142,18 @@ const paramSummary = computed(() => {
     parts.push('Seedance 2.0')
   }
   if ((kind.value === 'video' || kind.value === 'mixed') && params.duration)
-    parts.push(`${params.duration}s`)
+    parts.push(t('{seconds}s', { seconds: params.duration }))
   return parts.join(' · ')
 })
 const liveReason = computed(() => {
   if (props.readOnly)
-    return props.confirmation.reason || 'Saved generation settings'
+    return props.confirmation.reason || t('Saved generation settings')
   if (!isVideo.value)
-    return props.confirmation.reason || 'Confirm these settings to continue.'
+    return props.confirmation.reason || t('Confirm these settings to continue.')
   const count = Math.max(1, Number(props.confirmation.count) || 1)
   if (count > 1)
-    return `Confirm ${count} videos.`
-  return `Confirm this video.`
+    return t('Confirm {count} videos.', { count })
+  return t('Confirm this video.')
 })
 const inputUrls = computed(() =>
   (props.confirmation.inputUrls || []).filter(url => /^https?:\/\//i.test(url)),
@@ -161,14 +162,14 @@ const imageInputs = computed(() => inputUrls.value.filter(url => !isMediaVideoUr
 const videoInputs = computed(() => inputUrls.value.filter(url => isMediaVideoUrl(url)))
 const imageInputLabel = computed(() => {
   if (kind.value === 'cutout')
-    return UPLOAD_FIELD_LABELS.image_url
+    return t(UPLOAD_FIELD_LABELS.image_url!)
   if (kind.value === 'video') {
     if (props.confirmation.params.videoMode === 'reference')
-      return UPLOAD_FIELD_LABELS.reference_image_urls
+      return t(UPLOAD_FIELD_LABELS.reference_image_urls!)
     if (isImageToVideo.value)
-      return UPLOAD_FIELD_LABELS.first_frame_url
+      return t(UPLOAD_FIELD_LABELS.first_frame_url!)
   }
-  return UPLOAD_FIELD_LABELS.input_urls
+  return t(UPLOAD_FIELD_LABELS.input_urls!)
 })
 const imageInputMax = computed(() => {
   if (kind.value === 'video' && props.confirmation.params.videoMode === 'reference')
@@ -182,14 +183,14 @@ const mediaGroups = computed(() => {
   const groups: Array<{ label: string, max: number, urls: string[] }> = []
   if (imageInputs.value.length) {
     groups.push({
-      label: imageInputLabel.value || 'Input image',
+      label: imageInputLabel.value || t('Input image'),
       max: imageInputMax.value,
       urls: imageInputs.value,
     })
   }
   if (videoInputs.value.length) {
     groups.push({
-      label: UPLOAD_FIELD_LABELS.reference_video_urls || 'Reference video',
+      label: t(UPLOAD_FIELD_LABELS.reference_video_urls || 'Reference video'),
       max: videoInputMax.value,
       urls: videoInputs.value,
     })
@@ -197,7 +198,7 @@ const mediaGroups = computed(() => {
   return groups
 })
 const hasInputs = computed(() => mediaGroups.value.length > 0)
-const imageTask = computed(() => hasInputs.value ? 'Image to Image' : 'Text to Image')
+const imageTask = computed(() => hasInputs.value ? t('Image to Image') : t('Text to Image'))
 const modelLabel = computed(() => {
   const name = props.confirmation.modelName?.trim()
   const rawTask = props.confirmation.task?.trim()
@@ -205,22 +206,22 @@ const modelLabel = computed(() => {
     ? 'Image to Image'
     : rawTask
   if (name && task)
-    return `${name} ${task}`
+    return `${name} ${t(task)}`
   if (name)
     return name
   if (kind.value === 'cutout')
-    return 'Image Background Removal Remove Background'
+    return t('Image Background Removal Remove Background')
   if (kind.value === 'video') {
     const model = isSeedance25.value ? 'Seedance 2.5' : 'Seedance 2.0'
     const taskName = props.confirmation.params.videoMode === 'reference'
-      ? 'Reference to Video'
+      ? t('Reference to Video')
       : isImageToVideo.value
-        ? 'Image to Video'
-        : 'Text to Video'
+        ? t('Image to Video')
+        : t('Text to Video')
     return `${model} ${taskName}`
   }
   if (kind.value === 'mixed')
-    return 'Multiple models Mixed jobs'
+    return t('Multiple models Mixed jobs')
   return `GPT Image 2 ${imageTask.value}`
 })
 
@@ -235,14 +236,14 @@ function openInput(url: string, label: string) {
 const title = computed(() => {
   if (kind.value === 'video') {
     return props.confirmation.params.videoMode === 'reference'
-      ? 'Confirm reference video'
-      : 'Confirm video'
+      ? t('Confirm reference video')
+      : t('Confirm video')
   }
   if (kind.value === 'cutout')
-    return 'Confirm cutout'
+    return t('Confirm cutout')
   if (kind.value === 'mixed')
-    return 'Confirm jobs'
-  return 'Confirm generation'
+    return t('Confirm jobs')
+  return t('Confirm generation')
 })
 
 function isUncertain(field: ConfirmationPayload['uncertainFields'][number]) {
@@ -299,13 +300,13 @@ function emitConfirm() {
           variant="outline"
           class="border-primary/50 text-primary"
         >
-          Generating
+          {{ t('Generating') }}
         </Badge>
         <Badge v-else-if="state === 'cancelled'" variant="outline">
-          Cancelled
+          {{ t('Cancelled') }}
         </Badge>
         <Badge v-else-if="state === 'blocked'" variant="outline">
-          Not started
+          {{ t('Not started') }}
         </Badge>
       </div>
       <p class="flex items-center gap-2 text-sm leading-5 text-foreground">
@@ -316,13 +317,13 @@ function emitConfirm() {
         {{ liveReason }}
       </CardDescription>
       <p v-if="readOnly" class="text-xs capitalize text-muted-foreground">
-        {{ state || 'pending' }}
+        {{ t(state || 'pending') }}
       </p>
       <p
         v-if="confirmation.approvedBy === 'agent'"
         class="text-xs text-muted-foreground"
       >
-        Approved by agent
+        {{ t('Approved by agent') }}
       </p>
     </CardHeader>
 
@@ -331,14 +332,14 @@ function emitConfirm() {
         <details v-for="(job, index) in confirmation.jobs" :key="job.id" class="group px-3 py-2.5">
           <summary class="flex cursor-pointer list-none items-start gap-3 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
             <span class="pt-0.5 text-xs tabular-nums text-muted-foreground">{{ String(index + 1).padStart(2, '0') }}</span>
-            <img v-if="job.inputUrls[0] && !isMediaVideoUrl(job.inputUrls[0])" :src="job.inputUrls[0]" alt="Reference" class="h-12 w-16 shrink-0 rounded object-cover" loading="lazy">
+            <img v-if="job.inputUrls[0] && !isMediaVideoUrl(job.inputUrls[0])" :src="job.inputUrls[0]" :alt="t('Reference')" class="h-12 w-16 shrink-0 rounded object-cover" loading="lazy">
             <div class="min-w-0 flex-1">
               <p class="truncate text-sm font-medium" :title="job.name">
                 {{ job.name }}
               </p>
               <p class="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">
                 <AgentLabModelLogo :model-id="job.params.modelId" :model-name="job.modelName" />
-                <span>{{ [job.modelName, job.params.aspectRatio, job.params.resolution, job.params.duration ? `${job.params.duration}s` : ''].filter(Boolean).join(' · ') }}</span>
+                <span>{{ [job.modelName, job.params.aspectRatio, job.params.resolution, job.params.duration ? t('{seconds}s', { seconds: job.params.duration }) : ''].filter(Boolean).join(' · ') }}</span>
               </p>
               <p v-if="showPrompt(job.params) && job.params.prompt" class="mt-1 line-clamp-1 text-xs text-muted-foreground group-open:hidden">
                 {{ job.params.prompt }}
@@ -348,7 +349,7 @@ function emitConfirm() {
           </summary>
           <div class="mt-3 space-y-2 border-t border-border pt-3">
             <p class="text-xs text-muted-foreground">
-              {{ job.task }}
+              {{ t(job.task) }}
             </p>
             <dl class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
               <template v-for="(value, key) in visibleModelInput(job.params)" :key="key">
@@ -366,18 +367,18 @@ function emitConfirm() {
                 :key="url"
                 type="button"
                 class="overflow-hidden rounded-lg border border-border bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                :aria-label="`View reference ${refIndex + 1}`"
-                @click="openInput(url, `Reference ${refIndex + 1}`)"
+                :aria-label="t('View reference {index}', { index: refIndex + 1 })"
+                @click="openInput(url, t('Reference {index}', { index: refIndex + 1 }))"
               >
                 <video v-if="isMediaVideoUrl(url)" :src="url" muted playsinline preload="metadata" class="size-28 object-contain" />
-                <img v-else :src="url" :alt="`Reference ${refIndex + 1}`" loading="lazy" class="size-28 object-contain">
+                <img v-else :src="url" :alt="t('Reference {index}', { index: refIndex + 1 })" loading="lazy" class="size-28 object-contain">
               </button>
             </div>
           </div>
         </details>
       </div>
       <p v-else class="text-xs text-muted-foreground">
-        {{ confirmation.count }} tasks. Individual task details are unavailable for this older record.
+        {{ t('{count} tasks. Individual task details are unavailable for this older record.', { count: confirmation.count ?? '' }) }}
       </p>
     </CardContent>
 
@@ -394,7 +395,7 @@ function emitConfirm() {
               :key="url"
               type="button"
               class="size-16 overflow-hidden rounded-xl border border-border bg-muted/35 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              :aria-label="`View ${group.label}`"
+              :aria-label="t('View {label}', { label: group.label })"
               @click="openInput(url, group.label)"
             >
               <video
@@ -418,10 +419,10 @@ function emitConfirm() {
         <Field v-if="showPrompt(confirmation.params)" :data-invalid="isUncertain('prompt') || Boolean(promptError)">
           <div class="flex items-center gap-2">
             <FieldLabel :for="`agent-lab-prompt-${confirmation.id}`">
-              Prompt
+              {{ t('Prompt') }}
             </FieldLabel>
             <Badge v-if="isUncertain('prompt')" variant="outline">
-              Needs review
+              {{ t('Needs review') }}
             </Badge>
           </div>
           <Textarea
@@ -439,10 +440,10 @@ function emitConfirm() {
         <Field v-if="isImage" :data-invalid="isUncertain('aspect_ratio') || Boolean(comboError)">
           <div class="flex items-center gap-2">
             <FieldLabel>
-              Aspect ratio
+              {{ t('Aspect ratio') }}
             </FieldLabel>
             <Badge v-if="isUncertain('aspect_ratio')" variant="outline">
-              Needs review
+              {{ t('Needs review') }}
             </Badge>
           </div>
           <Select v-model="aspectRatio" :disabled="pending">
@@ -464,10 +465,10 @@ function emitConfirm() {
         <Field v-if="isImage" :data-invalid="isUncertain('resolution') || Boolean(comboError)">
           <div class="flex items-center gap-2">
             <FieldLabel>
-              Resolution
+              {{ t('Resolution') }}
             </FieldLabel>
             <Badge v-if="isUncertain('resolution')" variant="outline">
-              Needs review
+              {{ t('Needs review') }}
             </Badge>
           </div>
           <ToggleGroup
@@ -496,10 +497,10 @@ function emitConfirm() {
         <Field v-if="isVideo && !isImageToVideo" :data-invalid="isUncertain('aspect_ratio')">
           <div class="flex items-center gap-2">
             <FieldLabel>
-              Aspect ratio
+              {{ t('Aspect ratio') }}
             </FieldLabel>
             <Badge v-if="isUncertain('aspect_ratio')" variant="outline">
-              Needs review
+              {{ t('Needs review') }}
             </Badge>
           </div>
           <Select v-model="aspectRatio" :disabled="pending">
@@ -521,10 +522,10 @@ function emitConfirm() {
         <Field v-if="isVideo" :data-invalid="isUncertain('resolution')">
           <div class="flex items-center gap-2">
             <FieldLabel>
-              Resolution
+              {{ t('Resolution') }}
             </FieldLabel>
             <Badge v-if="isUncertain('resolution')" variant="outline">
-              Needs review
+              {{ t('Needs review') }}
             </Badge>
           </div>
           <ToggleGroup
@@ -551,10 +552,10 @@ function emitConfirm() {
         <Field v-if="isVideo" :data-invalid="isUncertain('duration')">
           <div class="flex items-center gap-2">
             <FieldLabel>
-              Duration
+              {{ t('Duration') }}
             </FieldLabel>
             <Badge v-if="isUncertain('duration')" variant="outline">
-              Needs review
+              {{ t('Needs review') }}
             </Badge>
           </div>
           <Select :model-value="String(duration)" :disabled="pending" @update:model-value="value => duration = Number(value) || 5">
@@ -564,7 +565,7 @@ function emitConfirm() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem v-for="item in videoDurations" :key="item" :value="String(item)">
-                {{ item }}s
+                {{ t('{seconds}s', { seconds: item }) }}
               </SelectItem>
             </SelectContent>
           </Select>
@@ -589,7 +590,7 @@ function emitConfirm() {
               :key="url"
               type="button"
               class="size-16 overflow-hidden rounded-xl border border-border bg-muted/35 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              :aria-label="`View ${group.label}`"
+              :aria-label="t('View {label}', { label: group.label })"
               @click="openInput(url, group.label)"
             >
               <video
@@ -620,7 +621,7 @@ function emitConfirm() {
 
     <CardFooter v-if="isPending" class="justify-end gap-2 border-t border-border px-4 pt-3">
       <Button variant="outline" size="sm" class="rounded-lg shadow-none" :disabled="pending" @click="emit('cancel')">
-        Cancel
+        {{ t('Cancel') }}
       </Button>
       <Button
         size="sm"
@@ -629,7 +630,7 @@ function emitConfirm() {
         @click="emitConfirm"
       >
         <Spinner v-if="pending" />
-        Generate
+        {{ t('Generate') }}
       </Button>
     </CardFooter>
   </Card>

@@ -7,6 +7,8 @@ const props = withDefaults(defineProps<{
   storageKey: 'polox-studio-split',
 })
 
+const { t } = useI18n()
+
 const DEFAULT_WIDTH = 448
 const MIN_WIDTH = 280
 const MAX_RATIO = 0.48
@@ -160,7 +162,7 @@ function onVerticalKeydown(event: KeyboardEvent) {
       class="group relative z-10 flex h-4 shrink-0 cursor-row-resize touch-none items-center justify-center lg:hidden"
       role="separator"
       aria-orientation="horizontal"
-      aria-label="Resize canvas panel"
+      :aria-label="t('Resize canvas panel')"
       :aria-valuenow="bottomHeight"
       :aria-valuemin="0"
       :aria-valuemax="bottomMax"
@@ -182,7 +184,7 @@ function onVerticalKeydown(event: KeyboardEvent) {
       class="group relative z-10 hidden w-3 shrink-0 cursor-col-resize touch-none items-center justify-center lg:flex"
       role="separator"
       aria-orientation="vertical"
-      aria-label="Resize generator panel"
+      :aria-label="t('Resize generator panel')"
       :aria-valuenow="leftWidth"
       :aria-valuemin="MIN_WIDTH"
       tabindex="0"

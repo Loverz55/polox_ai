@@ -13,6 +13,8 @@ const emit = defineEmits<{
   delete: []
 }>()
 
+const { t } = useI18n()
+
 const coverStyle = computed(() => {
   if (!props.project.coverUrl)
     return undefined
@@ -42,11 +44,11 @@ const coverStyle = computed(() => {
       </div>
       <div class="flex flex-col gap-1 p-4 pb-2">
         <h3 class="flex min-w-0 items-center gap-1.5 text-base font-medium text-foreground">
-          <span class="truncate">{{ project.name }}</span>
+          <span class="truncate">{{ t(project.name) }}</span>
           <span
             v-if="project.activeJobCount > 0"
             class="inline-flex shrink-0"
-            title="Generating"
+            :title="t('Generating')"
           >
             <Spinner class="size-3.5 text-muted-foreground" />
           </span>
@@ -61,7 +63,7 @@ const coverStyle = computed(() => {
     </NuxtLink>
     <div class="flex min-h-8 items-center justify-between gap-2 px-4 pb-4">
       <p class="min-w-0 truncate text-sm text-muted-foreground">
-        {{ project.assetCount }} {{ project.assetCount === 1 ? 'asset' : 'assets' }}
+        {{ project.assetCount === 1 ? t('{count} asset', { count: project.assetCount }) : t('{count} assets', { count: project.assetCount }) }}
       </p>
       <DropdownMenu
         v-if="showActions && !project.isDefault"
@@ -73,7 +75,7 @@ const coverStyle = computed(() => {
             variant="ghost"
             size="icon-sm"
             class="shrink-0 rounded-lg shadow-none"
-            :aria-label="`Actions for ${project.name}`"
+            :aria-label="t('Actions for {name}', { name: project.name })"
           >
             <Icon
               name="i-lucide-ellipsis-vertical"
@@ -83,13 +85,13 @@ const coverStyle = computed(() => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" class="min-w-36">
           <DropdownMenuItem @click="emit('edit')">
-            Edit
+            {{ t('Edit') }}
           </DropdownMenuItem>
           <DropdownMenuItem
             variant="destructive"
             @click="emit('delete')"
           >
-            Delete
+            {{ t('Delete') }}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
