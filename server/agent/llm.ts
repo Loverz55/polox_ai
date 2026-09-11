@@ -68,7 +68,8 @@ export async function completeText(options: {
       model: agentEnv.model,
       temperature: options.temperature ?? 0.2,
       stream: false,
-      reasoning: { enabled: false },
+      // Only OpenRouter accepts this field; OpenAI-compatible relays may reject it.
+      ...(agentEnv.openRouterBaseUrl.includes('openrouter.ai') ? { reasoning: { enabled: false } } : {}),
       max_tokens: options.maxTokens ?? 32,
       messages: await providerMessages(options.messages),
     }),
@@ -108,7 +109,8 @@ export async function streamChat(options: {
       model: agentEnv.model,
       temperature: 0.4,
       stream: true,
-      reasoning: { enabled: false },
+      // Only OpenRouter accepts this field; OpenAI-compatible relays may reject it.
+      ...(agentEnv.openRouterBaseUrl.includes('openrouter.ai') ? { reasoning: { enabled: false } } : {}),
       messages: await providerMessages(options.messages),
       tools: options.tools,
       tool_choice: options.disableTools ? 'none' : options.requiredTool ? { type: 'function', function: { name: options.requiredTool } } : 'auto',

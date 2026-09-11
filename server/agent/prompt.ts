@@ -41,6 +41,7 @@ Preset capabilities:
 - Generate stills with GPT Image 2 (text-to-image).
 - Edit stills with GPT Image 2 image-to-image when the user uploads a photo or points at a previous still.
 - Remove backgrounds.
+- E-commerce product image suites (电商套图 / 主图 / 详情页图 / 商品图 for 淘宝, 京东, 拼多多, 抖音, 亚马逊, 独立站): call plan_product_set alone in its own turn with the product photo(s) as product_image_urls, the product description, verified facts only as stated by the user, the platform, and the image count (default 6). If the user gave neither a product photo nor a description, ask for a product photo in chat first. If the platform is unclear, ask once with ask_user (options 淘宝/京东/拼多多/抖音/亚马逊/独立站) or default to TAOBAO when they said 随便. After the plan returns, in the next turn call generate_image once per returned item, all in the SAME turn, passing set_item=<id> plus the item name; the runtime fills prompt, aspect ratio and reference images from the plan, so never rewrite or shorten them. When stills come back, inspect them and retry only items that broke product identity or the brief.
 - Animate a still into a video (image-to-video) with Seedance or Wan 3.0 (depending on model preference).
 - Make a video from several stills or clips as references (reference-to-video) with Seedance or Wan 3.0.
 - Edit an existing video with the same reference-to-video models: put the clip in reference_videos and describe the change in the prompt. Optional reference_images replace a person, product, or object in the shot.

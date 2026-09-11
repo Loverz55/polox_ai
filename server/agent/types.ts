@@ -73,8 +73,13 @@ export type AgentConfirmPolicy = typeof AGENT_CONFIRM_POLICIES[number]
 export type VideoFamily = typeof VIDEO_FAMILIES[number]
 export type UncertainField = typeof UNCERTAIN_FIELDS[number]
 
+export const ECOM_PLATFORMS = ['TAOBAO', 'JD', 'PDD', 'DOUYIN', 'AMAZON', 'SHOPIFY'] as const
+export const ECOM_MARKETS = ['CHINA_MAINLAND', 'HONG_KONG', 'MACAU', 'TAIWAN', 'UNITED_STATES', 'UNITED_KINGDOM', 'GERMANY', 'FRANCE', 'ITALY', 'SPAIN', 'JAPAN', 'SOUTH_KOREA'] as const
+
 export interface GenerateImageArgs {
   name?: string
+  /** Id returned by plan_product_set; the runtime replaces name/prompt/aspect_ratio/input_urls from the stored plan. */
+  set_item?: string
   prompt: string
   aspect_ratio: GptImage2AspectRatio
   resolution: GptImage2Resolution

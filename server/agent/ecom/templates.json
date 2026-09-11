@@ -1,0 +1,1551 @@
+[
+ {
+  "id": "hero-image",
+  "name": "白底/纯色底产品主图",
+  "keywords": [
+   "白底图",
+   "主图",
+   "hero image",
+   "白背景",
+   "product shot",
+   "packshot",
+   "产品照",
+   "商品主图"
+  ],
+  "defaultSize": "1024x1024",
+  "productOccupancy": "35-40%",
+  "whitespace": "at least 45%",
+  "camera": "slight 3/4 full-product angle",
+  "visualFields": {
+   "type": "product photography",
+   "subject": "{product_description}",
+   "background": "clean white background",
+   "lighting": "soft diffused studio lighting",
+   "composition": "centered, front view",
+   "quality": "8K, commercial e-commerce photography"
+  },
+  "variants": {
+   "luxury": {
+    "description": "高端奢侈品风格",
+    "overrides": {
+     "lighting": "Rembrandt lighting, subtle rim light",
+     "background": "gradient from dark to light, premium feel"
+    }
+   },
+   "fresh": {
+    "description": "清新自然风格",
+    "overrides": {
+     "lighting": "bright natural light",
+     "background": "light pastel tones"
+    }
+   },
+   "tech": {
+    "description": "科技感风格",
+    "overrides": {
+     "lighting": "dramatic side lighting",
+     "background": "dark minimalist"
+    }
+   },
+   "color": {
+    "description": "彩色背景风格",
+    "overrides": {
+     "background": "{color} gradient background"
+    }
+   }
+  },
+  "categoryTips": {
+   "beauty": "emphasize texture and glow, show formula details; butterfly or clamshell lighting, shadowless background",
+   "electronics": "highlight metallic finish, screen details, port precision; soft diffused studio lighting with subtle rim light, shadowless background",
+   "food": "vibrant colors, fresh appearance, show texture; soft diffused top light, soft contact shadow",
+   "fashion": "show fabric texture, drape quality, stitching details; soft diffused studio lighting, subtle contact shadow, centered symmetrical composition",
+   "home": "show material quality, craftsmanship, lifestyle appeal; soft diffused 3/4 lighting, soft contact shadow",
+   "jewelry": "macro detail, sparkle and cut quality; diffused lightbox tent lighting, controlled reflection shadow on white surface"
+  },
+  "antiAiTips": "",
+  "supportsImageReference": true
+ },
+ {
+  "id": "lifestyle-scene",
+  "name": "场景化生活图",
+  "keywords": [
+   "场景图",
+   "生活图",
+   "lifestyle",
+   "使用场景",
+   "生活场景",
+   "场景化",
+   "lifestyle photography"
+  ],
+  "defaultSize": "1024x1024",
+  "productOccupancy": "20-25%",
+  "whitespace": "at least 50%",
+  "camera": "high 45-degree environmental view",
+  "visualFields": {
+   "type": "lifestyle product photography",
+   "subject": "{product_description}",
+   "setting": "modern living space, clean and organized",
+   "lighting": "natural morning light through window",
+   "composition": "rule of thirds, product as focal point",
+   "mood": "warm and inviting",
+   "quality": "8K, editorial lifestyle photography"
+  },
+  "variants": {
+   "morning": {
+    "description": "早晨清新氛围",
+    "overrides": {
+     "setting": "bright room with sunlight streaming through window",
+     "lighting": "soft morning golden light, visible dust particles",
+     "mood": "fresh, clean, new beginning"
+    }
+   },
+   "cozy": {
+    "description": "温馨舒适氛围",
+    "overrides": {
+     "setting": "warm cozy interior, soft textiles, candles",
+     "lighting": "warm ambient lighting, soft golden tones",
+     "mood": "comfortable, intimate"
+    }
+   },
+   "outdoor": {
+    "description": "户外自然场景",
+    "overrides": {
+     "setting": "outdoor natural setting, organic elements",
+     "lighting": "golden hour natural sunlight",
+     "mood": "natural, free, adventurous"
+    }
+   },
+   "luxury": {
+    "description": "奢华高端场景",
+    "overrides": {
+     "setting": "luxury spa/hotel, marble and gold fixtures",
+     "lighting": "cinematic lighting, warm color grading",
+     "mood": "premium, sophisticated"
+    }
+   }
+  },
+  "categoryTips": {
+   "beauty": "bathroom vanity with botanical elements, skincare ritual feel; soft window light, natural contact shadow",
+   "electronics": "modern desk setup, minimal aesthetic, tech-forward; loop lighting from window side, soft contact shadow",
+   "food": "kitchen counter or dining table, fresh ingredients, warm tones; window side light at 45 degrees, natural cast shadow",
+   "fashion": "urban street or boutique fitting room, model wearing the item; golden hour backlight or loop light, natural contact shadow",
+   "home": "styled room interior, product naturally placed; soft one-side window light, natural contact shadow, rule-of-thirds placement"
+  },
+  "antiAiTips": "",
+  "supportsImageReference": true
+ },
+ {
+  "id": "flat-lay",
+  "name": "平铺图",
+  "keywords": [
+   "平铺图",
+   "flat lay",
+   "俯拍",
+   "top-down",
+   "flatlay",
+   "俯视图"
+  ],
+  "defaultSize": "1024x1024",
+  "productOccupancy": "35-40%",
+  "whitespace": "at least 45%",
+  "camera": "90-degree overhead",
+  "visualFields": {
+   "type": "flat lay photography, top-down view",
+   "subject": "{product_description} as hero at bottom center",
+   "props": "carefully curated complementary objects",
+   "background": "ivory linen texture",
+   "color_palette": "ivory, blush, champagne gold, sage green",
+   "lighting": "soft natural window light from top-left at 45 degrees",
+   "quality": "8K, editorial photography, no text, no watermark"
+  },
+  "variants": {
+   "luxury": {
+    "description": "奢华仪式感",
+    "overrides": {
+     "props": "gold foil flakes, pearl beads, dried flowers, silk ribbon, leather journal",
+     "background": "ivory linen with subtle shadow from sheer curtains",
+     "color_palette": "ivory, blush pink, champagne gold, soft cream"
+    }
+   },
+   "minimal": {
+    "description": "极简风格",
+    "overrides": {
+     "props": "only 2-3 essential items, clean lines",
+     "background": "clean white surface",
+     "color_palette": "white, gray, one accent color"
+    }
+   },
+   "seasonal": {
+    "description": "季节主题",
+    "overrides": {
+     "props": "seasonal elements matching theme",
+     "color_palette": "season-appropriate color scheme"
+    }
+   }
+  },
+  "categoryTips": {
+   "beauty": "skincare ritual flat lay, open product showing formula, botanical elements; soft window light top-left, soft contact shadow",
+   "food": "ingredients spread, fresh produce, kitchen tools; 90-degree overhead, soft window light, soft overlapping shadows",
+   "fashion": "clothing + accessories + shoes arranged aesthetically, fabric textures; 90-degree overhead, triangular arrangement, soft contact shadow",
+   "home": "decor items, textures, materials spread showing lifestyle; 90-degree overhead, soft window light, negative space between items"
+  },
+  "antiAiTips": "",
+  "supportsImageReference": true
+ },
+ {
+  "id": "detail-macro",
+  "name": "细节微距图",
+  "keywords": [
+   "细节图",
+   "微距",
+   "macro",
+   "特写",
+   "close-up",
+   "detail shot",
+   "细节展示"
+  ],
+  "defaultSize": "1024x1024",
+  "productOccupancy": "55-60%",
+  "whitespace": "at least 45%",
+  "camera": "extreme close-up macro",
+  "visualFields": {
+   "type": "macro product photography",
+   "subject": "{product_description}, extreme close-up on {focus_area}",
+   "detail": "fine texture, material grain, surface quality",
+   "lighting": "soft directional lighting highlighting texture",
+   "camera": "dedicated macro lens setup",
+   "quality": "ultra macro detail, 8K, professional product photography",
+   "focus_area": "texture and material quality"
+  },
+  "variants": {
+   "texture": {
+    "description": "材质纹理展示",
+    "overrides": {
+     "focus_area": "material surface showing grain and quality"
+    }
+   },
+   "formula": {
+    "description": "产品配方展示",
+    "overrides": {
+     "focus_area": "product formula showing cream/liquid texture",
+     "detail": "formula consistency, light reflection"
+    }
+   },
+   "craftsmanship": {
+    "description": "工艺细节展示",
+    "overrides": {
+     "focus_area": "stitching, joints, edges, manufacturing precision"
+    }
+   }
+  },
+  "categoryTips": {
+   "beauty": "show cream formula texture, shimmer particles, light reflection; raking light across surface, shallow depth of field",
+   "electronics": "show port precision, material finish, button detail; raking light for texture, narrow contact shadow",
+   "food": "show ingredient texture, cross-section, freshness; directional side light, natural cast shadow",
+   "fashion": "show fabric weave, stitching quality, hardware detail; raking light to reveal weave, shallow depth of field",
+   "jewelry": "show gemstone cut, metal finish, clasp detail; diffused lightbox with focused sparkle light, dark-field reflection"
+  },
+  "antiAiTips": "For hand shots: specify real skin (visible knuckle lines, slight dryness on cuticles, natural warm tone). NOT retouched or smoothed.",
+  "supportsImageReference": true
+ },
+ {
+  "id": "poster-banner",
+  "name": "促销海报/Banner",
+  "keywords": [
+   "海报",
+   "poster",
+   "banner",
+   "促销",
+   "广告图",
+   "活动图",
+   "promotion",
+   "sale"
+  ],
+  "defaultSize": "1024x1024",
+  "productOccupancy": "25-30%",
+  "whitespace": "at least 45%",
+  "camera": "asymmetric campaign composition",
+  "visualFields": {
+   "type": "promotional poster design",
+   "subject": "{product_description}",
+   "background": "gradient matching brand aesthetic",
+   "headline": "headline text",
+   "subtitle": "subtitle or description",
+   "price": "",
+   "cta": "Shop Now",
+   "style": "clean minimalist with accent colors",
+   "quality": "high-resolution professional marketing design"
+  },
+  "variants": {
+   "luxury": {
+    "description": "高端奢华风格",
+    "overrides": {
+     "background": "full-bleed rich gradient, gold accents",
+     "style": "luxury magazine editorial, gold foil, pearl embellishments"
+    }
+   },
+   "minimal": {
+    "description": "极简现代风格",
+    "overrides": {
+     "background": "clean white or light gradient",
+     "style": "minimalist modern typography, generous white space"
+    }
+   },
+   "festive": {
+    "description": "节日主题风格",
+    "overrides": {
+     "background": "festive themed gradient with decorative elements",
+     "style": "festive, cultural elements, seasonal motifs"
+    }
+   },
+   "flash-sale": {
+    "description": "限时折扣风格",
+    "overrides": {
+     "style": "bold attention-grabbing, high contrast, urgency elements"
+    }
+   }
+  },
+  "categoryTips": {
+   "beauty": "rose gold accents, elegant serif fonts, luxury gift aesthetic; shadowless cutout product on gradient, high-key lighting",
+   "electronics": "dark backgrounds, neon accents, futuristic typography; low-key lighting, rim light separation, shadowless composite",
+   "food": "warm colors, dynamic food elements, freshness cues; high-key key light, soft cast shadow toward viewer",
+   "fashion": "editorial style, model inclusion, aspirational lifestyle; Rembrandt or split lighting, shadowless composite layout"
+  },
+  "antiAiTips": "",
+  "supportsImageReference": true
+ },
+ {
+  "id": "social-media",
+  "name": "社交媒体素材",
+  "keywords": [
+   "社交媒体",
+   "小红书",
+   "instagram",
+   "tiktok",
+   "种草",
+   "社媒",
+   "social media"
+  ],
+  "defaultSize": "1024x1024",
+  "productOccupancy": "40%",
+  "whitespace": "at least 45%",
+  "camera": "casual handheld framing",
+  "visualFields": {
+   "type": "social media content",
+   "subject": "{product_description}",
+   "platform": "Instagram post style",
+   "composition": "casual phone framing, slightly imperfect",
+   "lighting": "natural window light, warm color tone",
+   "overlay": "minimal stickers and text badges",
+   "quality": "authentic smartphone photography aesthetic"
+  },
+  "variants": {
+   "xiaohongshu": {
+    "description": "小红书种草风格",
+    "overrides": {
+     "platform": "Xiaohongshu RED app lifestyle photo, iPhone shot",
+     "composition": "slightly tilted like quick grab shot",
+     "lighting": "iPhone warm auto-white-balance, Kodak Portra 400 color feel",
+     "overlay": "Xiaohongshu sticker, casual text, star rating"
+    }
+   },
+   "instagram": {
+    "description": "Instagram帖子风格",
+    "overrides": {
+     "platform": "Instagram post premium aesthetic",
+     "composition": "clean framing with visual hierarchy",
+     "overlay": "engagement badges, hashtag elements"
+    }
+   },
+   "tiktok": {
+    "description": "TikTok/Reels封面风格",
+    "overrides": {
+     "platform": "TikTok/Reels thumbnail, vertical format",
+     "overlay": "trending audio icon, duet prompt, engagement metrics"
+    }
+   }
+  },
+  "categoryTips": {
+   "beauty": "show product in use on skin, texture close-up, real results; natural window light, realistic contact shadows",
+   "food": "overhead dish/drink shot, appetizing colors, 45-degree angle; natural daylight, natural cast shadow",
+   "fashion": "mirror selfie or outfit grid, casual styling, real-person aesthetic; ambient indoor light, realistic shadows",
+   "home": "corner shot in styled room, cozy atmosphere, warm tones; warm natural window light, natural contact shadow"
+  },
+  "antiAiTips": "Specify phone model. Add imperfection: noise, warm cast, not centered, slight blur. Use 'NOT AI-generated look'. Reference Kodak Portra 400 tone. Show lived-in environment.",
+  "supportsImageReference": true
+ },
+ {
+  "id": "ugc-style",
+  "name": "UGC风格/买家秀",
+  "keywords": [
+   "UGC",
+   "买家秀",
+   "用户生成",
+   "真实用户",
+   "user generated",
+   "GRWM",
+   "真实感"
+  ],
+  "defaultSize": "1024x1024",
+  "productOccupancy": "40%",
+  "whitespace": "at least 45%",
+  "camera": "imperfect smartphone snapshot",
+  "visualFields": {
+   "type": "authentic UGC snapshot",
+   "subject": "{product_description}",
+   "style": "iPhone front camera, candid snapshot",
+   "environment": "real bathroom or bedroom, lived-in details",
+   "lighting": "warm indoor overhead lighting, slight yellow cast",
+   "imperfection": "noise in shadows, not oversharpened, slight highlight overexposure",
+   "quality": "raw phone photo with natural imperfections, NOT AI-generated look, NOT studio quality"
+  },
+  "variants": {
+   "mirror-selfie": {
+    "description": "浴室镜自拍",
+    "overrides": {
+     "style": "iPhone front camera mirror selfie",
+     "environment": "bathroom mirror, slight condensation and fog marks",
+     "imperfection": "phone case at edge, finger smudge on mirror"
+    }
+   },
+   "ccd-retro": {
+    "description": "CCD复古胶片感",
+    "overrides": {
+     "style": "vintage 2005 CCD digicam photo, direct flash, cheap camera aesthetic",
+     "lighting": "harsh direct on-camera flash, strong warm yellow-green color shift, blown-out highlights",
+     "imperfection": "heavy film grain, overexposed skin on forehead and nose, flash hotspot, chromatic aberration at edges, red date stamp bottom-right corner"
+    }
+   },
+   "grwm": {
+    "description": "GRWM跟我一起准备",
+    "overrides": {
+     "style": "Get Ready With Me video thumbnail, morning routine",
+     "environment": "vanity mirror, slightly messy counter"
+    }
+   },
+   "unboxing": {
+    "description": "开箱分享",
+    "overrides": {
+     "style": "casual unboxing photo on bed or desk",
+     "environment": "bed with wrinkled sheets or cluttered desk"
+    }
+   }
+  },
+  "categoryTips": {
+   "beauty": "product in use on real skin, visible pores, bathroom setting; warm bathroom light, realistic uneven shadows",
+   "food": "phone snap on table, casual restaurant or home; ambient restaurant light, natural cast shadow",
+   "fashion": "mirror selfie wearing item, bedroom or fitting room; harsh direct flash or ambient light, raw shadows",
+   "electronics": "desk setup with product in use, realistic cables; monitor glow plus room light, realistic cable shadows",
+   "home": "product in actual living space, not perfectly styled; mixed household lighting, natural imperfect shadows"
+  },
+  "antiAiTips": "CRITICAL: (1) Specify phone model (iPhone 14 Pro/15), (2) Add imperfection (pores, noise, warm cast, off-center), (3) Candid language (NOT professional), (4) Real environment (slightly messy), (5) Avoid AI words (no perfect, flawless, stunning), (6) State 'NOT AI-generated look', (7) Reference Kodak Portra 400 tone",
+  "supportsImageReference": true
+ },
+ {
+  "id": "model-showcase",
+  "name": "模特展示图",
+  "keywords": [
+   "模特",
+   "model",
+   "人物展示",
+   "模特图",
+   "真人展示",
+   "人物图"
+  ],
+  "defaultSize": "1024x1536",
+  "productOccupancy": "35-40%",
+  "whitespace": "at least 45%",
+  "camera": "full or medium human-centered framing",
+  "visualFields": {
+   "type": "editorial beauty/fashion photography",
+   "subject": "{person_description} with {product_description}",
+   "camera": "Canon EOS R5, 85mm f/1.4 lens",
+   "lighting": "natural window light from left, realistic highlights",
+   "skin_detail": "visible pores, natural under-eye shadows, slight texture unevenness",
+   "expression": "authentic relaxed, subtle natural asymmetry",
+   "quality": "professional editorial photography, 8K"
+  },
+  "variants": {
+   "beauty-closeup": {
+    "description": "美妆极致特写",
+    "overrides": {
+     "camera": "Canon EOS R5, 100mm f/2.8 macro",
+     "skin_detail": "incredibly detailed: pores, fine lines, freckles, NOT retouched",
+     "expression": "eyes half-closed, peaceful self-care moment"
+    }
+   },
+   "fashion-full": {
+    "description": "时尚全身展示",
+    "overrides": {
+     "camera": "Canon EOS R5, 50mm f/1.2",
+     "expression": "confident direct gaze, editorial pose"
+    }
+   },
+   "candid": {
+    "description": "自然抓拍",
+    "overrides": {
+     "camera": "iPhone 15 Pro main camera",
+     "expression": "genuine candid, mid-action",
+     "skin_detail": "natural texture, slight blemishes, relatable"
+    }
+   }
+  },
+  "categoryTips": {
+   "beauty": "extreme close-up on application moment, formula texture on skin, real skin mandatory; clamshell lighting, minimal shadows",
+   "fashion": "full outfit showcase, pose highlighting garment, editorial lighting; editorial loop or Rembrandt lighting, natural ground shadow",
+   "accessories": "product being worn/used, hand or body detail, lifestyle context; soft diffused key light, natural contact shadow",
+   "sports": "active pose in appropriate setting, show performance; dramatic side light, directional cast shadow"
+  },
+  "antiAiTips": "MANDATORY: (1) Real camera (Canon EOS R5 / Sony A7 IV), (2) Visible skin imperfections (pores, uneven tone, blemishes, fine lines), (3) Natural expression asymmetry, (4) 'NOT retouched, NOT AI-generated look', (5) Real lighting (natural window, NOT studio-perfect), (6) Natural hand details (knuckle lines, cuticle texture)",
+  "supportsImageReference": true
+ },
+ {
+  "id": "before-after",
+  "name": "使用前后对比图",
+  "keywords": [
+   "对比",
+   "before after",
+   "前后",
+   "效果对比",
+   "transformation",
+   "变化图"
+  ],
+  "defaultSize": "1024x1024",
+  "productOccupancy": "25-30%",
+  "whitespace": "at least 45%",
+  "camera": "split-screen comparison composition",
+  "visualFields": {
+   "type": "before/after comparison visualization",
+   "subject": "{product_description}",
+   "before_state": "dull, dry, uneven appearance",
+   "after_state": "radiant, smooth, healthy appearance",
+   "metrics": "improvement percentage",
+   "divider": "elegant gold line with arrow",
+   "quality": "professional campaign photography"
+  },
+  "variants": {
+   "clinical": {
+    "description": "临床数据风格",
+    "overrides": {
+     "metrics": "detailed data grid with 4+ metrics and percentage arrows"
+    }
+   },
+   "cinematic": {
+    "description": "电影感蜕变",
+    "overrides": {
+     "before_state": "moody dramatic, cool tone",
+     "after_state": "bright warm golden hour, warm tone",
+     "divider": "decorative vintage frame with product"
+    }
+   },
+   "simple": {
+    "description": "简洁信息图",
+    "overrides": {
+     "metrics": "simple progress bar with key metric"
+    }
+   }
+  },
+  "categoryTips": {
+   "beauty": "show skin texture change, include moisture/radiance percentage data; identical lighting both sides, shadowless clinical setup",
+   "fitness": "body transformation, consistent pose and lighting; same key light direction and contact shadow both halves",
+   "home": "room before/after renovation or cleaning; identical camera angle, consistent window light direction",
+   "automotive": "vehicle before/after detailing; consistent diffused overcast-style light both halves"
+  },
+  "antiAiTips": "",
+  "supportsImageReference": true
+ },
+ {
+  "id": "packaging",
+  "name": "包装设计展示",
+  "keywords": [
+   "包装",
+   "packaging",
+   "礼盒",
+   "gift box",
+   "包装设计",
+   "unboxing",
+   "开箱"
+  ],
+  "defaultSize": "1024x1024",
+  "productOccupancy": "35-40%",
+  "whitespace": "at least 45%",
+  "camera": "three-quarter tabletop still life",
+  "visualFields": {
+   "type": "packaging design visualization",
+   "subject": "{product_description}",
+   "display": "full spread: product, outer box, tissue, ribbon, brand card",
+   "surface": "premium marble surface",
+   "decorative": "gold foil, pearls, dried petals, silk fabric",
+   "lighting": "soft directional with metallic reflections",
+   "quality": "premium design presentation, 8K"
+  },
+  "variants": {
+   "luxury-gift": {
+    "description": "奢华礼盒",
+    "overrides": {
+     "display": "gift box opened: outer box, inner tray, product, ribbon, brand card",
+     "decorative": "gold foil, pearls, dried roses, silk scarf"
+    }
+   },
+   "minimal-eco": {
+    "description": "极简环保",
+    "overrides": {
+     "display": "sustainable packaging: recycled paper, soy ink, simple label",
+     "decorative": "natural elements, dried leaves, twine"
+    }
+   },
+   "unboxing": {
+    "description": "开箱体验",
+    "overrides": {
+     "display": "unboxing sequence: box opening, tissue reveal, product discovery"
+    }
+   }
+  },
+  "categoryTips": {
+   "beauty": "label design, ingredient preview, formula through transparent elements; backlighting for transparent parts, soft contact shadow",
+   "food": "nutritional info area, ingredient imagery, freshness seals; soft diffused studio light, soft contact shadow",
+   "fashion": "branded tissue, garment tag, care instructions, shopping bag; soft directional light, gentle cast shadow",
+   "electronics": "box design, inner foam, cable organization, quick-start guide; soft diffused top light, precise contact shadow"
+  },
+  "antiAiTips": "",
+  "supportsImageReference": true
+ },
+ {
+  "id": "infographic",
+  "name": "信息图/A+Content",
+  "keywords": [
+   "信息图",
+   "infographic",
+   "A+",
+   "详情页",
+   "卖点图",
+   "产品信息图",
+   "产品详情"
+  ],
+  "defaultSize": "1024x1536",
+  "productOccupancy": "25-30%",
+  "whitespace": "at least 50%",
+  "camera": "left-product right-information composition",
+  "visualFields": {
+   "type": "e-commerce product infographic",
+   "subject": "{product_description}",
+   "features": "4-6 key features with icons and descriptions",
+   "layout": "clean grid, product as focal point",
+   "data_vis": "simple charts or comparison tables",
+   "color_scheme": "brand-consistent palette",
+   "quality": "professional e-commerce design, mobile-friendly"
+  },
+  "variants": {
+   "amazon-a-plus": {
+    "description": "亚马逊A+风格",
+    "overrides": {
+     "layout": "4-quadrant module with banner, feature blocks, comparison, badges",
+     "data_vis": "comparison table, ingredient chart, certification badges"
+    }
+   },
+   "feature-grid": {
+    "description": "卖点网格",
+    "overrides": {
+     "layout": "product centered with callout lines to feature blocks"
+    }
+   },
+   "story-flow": {
+    "description": "故事线信息流",
+    "overrides": {
+     "layout": "vertical story: problem → solution → features → results"
+    }
+   }
+  },
+  "categoryTips": {
+   "beauty": "ingredient breakdown with %, before/after data, dermatologist badges; shadowless cutout product, high-key lighting",
+   "electronics": "spec comparison, performance metrics, compatibility icons; shadowless cutout, subtle contact shadow only",
+   "food": "nutritional visualization, ingredient sourcing, recipe flow; shadowless cutout, clean high-key light",
+   "fashion": "size guide, material composition, care instructions; shadowless garment cutout, even illumination"
+  },
+  "antiAiTips": "",
+  "supportsImageReference": true
+ },
+ {
+  "id": "creative-concept",
+  "name": "创意概念广告图",
+  "keywords": [
+   "创意图",
+   "概念图",
+   "creative",
+   "概念广告",
+   "品牌广告",
+   "创意广告",
+   "concept art"
+  ],
+  "defaultSize": "1024x1024",
+  "productOccupancy": "20-25%",
+  "whitespace": "at least 50%",
+  "camera": "dramatic conceptual perspective",
+  "visualFields": {
+   "type": "creative advertising photography",
+   "subject": "{product_description}",
+   "concept": "dynamic product with unexpected visual elements",
+   "effects": "dramatic visual impact",
+   "color_palette": "bold unusual combinations",
+   "art_direction": "strong visual narrative",
+   "quality": "award-winning advertising photography, ultra-detailed, cinematic"
+  },
+  "variants": {
+   "splash-dynamic": {
+    "description": "飞溅动态效果",
+    "overrides": {
+     "effects": "water splash / powder explosion frozen in motion, high-speed photography",
+     "art_direction": "dramatic, vivid, commercial style"
+    }
+   },
+   "surreal": {
+    "description": "超现实概念",
+    "overrides": {
+     "concept": "product in unexpected surreal environment",
+     "effects": "gravity-defying, impossible geometry"
+    }
+   },
+   "minimal-art": {
+    "description": "极简艺术风格",
+    "overrides": {
+     "concept": "product as art object in minimalist composition",
+     "color_palette": "monochromatic or two-tone"
+    }
+   }
+  },
+  "categoryTips": {
+   "beauty": "floating product with splash, ethereal lighting, formula particles; backlighting through liquid, rim light separation",
+   "electronics": "holographic interfaces, data visualization, futuristic; low-key setup, rim and backlight, glow accents",
+   "food": "ingredient explosion, dynamic pour/splash, steam and fire; frozen high-speed motion, dramatic side light, cast shadow",
+   "fashion": "editorial art direction, dramatic poses, fabric in motion; split or cross lighting, long cast shadow"
+  },
+  "antiAiTips": "",
+  "supportsImageReference": true
+ },
+ {
+  "id": "size-spec",
+  "name": "尺寸规格+使用步骤图",
+  "keywords": [
+   "尺寸",
+   "规格",
+   "尺寸图",
+   "使用步骤",
+   "规格图",
+   "dimension",
+   "how to use",
+   "使用指南"
+  ],
+  "defaultSize": "1024x1536",
+  "productOccupancy": "25-30%",
+  "whitespace": "at least 50%",
+  "camera": "orthographic or clear side profile",
+  "visualFields": {
+   "type": "product specification and usage guide infographic",
+   "subject": "{product_description}",
+   "dimensions": "height, width with measurement lines and arrows",
+   "steps": "3-4 step numbered usage guide with icons",
+   "extras": "ingredient highlights or feature badges",
+   "style": "clean white, professional typography",
+   "quality": "professional e-commerce infographic"
+  },
+  "variants": {
+   "premium-editorial": {
+    "description": "高端杂志风格",
+    "overrides": {
+     "style": "luxury editorial with decorative elements, gold accents, premium typography"
+    }
+   },
+   "technical": {
+    "description": "技术规格风格",
+    "overrides": {
+     "dimensions": "detailed specs with reference objects for scale",
+     "extras": "comparison charts, certification badges, data grids"
+    }
+   },
+   "ritual-guide": {
+    "description": "使用仪式指南",
+    "overrides": {
+     "steps": "decorative numbered ritual guide with small illustrations"
+    }
+   }
+  },
+  "categoryTips": {
+   "beauty": "dimension callout badge, usage ritual steps, ingredient percentages; shadowless front view, even illumination",
+   "electronics": "precise dimensions with comparison objects, port specs; shadowless, true-to-scale side view",
+   "food": "serving size, preparation steps, nutritional highlights; shadowless product front, clean white base",
+   "fashion": "size chart with body measurements, care instructions; flat garment, shadowless overhead view"
+  },
+  "antiAiTips": "",
+  "supportsImageReference": true
+ },
+ {
+  "id": "multi-product",
+  "name": "多产品套装/组合展示",
+  "keywords": [
+   "套装",
+   "组合",
+   "多产品",
+   "bundle",
+   "gift set",
+   "礼盒",
+   "系列展示"
+  ],
+  "defaultSize": "1024x1024",
+  "productOccupancy": "60-70%",
+  "whitespace": "at least 35%",
+  "camera": "clean frontal product lineup",
+  "visualFields": {
+   "type": "multi-product bundle photography",
+   "subject": "{product_set_description}",
+   "arrangement": "organized with consistent spacing, all visible, no overlap",
+   "background": "clean suitable for showcase",
+   "decorative": "luxury elements for gift-ready presentation",
+   "quality": "professional product photography, 8K"
+  },
+  "variants": {
+   "gift-set": {
+    "description": "礼盒套装",
+    "overrides": {
+     "arrangement": "products in gift box with cards",
+     "decorative": "satin ribbon, gold foil, dried flowers, pearls"
+    }
+   },
+   "routine-set": {
+    "description": "使用程序套装",
+    "overrides": {
+     "arrangement": "products in order of use, step indicators"
+    }
+   },
+   "lineup": {
+    "description": "产品线排列",
+    "overrides": {
+     "arrangement": "neat row, hero centered and larger",
+     "decorative": "minimal, clean",
+     "background": "white seamless"
+    }
+   }
+  },
+  "categoryTips": {
+   "beauty": "complete routine (cleanser → toner → serum → cream), gift-ready; single softbox key light, uniform contact shadows",
+   "food": "product range, variety pack, flavor assortment; uniform diffused light, identical contact shadow per item",
+   "fashion": "outfit coordination pieces, colorway options; even high-key light, aligned shadows",
+   "home": "collection of coordinating items; soft diffused key light, triangular arrangement, consistent contact shadows"
+  },
+  "antiAiTips": "",
+  "supportsImageReference": true
+ },
+ {
+  "id": "livestream",
+  "name": "电商直播间场景",
+  "keywords": [
+   "直播",
+   "livestream",
+   "直播间",
+   "电商直播",
+   "直播截图",
+   "抖音直播",
+   "带货"
+  ],
+  "defaultSize": "1024x1024",
+  "productOccupancy": "40%",
+  "whitespace": "at least 45%",
+  "camera": "wide livestream set view",
+  "visualFields": {
+   "type": "e-commerce livestream screenshot",
+   "host": "friendly person, natural expression, visible skin texture, NOT retouched",
+   "product_action": "holding product close to camera showing details",
+   "background": "organized but real product shelf, LED strip, small plants",
+   "ui_overlay": "viewer count, LIVE badge, comments, product card, buy button",
+   "lighting": "ring light circular catchlight in eyes, warm indoor overhead",
+   "quality": "authentic phone screen capture, NOT AI-generated look"
+  },
+  "variants": {
+   "douyin": {
+    "description": "抖音直播风格",
+    "overrides": {
+     "ui_overlay": "Douyin UI: LIVE badge, viewer count, scrolling comments, product card with price and buy button, gift icons, shopping cart"
+    }
+   },
+   "taobao": {
+    "description": "淘宝直播风格",
+    "overrides": {
+     "ui_overlay": "Taobao Live UI: product listing, coupon badges, viewer count, chat"
+    }
+   },
+   "setup": {
+    "description": "直播间布景展示",
+    "overrides": {
+     "ui_overlay": "no UI overlay, showing physical setup",
+     "background": "full view of studio with lighting, backdrop, shelves"
+    }
+   }
+  },
+  "categoryTips": {
+   "beauty": "host demonstrating application, showing texture, real-time swatching; ring light catchlight, warm indoor fill",
+   "fashion": "host wearing/showing clothing, fit demo, fabric close-up; ring light plus ambient room light",
+   "food": "host tasting/preparing, showing freshness, unboxing; warm practical lighting, natural shadows",
+   "electronics": "host demonstrating features, hands-on product demo; ring light catchlight, screen glow fill"
+  },
+  "antiAiTips": "CRITICAL: (1) Phone screen capture style, (2) Ring light: circular catchlight in eyes, (3) Real skin: pores, undereye darkness, NOT smoothed, (4) Real environment: slightly messy, real objects, (5) Warm yellowish cast, (6) Slight noise, (7) 'NOT AI-generated look, NOT plastic smooth', (8) Kodak Portra 400 tone, (9) Realistic UI overlay",
+  "supportsImageReference": true
+ },
+ {
+  "id": "try-on-virtual",
+  "name": "虚拟试穿/产品融入场景",
+  "keywords": [
+   "试穿",
+   "融入",
+   "虚拟试穿",
+   "try on",
+   "场景融合",
+   "产品融入",
+   "product placement"
+  ],
+  "defaultSize": "1024x1536",
+  "productOccupancy": "35-40%",
+  "whitespace": "at least 45%",
+  "camera": "full-body or torso crop",
+  "visualFields": {
+   "type": "product integration / virtual try-on",
+   "subject": "{product_description} naturally integrated into {scene_type}",
+   "setting": "luxury interior or lifestyle environment matching product",
+   "atmosphere": "warm, inviting, aspirational",
+   "integration": "product as natural focal point",
+   "quality": "cinematic lifestyle photography, 8K"
+  },
+  "variants": {
+   "interior-luxury": {
+    "description": "奢华室内场景",
+    "overrides": {
+     "setting": "high-end spa/hotel/luxury home, marble, gold fixtures",
+     "atmosphere": "cinematic depth, warm grading, premium"
+    }
+   },
+   "outdoor-natural": {
+    "description": "户外自然场景",
+    "overrides": {
+     "setting": "natural outdoor, organic elements",
+     "atmosphere": "golden hour sunlight, natural and free"
+    }
+   },
+   "studio-editorial": {
+    "description": "棚拍编辑风格",
+    "overrides": {
+     "setting": "professional studio with styled backdrop",
+     "atmosphere": "controlled studio lighting, editorial quality"
+    }
+   }
+  },
+  "categoryTips": {
+   "beauty": "spa bathroom, vanity mirror, botanical elements, skincare ritual; soft vanity light, natural contact shadow",
+   "fashion": "model wearing item in appropriate setting, natural styling; natural window light, ground contact shadow",
+   "furniture": "product in complete room setting, complementary decor; room-matched window light, realistic contact shadow",
+   "electronics": "modern desk setup, in-use context, tech-forward; ambient desk light, natural contact shadow"
+  },
+  "antiAiTips": "",
+  "supportsImageReference": true
+ },
+ {
+  "id": "exploded-view",
+  "name": "技术拆解/爆炸图",
+  "keywords": [
+   "拆解图",
+   "爆炸图",
+   "exploded view",
+   "技术图",
+   "结构图",
+   "内部结构",
+   "拆机",
+   "teardown",
+   "cross-section"
+  ],
+  "defaultSize": "1024x1024",
+  "productOccupancy": "35-40%",
+  "whitespace": "at least 45%",
+  "camera": "orthographic exploded arrangement",
+  "visualFields": {
+   "type": "technical product exploded view",
+   "subject": "{product_description}",
+   "components": "{component_list}",
+   "arrangement": "vertical exploded stack",
+   "background": "clean light gray",
+   "labels": "component name + material + core spec",
+   "quality": "8K, technical illustration, precise component rendering"
+  },
+  "variants": {
+   "blueprint": {
+    "description": "蓝图风格",
+    "overrides": {
+     "background": "dark charcoal with cyan grid lines",
+     "labels": "white and gold typography, blueprint aesthetic"
+    }
+   },
+   "minimal": {
+    "description": "极简白底",
+    "overrides": {
+     "background": "pure white, no grid",
+     "labels": "minimal black text, thin gray leader lines"
+    }
+   },
+   "apple-style": {
+    "description": "Apple产品拆解风格",
+    "overrides": {
+     "arrangement": "isometric floating with precise spacing",
+     "background": "deep gradient from charcoal to black",
+     "labels": "elegant sans-serif, golden accent lines"
+    }
+   },
+   "editorial": {
+    "description": "杂志编辑风格",
+    "overrides": {
+     "background": "warm off-white with subtle texture",
+     "labels": "serif font callouts, hand-drawn arrow style"
+    }
+   }
+  },
+  "categoryTips": {
+   "electronics": "highlight circuit boards, chips, battery modules with spec labels; parts float vertically, soft shadow beneath each part",
+   "audio": "show speaker drivers, diaphragms, ANC modules, battery size; floating alignment with equal spacing, soft per-part shadow",
+   "wearables": "include sensors, display panel, waterproof seals, strap mechanism; vertical exploded axis, soft contact shadows below",
+   "home_appliance": "show motor, filter system, internal wiring, control board; aligned floating components, soft ground shadow",
+   "phone_accessories": "highlight charging coils, magnet arrays, protective layers; vertical float, soft per-part shadow",
+   "camera": "show lens elements, sensor, image processor, stabilization unit; aligned lens stack float, soft shadow beneath"
+  },
+  "antiAiTips": "",
+  "supportsImageReference": true
+ },
+ {
+  "id": "ghost-mannequin",
+  "name": "隐形模特",
+  "keywords": [
+   "隐形模特",
+   "ghost mannequin",
+   "invisible model",
+   "3D服装",
+   "服装展示",
+   "无人模特",
+   "中空模特",
+   "flat mannequin"
+  ],
+  "defaultSize": "1024x1536",
+  "productOccupancy": "45-50%",
+  "whitespace": "at least 45%",
+  "camera": "front three-quarter apparel form",
+  "visualFields": {
+   "type": "ghost mannequin product photography",
+   "subject": "{product_description}",
+   "form": "natural body contours - shoulders, bust, waist",
+   "details": "natural shoulder slope, bust/chest contour, waist curve visible",
+   "background": "soft warm gray gradient",
+   "lighting": "three-point studio setup creating gentle dimension",
+   "quality": "8K, fashion e-commerce standard photography"
+  },
+  "variants": {
+   "white-clean": {
+    "description": "纯白干净",
+    "overrides": {
+     "background": "pure white seamless",
+     "lighting": "bright even commercial lighting"
+    }
+   },
+   "editorial": {
+    "description": "杂志风格",
+    "overrides": {
+     "background": "moody dark gradient from charcoal to deep gray",
+     "lighting": "spotlight from above creating dramatic highlight on shoulders"
+    }
+   },
+   "editorial-detail": {
+    "description": "展示内衬细节",
+    "overrides": {
+     "details": "garment partially open revealing inner lining tag, rolled sleeves showing lining contrast"
+    }
+   },
+   "lifestyle": {
+    "description": "带环境道具",
+    "overrides": {
+     "background": "minimal studio with subtle editorial prop - single branch or flower in corner"
+    }
+   }
+  },
+  "categoryTips": {
+   "shirts": "collar standing naturally, top buttons detail, cuff visibility; soft studio light, soft contact shadow",
+   "dresses": "natural waist cinch, skirt drape showing fabric weight, back zipper detail; soft wraparound light, contact shadow",
+   "coats": "architectural shoulder structure, fabric texture visible, button and pocket details; raking light for texture, soft contact shadow",
+   "knitwear": "visible knit pattern and texture, natural stretch around body contours; soft diffused light, gentle contact shadow",
+   "tshirts": "casual relaxed drape, crew or v-neck sitting naturally, sleeve length proportion; even softbox light, minimal contact shadow",
+   "activewear": "compression fit showing body contour, moisture-wicking fabric texture, logo placement; soft directional light, contact shadow"
+  },
+  "antiAiTips": "",
+  "supportsImageReference": true
+ },
+ {
+  "id": "multi-angle-grid",
+  "name": "产品多角度网格",
+  "keywords": [
+   "多角度",
+   "网格",
+   "grid",
+   "多面",
+   "颜色展示",
+   "colorway",
+   "产品角度",
+   "catalog grid",
+   "产品目录"
+  ],
+  "defaultSize": "1024x1024",
+  "productOccupancy": "60-70%",
+  "whitespace": "at least 30%",
+  "camera": "front, side, rear and macro grid",
+  "visualFields": {
+   "type": "product photography grid layout",
+   "subject": "{product_description}",
+   "grid": "2x2 grid, 4 views",
+   "variation": "front, side, back, top-down angles",
+   "background": "clean white per cell",
+   "separators": "thin white borders",
+   "quality": "8K, catalog photography, uniform lighting across all cells"
+  },
+  "variants": {
+   "angle-view": {
+    "description": "多角度视角",
+    "overrides": {
+     "variation": "front, side, back, top-down, 3/4 angle views",
+     "grid": "2x2 or 3x3"
+    }
+   },
+   "colorway": {
+    "description": "多配色展示",
+    "overrides": {
+     "variation": "same product in different colors, consistent 3/4 angle",
+     "grid": "3x3 for 9 colors or 2x3 for 6 colors"
+    }
+   },
+   "feature-grid": {
+    "description": "带功能标注网格",
+    "overrides": {
+     "variation": "each cell shows different product feature with label and icon",
+     "grid": "hero image left + 4 smaller shots right column"
+    }
+   },
+   "comparison": {
+    "description": "对比网格",
+    "overrides": {
+     "variation": "before/after or product vs competitor in side-by-side grid"
+    }
+   }
+  },
+  "categoryTips": {
+   "beauty": "show bottle angle, cap detail, texture close-up, and open product; identical lighting and shadow in all four cells",
+   "electronics": "show front face, side ports, back panel, and included accessories; uniform studio light per cell, consistent contact shadow",
+   "fashion": "show front view, back view, detail close-up, and fabric texture; identical key light direction across grid",
+   "food": "show packaging front, back nutrition, open product, and serving suggestion; uniform light, consistent shadows",
+   "home": "show full product, detail angle, material texture, and in-context shot; consistent lighting across cells",
+   "sports": "show product front, side profile, sole/bottom, and action usage shot; uniform studio cells, consistent shadow direction"
+  },
+  "antiAiTips": "",
+  "supportsImageReference": true
+ },
+ {
+  "id": "magazine-editorial",
+  "name": "杂志大片/封面",
+  "keywords": [
+   "杂志",
+   "封面",
+   "杂志大片",
+   "editorial",
+   "magazine cover",
+   "时尚大片",
+   "Vogue",
+   "时尚摄影",
+   "fashion editorial"
+  ],
+  "defaultSize": "1024x1536",
+  "productOccupancy": "20-25%",
+  "whitespace": "at least 50%",
+  "camera": "editorial low-angle composition",
+  "visualFields": {
+   "type": "fashion/beauty magazine cover editorial",
+   "subject": "{product_description}",
+   "model": "person holding or wearing product in editorial pose",
+   "makeup_hair": "polished editorial beauty look",
+   "background": "studio backdrop warm peach-nude tone",
+   "lighting": "beauty dish from front-left, soft rim light on hair",
+   "layout": "masthead area top, issue text bottom-left, barcode bottom-right",
+   "quality": "8K, Vogue-quality editorial photography"
+  },
+  "variants": {
+   "beauty-cover": {
+    "description": "美妆封面",
+    "overrides": {
+     "model": "close-up portrait with glowing skin, holding skincare near face",
+     "makeup_hair": "dewy natural, glossy lips, subtle smoky eye"
+    }
+   },
+   "fashion-cover": {
+    "description": "时尚封面",
+    "overrides": {
+     "model": "full or 3/4 body shot wearing fashion product, confident pose",
+     "makeup_hair": "bold editorial makeup, high-fashion styling"
+    }
+   },
+   "fragrance-editorial": {
+    "description": "香水大片",
+    "overrides": {
+     "model": "person in contemplative pose with fragrance bottle, atmospheric",
+     "background": "dark moody backdrop with atmospheric haze"
+    }
+   },
+   "minimal-editorial": {
+    "description": "极简杂志内页",
+    "overrides": {
+     "background": "clean white studio, no backdrop color",
+     "layout": "no masthead, clean full-bleed editorial image"
+    }
+   }
+  },
+  "categoryTips": {
+   "skincare": "dewy skin, product held at chin level, beauty lighting; butterfly or clamshell beauty lighting",
+   "fragrance": "atmospheric smoke, contemplative mood, bottle prominent; backlighting through smoke, rim light",
+   "fashion": "confident pose, outfit fully visible, dramatic lighting; Rembrandt or split editorial lighting, long cast shadow",
+   "jewelry": "close-up on hands/neck, editorial styling, luxury backdrop; diffused tent key light plus sparkle accent, dark-field reflection",
+   "haircare": "hair as hero element, movement and texture, beauty lighting; rim light for hair separation, soft fill",
+   "makeup": "bold lip or eye focus, product in hand, editorial beauty; clamshell beauty lighting, soft falloff"
+  },
+  "antiAiTips": "For authentic editorial feel: specify actual camera (Phase One IQ4, Canon EOS R5 85mm f/1.2), add visible skin texture, use real beauty lighting terminology",
+  "supportsImageReference": true
+ },
+ {
+  "id": "seasonal-campaign",
+  "name": "季节主题网格",
+  "keywords": [
+   "季节",
+   "四季",
+   "campaign",
+   "季节主题",
+   "seasonal",
+   "春夏秋冬",
+   "年度campaign",
+   "品牌campaign",
+   "季节变体"
+  ],
+  "defaultSize": "1024x1024",
+  "productOccupancy": "25-30%",
+  "whitespace": "at least 50%",
+  "camera": "environmental campaign composition",
+  "visualFields": {
+   "type": "seasonal product campaign grid",
+   "subject": "{product_description}",
+   "layout": "2x2 grid with thin white or gold borders",
+   "spring": "pastel tones, blossoms, morning dew, soft light",
+   "summer": "bright warm tones, tropical elements, golden light",
+   "autumn": "warm amber, dried leaves, cinnamon, window light",
+   "winter": "cool blues, pine branches, frost, moonlight",
+   "quality": "8K, brand campaign photography, consistent product placement",
+   "consistency": "same product angle and size across all four quadrants"
+  },
+  "variants": {
+   "four-seasons": {
+    "description": "经典四季",
+    "overrides": {
+     "layout": "2x2, each quadrant a full seasonal scene"
+    }
+   },
+   "holiday-series": {
+    "description": "节日系列",
+    "overrides": {
+     "layout": "2x3 or 3x2 grid, each cell a different holiday theme (Valentine's, Easter, Summer, Halloween, Thanksgiving, Christmas)"
+    }
+   },
+   "day-to-night": {
+    "description": "日夜变体",
+    "overrides": {
+     "layout": "2x2 grid, same scene at dawn, morning, afternoon, night"
+    }
+   },
+   "travel-series": {
+    "description": "旅行主题",
+    "overrides": {
+     "layout": "2x2 grid, product in 4 travel destinations with local elements"
+    }
+   }
+  },
+  "categoryTips": {
+   "skincare": "spring=blossoms+dew, summer=sun+kisses, autumn=cozy+cream, winter=frost+glow; season-matched light temperature, consistent shadow style per quadrant",
+   "fragrance": "each season with matching botanical elements and color palette; consistent rim light across quadrants",
+   "fashion": "season-appropriate styling visible in each quadrant; consistent key light direction, natural contact shadow",
+   "food": "seasonal ingredients and color palette matching product; matched light warmth per season, soft contact shadow",
+   "home": "seasonal decor elements and lighting mood; consistent window light direction across quadrants",
+   "candles": "seasonal scents visualized through corresponding natural elements; warm flame practical light, low-key ambience"
+  },
+  "antiAiTips": "",
+  "supportsImageReference": true
+ },
+ {
+  "id": "luxury-atmospherics",
+  "name": "奢华氛围渲染",
+  "keywords": [
+   "奢华",
+   "氛围",
+   "烟雾",
+   "高级感",
+   "luxury",
+   "atmospheric",
+   "梦幻",
+   "高端",
+   "premium",
+   "烟雾效果",
+   "金色"
+  ],
+  "defaultSize": "1024x1024",
+  "productOccupancy": "20-25%",
+  "whitespace": "at least 50%",
+  "camera": "dramatic side-lit hero view",
+  "visualFields": {
+   "type": "luxury product photography with atmospheric effects",
+   "subject": "{product_description}",
+   "surface": "polished obsidian or black marble platform",
+   "atmosphere": "purple-blue smoke wisps + floating elements",
+   "lighting": "golden rim light from upper-left, cool blue backlight",
+   "background": "infinite dark void with subtle gradient",
+   "quality": "8K, award-winning luxury advertising photography"
+  },
+  "variants": {
+   "floral-dream": {
+    "description": "花卉梦幻",
+    "overrides": {
+     "atmosphere": "fresh flower petals floating at various heights catching light, scattered gold leaf particles"
+    }
+   },
+   "smoke-mystique": {
+    "description": "烟雾神秘",
+    "overrides": {
+     "atmosphere": "multi-layered violet and midnight blue smoke swirling around product"
+    }
+   },
+   "golden-luxe": {
+    "description": "金色奢华",
+    "overrides": {
+     "atmosphere": "golden bokeh particles, warm amber glow, scattered gold flakes"
+    }
+   },
+   "ice-crystal": {
+    "description": "冰晶冷冽",
+    "overrides": {
+     "atmosphere": "floating ice crystals, frost patterns, diamond-like light refractions",
+     "lighting": "cool platinum spotlight, ice-blue ambient"
+    }
+   }
+  },
+  "categoryTips": {
+   "fragrance": "multi-layer smoke + matching botanical elements, amber liquid visible inside; backlighting through liquid, rim light, reflection on polished surface",
+   "skincare": "ethereal glow around product, subtle condensation, dreamy quality; backlight glow, narrow contact shadow on dark surface",
+   "jewelry": "diamond-like light bokeh, dark background, sparkle and reflection focus; diffused tent plus focused sparkle light, reflection shadow",
+   "wine": "rich amber or ruby liquid, smoke wisps matching color, candlelight warmth; backlighting through glass, candlelight practical, surface reflection",
+   "chocolate": "warm golden particles, cocoa powder dust, rich dark tones; low-key side light, raking light for texture",
+   "watch": "sharp metallic reflections, precise time visible, ice-blue or golden accent; diffused tent with accent rim, reflection on dark polished surface"
+  },
+  "antiAiTips": "",
+  "supportsImageReference": true
+ },
+ {
+  "id": "device-mockup",
+  "name": "设备界面模型",
+  "keywords": [
+   "设备模型",
+   "界面模型",
+   "mockup",
+   "UI展示",
+   "APP截图",
+   "设备展示",
+   "屏幕展示",
+   "device mockup",
+   "SaaS"
+  ],
+  "defaultSize": "1024x1024",
+  "productOccupancy": "35-40%",
+  "whitespace": "at least 45%",
+  "camera": "clean device perspective",
+  "visualFields": {
+   "type": "product device mockup photography",
+   "subject": "{product_description} displayed on device screen",
+   "device": "latest laptop on clean desk",
+   "screen_content": "modern clean app/dashboard interface",
+   "desk_accessories": "coffee cup, small plant, wireless mouse, notebook",
+   "lighting": "soft window light from left, warm overhead fill",
+   "quality": "8K, tech product photography, screen content tack-sharp",
+   "background": "modern minimal office environment"
+  },
+  "variants": {
+   "single-laptop": {
+    "description": "单笔记本",
+    "overrides": {
+     "device": "MacBook Pro showing product interface, shallow depth of field on screen"
+    }
+   },
+   "multi-device": {
+    "description": "多设备联动",
+    "overrides": {
+     "device": "iPad center + iPhone left + smartwatch right, all showing consistent app UI"
+    }
+   },
+   "phone-only": {
+    "description": "手机展示",
+    "overrides": {
+     "device": "iPhone held at slight angle in hand, lifestyle background, screen clearly visible"
+    }
+   },
+   "office-lifestyle": {
+    "description": "办公场景",
+    "overrides": {
+     "desk_accessories": "Aesop hand cream, Muji pen holder, latte with art, hardcover notebook, trailing plant on shelf",
+     "background": "Scandinavian home office with white bookshelf"
+    }
+   }
+  },
+  "categoryTips": {
+   "saas": "show dashboard with charts, KPI cards, data visualizations; screen glow as key light, minimal contact shadow",
+   "mobile_app": "show app interface on phone, notification visible, clean UI; screen glow, soft reflection on screen glass",
+   "ecommerce_platform": "show store admin dashboard with product listings and analytics; screen glow key, subtle device contact shadow",
+   "fintech": "show financial dashboard with graphs, portfolio summary; screen glow, dark-theme rim highlight",
+   "health_app": "show workout tracker, health metrics, progress charts; screen glow, soft ambient fill",
+   "ai_product": "show chat interface, AI responses, modern dark or light theme; screen glow with glow accents, low-key surround"
+  },
+  "antiAiTips": "",
+  "supportsImageReference": true
+ },
+ {
+  "id": "storefront",
+  "name": "店铺门面/空间摄影",
+  "keywords": [
+   "店铺",
+   "门面",
+   "店面",
+   "storefront",
+   "空间摄影",
+   "室内设计",
+   "零售空间",
+   "咖啡店",
+   "实体店"
+  ],
+  "defaultSize": "1024x1024",
+  "productOccupancy": "20-25%",
+  "whitespace": "at least 50%",
+  "camera": "wide store interior view",
+  "visualFields": {
+   "type": "retail/storefront architectural photography",
+   "subject": "{business_description}",
+   "exterior": "large glass windows, signage, entrance details, potted plants",
+   "interior": "curated display shelving, consultation area, ambient lighting",
+   "lighting": "late afternoon warm golden light, interior already glowing",
+   "quality": "8K, editorial architectural photography, wide-angle sharp",
+   "camera": "wide-angle lens, f/8-f/11 for full sharpness"
+  },
+  "variants": {
+   "exterior": {
+    "description": "门面外观",
+    "overrides": {
+     "exterior": "full storefront view with window display, entrance, street context",
+     "interior": "visible through glass windows only"
+    }
+   },
+   "interior": {
+    "description": "室内空间",
+    "overrides": {
+     "interior": "wide-angle interior showing product displays, furniture, lighting design",
+     "exterior": "not visible"
+    }
+   },
+   "corner-detail": {
+    "description": "角落细节",
+    "overrides": {
+     "interior": "close-up vignette of a curated corner: consultation table, product samples, single flower"
+    }
+   },
+   "aerial-plan": {
+    "description": "俯视平面",
+    "overrides": {
+     "camera": "top-down bird's eye view showing full floor plan layout"
+    }
+   }
+  },
+  "categoryTips": {
+   "coffee_shop": "espresso machine visible, warm wood tones, latte art, pastry display; warm practical lighting, natural cast shadows",
+   "beauty_store": "illuminated niches, marble counter, product wall, consultation area; backlit niches, reflection on marble",
+   "fashion_boutique": "minimalist racks, curated display, premium flooring, mirror accents; soft track lighting, gentle contact shadows",
+   "restaurant": "table setting, kitchen pass visible, ambient lighting, menu display; warm pendant practicals, natural shadows",
+   "gym_studio": "modern equipment, branded wall, natural light, motivational signage; daylight plus practical fill, long cast shadows",
+   "pop_up": "temporary creative installation, bold graphics, unique display fixtures; even high-key fill, clean shadows"
+  },
+  "antiAiTips": "",
+  "supportsImageReference": true
+ },
+ {
+  "id": "sports-campaign",
+  "name": "运动/健身广告",
+  "keywords": [
+   "运动",
+   "健身",
+   "广告",
+   "sports",
+   "fitness",
+   "campaign",
+   "运动鞋",
+   "运动服",
+   "篮球",
+   "跑步",
+   "健身器材"
+  ],
+  "defaultSize": "1024x1024",
+  "productOccupancy": "25-30%",
+  "whitespace": "at least 50%",
+  "camera": "dynamic low-angle action frame",
+  "visualFields": {
+   "type": "sports/fitness advertising campaign photography",
+   "subject": "{product_description}",
+   "athlete": "athletic model in dynamic pose with product",
+   "props": "sports equipment as visual anchor, exaggerated scale",
+   "background": "dark studio, reflective black floor",
+   "typography": "bold condensed font, brand color accent",
+   "quality": "8K, Nike/Under Armour campaign quality",
+   "lighting": "spotlight from above, dramatic body highlights"
+  },
+  "variants": {
+   "product-hero": {
+    "description": "产品主视觉",
+    "overrides": {
+     "athlete": "no model, product floating at dynamic angle",
+     "props": "motion lines and speed effects around product"
+    }
+   },
+   "athlete-action": {
+    "description": "运动员动态",
+    "overrides": {
+     "athlete": "athlete mid-action wearing product, stadium lights, lens flare"
+    }
+   },
+   "triptych": {
+    "description": "三联画",
+    "overrides": {
+     "layout": "three vertical panels: close-up detail + action shot + product hero, unified bottom strip with branding"
+    }
+   },
+   "gym-power": {
+    "description": "健身力量感",
+    "overrides": {
+     "athlete": "muscular athlete seated on oversized dumbbell or equipment",
+     "props": "exaggerated fitness equipment placed diagonally"
+    }
+   }
+  },
+  "categoryTips": {
+   "running_shoes": "dynamic forward motion, speed lines, track or road surface context; hard side light, long directional cast shadow",
+   "basketball": "mid-dunk or crossover pose, stadium lighting, court texture; dramatic stadium key plus rim, strong cast shadow",
+   "fitness_equipment": "athlete using product, sweat detail, gym environment; high-contrast side light, sweat highlights",
+   "sportswear": "compression fit visible, fabric technology highlighted, movement pose; rim light for silhouette, directional cast shadow",
+   "protein_supplements": "product with athlete post-workout, muscular definition, energy mood; dramatic side light, container contact shadow",
+   "sports_drink": "splash effects, condensation, vibrant energy colors, hydration theme; backlighting through liquid, condensation highlights, cast shadow"
+  },
+  "antiAiTips": "",
+  "supportsImageReference": true
+ }
+]

@@ -7,6 +7,8 @@ import { validateLayerSelection, validateLayerSelections } from '~~/shared/utils
 import { AGENT_MODELS, findAgentModelTool, readModelMentions, registeredModelTools } from '~~/shared/utils/agentModels'
 import { validateTextEditAnswer, validateTextEditAnswers } from '~~/shared/utils/imageTextEditor'
 import { concatVideoUrls } from './concat'
+import { applyProductSetItem, parsePlanProductSetArgs, planProductSet } from './ecom/productSet'
+import type { PlanProductSetArgs } from './ecom/productSet'
 import { EXPORT_ZIP_TOOL, exportSessionZip, resolveZipExport } from './exportZip'
 import { removeBackground } from './fal'
 import { confirmedTextEdit, detectImageText, textEditNeedsSummary } from './imageTextEditor'
@@ -22,7 +24,7 @@ import { scheduleSessionResume } from './resume'
 import { choiceAlreadyAnswered, confirmationAlreadyStarted, persistNow, refreshSessionPrompt, requireLoadedSession, requireSession, resolveChatSession, touch, upsertImage } from './session'
 import { acquireGenerationSlot, bindGenerationSlot, completeGenerationSlot, waitForGenerationSlot } from './slots'
 import { summarizeSessionTitle } from './title'
-import { ASK_USER_TOOL, CONCAT_VIDEO_TOOL, GENERATE_IMAGE_TOOL, GENERATE_VIDEO_TOOL, openAiTools, parseAskUserArgs, parseConcatVideoArgs, parseGenerateImageArgs, parseGenerateVideoArgs, parseRemoveBackgroundArgs, REMOVE_BACKGROUND_TOOL, resolveConcatVideoUrls, resolveGenerateImageArgs, resolveGenerateVideoArgs, resolveRemoveBackgroundSource } from './tools'
+import { ASK_USER_TOOL, CONCAT_VIDEO_TOOL, GENERATE_IMAGE_TOOL, GENERATE_VIDEO_TOOL, openAiTools, PLAN_PRODUCT_SET_TOOL, parseAskUserArgs, parseConcatVideoArgs, parseGenerateImageArgs, parseGenerateVideoArgs, parseRemoveBackgroundArgs, REMOVE_BACKGROUND_TOOL, resolveConcatVideoUrls, resolveGenerateImageArgs, resolveGenerateVideoArgs, resolveRemoveBackgroundSource } from './tools'
 import { uploadAgentImage } from './upload'
 
 type Emit = (event: AgentEvent) => void
@@ -1012,6 +1014,10 @@ async function dispatchToolCalls(sessionId: string, toolCalls: ToolCall[], emit:
     args: AskUserArgs
   } | {
     call: ToolCall
+    kind: 'plan'
+    args: PlanProductSetArgs
+  } | {
+    call: ToolCall
     kind: 'error'
     result: string
   }
@@ -1026,7 +1032,7 @@ async function dispatchToolCalls(sessionId: string, toolCalls: ToolCall[], emit:
       if ((session.quality === 'custom' || selectedModelIds(session).length) && [GENERATE_IMAGE_TOOL, GENERATE_VIDEO_TOOL, REMOVE_BACKGROUND_TOOL].includes(call.function.name))
         throw new Error('Use the registered model tools for Custom mode or an explicitly selected model.')
       if (call.function.name === GENERATE_IMAGE_TOOL) {
-        const args = withTurnImageInputs(applyImageQuality(resolveGenerateImageArgs(parseGenerateImageArgs(call.function.arguments), session.images), session.quality || 'economy'), session.messages)
+        const args = withTurnImageInputs(applyImageQuality(resolveGenerateImageArgs(applyProductSetItem(parseGenerateImageArgs(call.function.arguments)), session.images), session.quality || 'economy'), session.messages)
         return { call, kind: 'image', args }
       }
       if (call.function.name === REMOVE_BACKGROUND_TOOL) {
@@ -1039,6 +1045,8 @@ async function dispatchToolCalls(sessionId: string, toolCalls: ToolCall[], emit:
       }
       if (call.function.name === EXPORT_ZIP_TOOL)
         return { call, kind: 'zip', input: resolveZipExport(call.function.arguments, session.images) }
+      if (call.function.name === PLAN_PRODUCT_SET_TOOL)
+        return { call, kind: 'plan', args: parsePlanProductSetArgs(call.function.arguments) }
       if (call.function.name === CONCAT_VIDEO_TOOL) {
         const args = parseConcatVideoArgs(call.function.arguments)
         return { call, kind: 'concat', urls: resolveConcatVideoUrls(args, session.images) }
@@ -1063,6 +1071,9 @@ async function dispatchToolCalls(sessionId: string, toolCalls: ToolCall[], emit:
   const exports = prepared.filter((item): item is Extract<Prepared, {
     kind: 'zip'
   }> => item.kind === 'zip')
+  const plans = prepared.filter((item): item is Extract<Prepared, {
+    kind: 'plan'
+  }> => item.kind === 'plan')
   const concats = prepared.filter((item): item is Extract<Prepared, {
     kind: 'concat'
   }> => item.kind === 'concat')
@@ -1070,13 +1081,14 @@ async function dispatchToolCalls(sessionId: string, toolCalls: ToolCall[], emit:
     kind: 'ask'
   }> => item.kind === 'ask')
   const generation = prepared.filter((item): item is Exclude<Prepared, {
-    kind: 'error' | 'concat' | 'ask' | 'zip'
+    kind: 'error' | 'concat' | 'ask' | 'zip' | 'plan'
   }> => item.kind === 'image' || item.kind === 'remove' || item.kind === 'video' || item.kind === 'model')
   if (asks.length) {
     const blocked = [
       ...generation.map(item => item.call.id),
       ...concats.map(item => item.call.id),
       ...exports.map(item => item.call.id),
+      ...plans.map(item => item.call.id),
     ]
     for (const id of blocked) {
       appendToolResult(sessionId, id, JSON.stringify({
@@ -1119,6 +1131,24 @@ async function dispatchToolCalls(sessionId: string, toolCalls: ToolCall[], emit:
     }
     finally {
       emit({ type: 'tool', name: EXPORT_ZIP_TOOL, status: 'end', callId: item.call.id })
+    }
+  }
+  for (const item of plans) {
+    if (sessionWantsStop(session) || signal?.aborted) {
+      appendToolResult(sessionId, item.call.id, JSON.stringify({ ok: false, cancelled: true, error: 'Stopped by user' }))
+      continue
+    }
+    emit({ type: 'tool', name: PLAN_PRODUCT_SET_TOOL, status: 'start', callId: item.call.id })
+    emit({ type: 'status', status: 'thinking' })
+    try {
+      const result = await planProductSet(item.args, session.images, signal)
+      appendToolResult(sessionId, item.call.id, JSON.stringify(result))
+    }
+    catch (error) {
+      appendToolResult(sessionId, item.call.id, JSON.stringify({ ok: false, error: error instanceof Error ? error.message : 'Product set planning failed' }))
+    }
+    finally {
+      emit({ type: 'tool', name: PLAN_PRODUCT_SET_TOOL, status: 'end', callId: item.call.id })
     }
   }
   if (concats.length && generation.length) {

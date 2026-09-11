@@ -16,19 +16,47 @@ import { withCustomChoiceOption } from '~~/shared/utils/agentChoices'
 import { exportZipTool } from './exportZip'
 import { gptImage2ComboError, isGptImage2AspectRatio, isGptImage2Resolution } from './gptImage2'
 import { isSeedance2AspectRatio, isSeedance2Resolution } from './seedance2'
-import { AGENT_VIDEO_DURATIONS, GPT_IMAGE_2_ASPECT_RATIOS, GPT_IMAGE_2_RESOLUTIONS, SEEDANCE_2_ASPECT_RATIOS, SEEDANCE_2_RESOLUTIONS, UNCERTAIN_FIELDS } from './types'
+import { AGENT_VIDEO_DURATIONS, ECOM_MARKETS, ECOM_PLATFORMS, GPT_IMAGE_2_ASPECT_RATIOS, GPT_IMAGE_2_RESOLUTIONS, SEEDANCE_2_ASPECT_RATIOS, SEEDANCE_2_RESOLUTIONS, UNCERTAIN_FIELDS } from './types'
 
 export const GENERATE_IMAGE_TOOL = 'generate_image'
 export const REMOVE_BACKGROUND_TOOL = 'remove_background'
 export const GENERATE_VIDEO_TOOL = 'generate_video'
 export const CONCAT_VIDEO_TOOL = 'concat_videos'
 export const ASK_USER_TOOL = 'ask_user'
+export const PLAN_PRODUCT_SET_TOOL = 'plan_product_set'
 export const MAX_CONCAT_CLIPS = 20
 export const MAX_ASK_QUESTIONS = 6
 export const MAX_ASK_OPTIONS = 8
 
 export const openAiTools = [
   exportZipTool,
+  {
+    type: 'function',
+    function: {
+      name: PLAN_PRODUCT_SET_TOOL,
+      description: 'Plan a coherent e-commerce product image suite (主图/套图/详情页图) from product facts and the product photo. Returns a campaign style lock plus one storyboard item per image, each with a set_item id. Call it alone in its own turn; then, in the NEXT turn, call generate_image once per item in the SAME turn with set_item=<id>. Do not write the image prompts yourself.',
+      parameters: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          product_description: { type: 'string', description: 'What the product is, in the user\'s words: type, key visible features, materials, use. Required.' },
+          category: { type: 'string', description: 'Product category, e.g. 美妆/护肤, 数码, 服装, 食品, 家居, 珠宝. Free text.' },
+          verified_facts: { type: 'array', items: { type: 'string' }, description: 'Only facts the user explicitly stated (size, material, capacity, certifications). Never infer.' },
+          prohibited_claims: { type: 'array', items: { type: 'string' }, description: 'Claims the user said must not appear.' },
+          brand_guidelines: { type: 'string', description: 'Brand colors (hex if given), tone, must-haves. Empty if none.' },
+          platform: { type: 'string', enum: [...ECOM_PLATFORMS], description: 'Target platform. 淘宝/天猫=TAOBAO, 京东=JD, 拼多多=PDD, 抖音=DOUYIN, 亚马逊=AMAZON, 独立站/Shopify=SHOPIFY. Default TAOBAO.' },
+          market: { type: 'string', enum: [...ECOM_MARKETS], description: 'Target market; only sets the copy language. Omit if unknown.' },
+          copy_language: { type: 'string', description: 'BCP-47 code for any on-image copy, e.g. zh-Hans, en-US. Omit to derive from market.' },
+          image_count: { type: 'integer', minimum: 1, maximum: 12, description: 'How many images in the suite. Default 6. Ignored when requested_types is given.' },
+          requested_types: { type: 'array', items: { type: 'string' }, description: 'Optional exact template ids when the user asked for specific types: hero-image, lifestyle-scene, flat-lay, detail-macro, poster-banner, social-media, ugc-style, model-showcase, before-after, packaging, infographic, creative-concept, size-spec, multi-product, livestream, try-on-virtual, exploded-view, ghost-mannequin, multi-angle-grid, magazine-editorial, seasonal-campaign, luxury-atmospherics, device-mockup, storefront, sports-campaign.' },
+          product_image_urls: { type: 'array', items: { type: 'string' }, description: 'Product truth photos: uploaded URLs, session image ids, or "latest". Up to 6. Strongly recommended; without them the suite is creative-only.' },
+          reference_image_urls: { type: 'array', items: { type: 'string' }, description: 'Optional style/layout references (not the product). Up to 6.' },
+          instruction: { type: 'string', description: 'Optional visual-direction notes from the user (style, mood, scenes to include).' },
+        },
+        required: ['product_description', 'platform', 'product_image_urls'],
+      },
+    },
+  },
   {
     type: 'function',
     function: {
@@ -57,6 +85,10 @@ export const openAiTools = [
             type: 'array',
             description: 'Reference stills to edit. Public HTTP URLs, session image ids, or "latest". Empty or omitted means text-to-image. Up to 16.',
             items: { type: 'string' },
+          },
+          set_item: {
+            type: 'string',
+            description: 'Storyboard item id returned by plan_product_set. When set, the runtime overrides name, prompt, aspect_ratio and input_urls from the plan.',
           },
           uncertain_fields: {
             type: 'array',
@@ -330,6 +362,7 @@ export function parseGenerateImageArgs(raw: string): GenerateImageArgs {
 
   return {
     name: asString(parsed.name).slice(0, 100),
+    set_item: asString(parsed.set_item) || undefined,
     prompt,
     aspect_ratio: aspectRatio,
     resolution,
