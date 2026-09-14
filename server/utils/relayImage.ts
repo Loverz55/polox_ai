@@ -20,7 +20,8 @@ export function relayImageTarget(model: string) {
   const key = family(model)
   if (key === 'gpt-image-2') {
     const name = settings.imageModel || 'gpt-image-2'
-    return { model: name, format: /gemini|banana/i.test(name) ? 'gemini' as const : 'openai' as const }
+    // "-async" models use the task API (POST /v1/videos + poll), e.g. gpt-image-2-async on new-api relays.
+    return { model: name, format: /async$/i.test(name) ? 'async' as const : /gemini|banana/i.test(name) ? 'gemini' as const : 'openai' as const }
   }
   if (GEMINI_MODELS[key])
     return { model: GEMINI_MODELS[key], format: 'gemini' as const }
@@ -109,6 +110,38 @@ async function callOpenai(model: string, input: Record<string, unknown>, refs: s
   return data.map((item: any) => item?.b64_json ? { base64: String(item.b64_json), mime: 'image/png' } : item?.url ? { url: String(item.url) } : null).filter(Boolean) as ImagePart[]
 }
 type ImagePart = { base64: string, mime: string } | { url: string }
+async function referenceDataUrl(url: string) {
+  const local = await readStoredMedia(url, 30 * 1024 * 1024)
+  return local ? `data:${local.mime};base64,${Buffer.from(local.bytes).toString('base64')}` : url
+}
+/** Task-style relay: submit, then poll /v1/videos/{task_id} (same shape Banana's gpt_xxz adapter uses). */
+async function callAsync(model: string, input: Record<string, unknown>, refs: string[], signal?: AbortSignal) {
+  const headers = { 'Authorization': `Bearer ${readServiceSettings().imageKey}`, 'Content-Type': 'application/json' }
+  const ratio = aspectOf(input)
+  const body: Record<string, unknown> = { model, prompt: String(input.prompt || ''), ...(ratio === 'auto' ? {} : { aspect_ratio: ratio }) }
+  if (refs.length)
+    body.image_urls = await Promise.all(refs.map(referenceDataUrl))
+  const submit = await fetch(`${base()}/v1/videos`, { method: 'POST', headers, body: JSON.stringify(body), signal: AbortSignal.timeout(60_000) })
+  const created = await submit.json().catch(() => ({})) as Record<string, any>
+  if (!submit.ok || created.error || !created.task_id)
+    throw new Error(readErrorMessage(created, `Image relay task submit failed (${submit.status})`))
+  const deadline = Date.now() + IMAGE_TIMEOUT_MS
+  while (Date.now() < deadline) {
+    signal?.throwIfAborted()
+    await new Promise(resolve => setTimeout(resolve, 3000))
+    const poll = await fetch(`${base()}/v1/videos/${encodeURIComponent(String(created.task_id))}`, { headers, signal: AbortSignal.timeout(30_000) })
+    const task = await poll.json().catch(() => ({})) as Record<string, any>
+    const status = String(task.status || '').toLowerCase()
+    if (['success', 'succeeded', 'completed'].includes(status)) {
+      const urls: string[] = [...(Array.isArray(task.image_urls) ? task.image_urls : []), ...(Array.isArray(task.data) ? task.data.map((item: any) => item?.url) : []), task.image_url, task.url].filter((url): url is string => typeof url === 'string' && /^https?:\/\//i.test(url))
+      const b64: string[] = [task.b64_json, ...(Array.isArray(task.data) ? task.data.map((item: any) => item?.b64_json) : [])].filter((value): value is string => typeof value === 'string' && value.length > 0)
+      return [...urls.map(url => ({ url })), ...b64.map(base64 => ({ base64, mime: 'image/png' }))] as ImagePart[]
+    }
+    if (['failed', 'error', 'cancelled', 'canceled'].includes(status))
+      throw new Error(readErrorMessage(task.error || task, 'Image relay task failed'))
+  }
+  throw new Error('Image relay task timed out')
+}
 async function callGemini(model: string, input: Record<string, unknown>, refs: string[], signal?: AbortSignal) {
   const parts: any[] = [{ text: String(input.prompt || '') }]
   for (const url of refs) {
@@ -148,7 +181,9 @@ export async function generateRelayImage(model: string, input: Record<string, un
   if (!target)
     throw new Error('Image relay is not configured for this model')
   const refs = referenceUrls(input)
-  const parts = target.format === 'gemini' ? await callGemini(target.model, input, refs, signal) : await callOpenai(target.model, input, refs, signal)
+  const parts = target.format === 'async'
+    ? await callAsync(target.model, input, refs, signal)
+    : target.format === 'gemini' ? await callGemini(target.model, input, refs, signal) : await callOpenai(target.model, input, refs, signal)
   if (!parts.length)
     throw new Error('Image relay returned no image')
   const urls: string[] = []
