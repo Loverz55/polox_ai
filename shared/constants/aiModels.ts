@@ -121,6 +121,24 @@ export const AI_MODELS: AiModelConfig[] = [
     schema: falFormSchema('gpt-image-2-image-to-image')!,
   },
   {
+    id: 'gpt-image-2-5-text-to-image',
+    name: 'GPT Image 2.5',
+    category: 'Image',
+    task: 'Text to Image',
+
+    icon: 'lucide:sparkles',
+    schema: falFormSchema('gpt-image-2-5-text-to-image')!,
+  },
+  {
+    id: 'gpt-image-2-5-image-to-image',
+    name: 'GPT Image 2.5',
+    category: 'Image',
+    task: 'Image to Image',
+
+    icon: 'lucide:sparkles',
+    schema: falFormSchema('gpt-image-2-5-image-to-image')!,
+  },
+  {
     id: 'nano-banana-2-text-to-image',
     name: 'Nano Banana 2',
     category: 'Image',
@@ -384,6 +402,7 @@ export const AI_MODELS: AiModelConfig[] = [
 export const MODEL_COMPANIES: Record<string, string> = {
   'Seedream 5.0 Pro': 'ByteDance',
   'GPT Image 2': 'OpenAI',
+  'GPT Image 2.5': 'OpenAI',
   'Nano Banana 2': 'Google',
   'Nano Banana 2 Lite': 'Google',
   'Nano Banana Pro': 'Google',

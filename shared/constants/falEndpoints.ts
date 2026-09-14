@@ -4,6 +4,9 @@ export const FAL_ENDPOINTS: Record<string, string> = {
   'seedream/5-pro-image-to-image': 'bytedance/seedream/v5/pro/edit',
   'gpt-image-2-text-to-image': 'openai/gpt-image-2',
   'gpt-image-2-image-to-image': 'openai/gpt-image-2/edit',
+  // GPT Image 2.5 reuses the 2.0 input schema; served by the image relay (task format), fal falls back to 2.0.
+  'gpt-image-2-5-text-to-image': 'openai/gpt-image-2',
+  'gpt-image-2-5-image-to-image': 'openai/gpt-image-2/edit',
   'nano-banana-2-text-to-image': 'fal-ai/nano-banana-2',
   'nano-banana-2-image-to-image': 'fal-ai/nano-banana-2/edit',
   'nano-banana-2-lite-text-to-image': 'google/nano-banana-2-lite',

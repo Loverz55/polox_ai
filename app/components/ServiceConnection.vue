@@ -11,6 +11,7 @@ interface ConnectionStatus {
   openRouterModel: string
   imageBaseUrl: string
   imageModel: string
+  imageFormat: string
   openRouterOk: boolean
   imageOk: boolean
   falOk: boolean
@@ -28,6 +29,7 @@ const openRouterModel = ref('')
 const imageBaseUrl = ref('')
 const imageKey = ref('')
 const imageModel = ref('')
+const imageFormat = ref('auto')
 const falKey = ref('')
 function showSavedKeys() {
   openRouterKey.value = status.value?.openRouterConfigured ? MASKED_KEY : ''
@@ -65,6 +67,7 @@ watch(open, async (value) => {
   openRouterModel.value = status.value?.openRouterModel || 'deepseek/deepseek-v4-flash-vision-exp'
   imageBaseUrl.value = status.value?.imageBaseUrl || ''
   imageModel.value = status.value?.imageModel || 'gpt-image-2'
+  imageFormat.value = status.value?.imageFormat || 'auto'
   results.value = null
   error.value = ''
 })
@@ -78,7 +81,7 @@ async function testConnection() {
   try {
     const result = await $fetch<ConnectionStatus & { openRouter: CheckResult, image: CheckResult, fal: CheckResult, superseded: boolean }>('/api/settings/services', {
       method: 'POST',
-      body: { openRouterBaseUrl: openRouterBaseUrl.value, openRouterKey: unmasked(openRouterKey.value), openRouterModel: openRouterModel.value, imageBaseUrl: imageBaseUrl.value, imageKey: unmasked(imageKey.value), imageModel: imageModel.value, falKey: unmasked(falKey.value) },
+      body: { openRouterBaseUrl: openRouterBaseUrl.value, openRouterKey: unmasked(openRouterKey.value), openRouterModel: openRouterModel.value, imageBaseUrl: imageBaseUrl.value, imageKey: unmasked(imageKey.value), imageModel: imageModel.value, imageFormat: imageFormat.value, falKey: unmasked(falKey.value) },
       timeout: 65000,
     })
     status.value = result
@@ -133,6 +136,15 @@ async function testConnection() {
         <div class="space-y-2">
           <Label for="image-model">{{ t('Default image model (gpt-image-2 or a gemini image model)') }}</Label>
           <Input id="image-model" v-model="imageModel" autocomplete="off" :disabled="testing" placeholder="gpt-image-2" />
+        </div>
+        <div class="space-y-2">
+          <Label for="image-format">{{ t('Image API format') }}</Label>
+          <select id="image-format" v-model="imageFormat" :disabled="testing" class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs">
+            <option value="auto">{{ t('Auto (infer from model name)') }}</option>
+            <option value="openai">OpenAI images (/v1/images/generations)</option>
+            <option value="gemini">Gemini (generateContent)</option>
+            <option value="task">{{ t('Task API (/v1/videos + poll, e.g. 521xxz)') }}</option>
+          </select>
         </div>
         <div class="space-y-2">
           <div class="flex items-center gap-3">
